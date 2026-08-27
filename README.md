@@ -14,12 +14,27 @@ La arquitectura general del proyecto contempla:
 
 ---
 
-## Equipo de desarrollo
+# Roles y responsabilidades del equipo
 
-- Andre
-- Vivian
-- Alexis
-- Daniela
+Para organizar el desarrollo del Sistema de Citas Médicas, las responsabilidades principales se distribuyen de la siguiente manera:
+
+| Integrante | Rol principal | Responsabilidades |
+|---|---|---|
+| **Andre** | **Líder del proyecto / Frontend** | Coordinación general del equipo, seguimiento de las fases, integración de módulos, desarrollo del panel web con Angular, aplicación móvil con Ionic y conexión de las interfaces con la API REST. |
+| **Daniela** | **Base de Datos / DBA** | Administración de MySQL, mantenimiento del modelo de datos, DER, tablas, relaciones, claves primarias y foráneas, integridad de datos, `schema.sql`, consultas y datos de prueba. |
+| **Vivian** | **Backend / API REST** | Desarrollo y mantenimiento del backend con Spring Boot, entidades JPA, repositories, services, controllers, DTOs, endpoints REST y lógica de negocio del sistema. |
+| **Alexis** | **Seguridad / QA y pruebas de API** | Spring Security, autenticación JWT, roles y permisos, protección de endpoints, pruebas funcionales de la API, mantenimiento de la colección Postman y pruebas de regresión. |
+
+## Trabajo colaborativo
+
+Aunque cada integrante tiene un área principal asignada, el proyecto se desarrolla de manera colaborativa. Todos pueden apoyar en otras áreas cuando sea necesario.
+
+- Los cambios en **MySQL, tablas o relaciones** deben coordinarse con **Daniela**.
+- Los cambios en **Spring Boot, endpoints o lógica de negocio** deben coordinarse con **Vivian**.
+- Los cambios en **JWT, Spring Security, permisos o pruebas de API** deben coordinarse con **Alexis**.
+- Los cambios en **Angular, Ionic o integración general del sistema** deben coordinarse con **Andre**.
+
+Los cambios que afecten varios módulos deben ser comunicados al equipo antes de integrarse a la rama `main`.
 
 ---
 
@@ -945,3 +960,5 @@ Las siguientes fases continuarán a partir de esta base con la integración de l
 Este repositorio corresponde a un proyecto académico.
 
 Las configuraciones utilizadas durante el desarrollo local no deben considerarse configuraciones destinadas a un ambiente de producción.
+
+
