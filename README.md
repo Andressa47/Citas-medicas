@@ -269,19 +269,6 @@ El DER representa las relaciones entre:
 
 <img width="888" height="522" alt="image" src="https://github.com/user-attachments/assets/c28b7ffc-aad3-4d27-bb6b-4a00a09e8eea" />
 
-
-Se recomienda guardar la documentación del proyecto dentro de:
-
-```text
-docs/
-```
-
-Por ejemplo:
-
-```text
-docs/DER_Sistema_Citas_Medicas.png
-```
-
 ---
 
 # Configuración del proyecto
