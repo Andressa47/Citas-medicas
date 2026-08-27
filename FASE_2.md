@@ -1,122 +1,307 @@
-# Fase 2 - Lógica de Negocio y Servicios REST
+# Fase 2 - Guía de trabajo por persona
 
-**Periodo:** Semanas 3 - 4  
-**Fecha de entrega:** 05/09
+## Objetivo de esta guía
 
-## Objetivo de la Fase 2
+Esta sección explica **qué debe hacer cada integrante, en qué orden y cómo comprobar que terminó su parte**.
 
-La Fase 2 tiene como objetivo fortalecer la lógica de negocio del backend y completar los servicios REST necesarios para garantizar que el proceso de agendamiento de citas sea seguro, consistente y correctamente validado.
-
-Los requerimientos principales de esta fase son:
-
-- Implementación del motor de disponibilidad de citas.
-- Reglas de negocio para evitar cruces de horarios.
-- Implementación y utilización de DTOs.
-- Validación de datos de entrada mediante `@Valid`.
-- Manejo global de excepciones mediante `@ControllerAdvice`.
-- Revisión de los servicios REST desarrollados durante la Fase 1.
-- Fortalecimiento del control de acceso según roles.
+La idea es evitar que varias personas modifiquen lo mismo al mismo tiempo.
 
 ---
 
-# Estado inicial de la Fase 2
+# Orden de trabajo recomendado
 
-Parte de la lógica necesaria para esta fase fue adelantada durante el desarrollo de la Fase 1.
-
-Actualmente el backend ya permite:
-
-- Crear bloques de horarios para médicos.
-- Consultar horarios disponibles.
-- Reservar una cita utilizando un horario.
-- Verificar si un horario está disponible.
-- Evitar reservar nuevamente un horario que ya fue utilizado.
-- Cambiar automáticamente un horario a `disponible = false` después de crear una cita.
-- Asociar automáticamente la cita con el médico correspondiente al horario.
-- Consultar citas por paciente.
-- Consultar citas por médico.
-- Consultar el historial del paciente autenticado.
-- Registrar diagnóstico y receta.
-- Cambiar una cita a estado `COMPLETADA`.
-
-Por lo tanto, durante la Fase 2 esta lógica deberá ser revisada, ampliada y validada para cumplir completamente los requisitos del proyecto.
-
----
-
-# Distribución de responsabilidades - Fase 2
-
-| Integrante | Rol | Responsabilidades principales durante Fase 2 |
-|---|---|---|
-| **Andre** | **Líder del proyecto / Integración** | Coordinar el desarrollo de la fase, revisar integración entre módulos, apoyar las pruebas generales, revisar Pull Requests y verificar que los servicios REST queden preparados para ser consumidos posteriormente por Angular e Ionic. |
-| **Daniela** | **Base de Datos / DBA** | Revisar integridad de horarios y citas, restricciones de base de datos, relaciones, índices y consultas necesarias para detectar disponibilidad y cruces de horarios. Mantener actualizado el modelo de datos si se realizan cambios. |
-| **Vivian** | **Backend / API REST** | Implementar y mejorar la lógica de disponibilidad, reglas para evitar cruces de horarios, DTOs, validaciones con `@Valid`, servicios y endpoints necesarios para completar la lógica de negocio. |
-| **Alexis** | **Seguridad / QA y pruebas de API** | Implementar/revisar RBAC, manejo global de excepciones, pruebas de casos válidos e inválidos, actualización de Postman y verificación de respuestas HTTP y seguridad de los endpoints. |
-
-> Aunque existen responsables principales, los cambios que involucren varias capas deben revisarse de manera colaborativa antes de integrarse a `main`.
-
----
-
-# 1. Motor de disponibilidad de citas
-
-## Objetivo
-
-El sistema debe determinar correctamente qué horarios se encuentran disponibles para un médico en una fecha determinada.
-
-Endpoint mínimo requerido:
-
-```http
-GET /api/v1/schedules/available
-```
-
-La consulta debe permitir utilizar como mínimo:
+La Fase 2 se trabajará en este orden:
 
 ```text
-medicoId
-fecha
+1. DANIELA
+   Base de datos y revisión de horarios
+        ↓
+2. VIVIAN
+   Lógica de negocio + DTOs + validaciones
+        ↓
+3. ALEXIS
+   Seguridad + manejo de errores + pruebas
+        ↓
+4. ANDRE
+   Integración final + revisión + documentación
 ```
 
-Ejemplo conceptual:
+No significa que una persona tenga que esperar completamente a la otra, pero **los cambios que dependan del paso anterior deben hacerse después de que ese paso esté integrado**.
 
-```http
-GET /api/v1/schedules/available?medicoId=4&fecha=2026-09-05
+---
+
+# PASO 0 - Todos antes de empezar
+
+## Responsable: TODO EL EQUIPO
+
+Antes de modificar código:
+
+### 1. Descargar la versión actual
+
+Cada integrante debe trabajar con la versión más reciente de `main`.
+
+```bash
+git switch main
+git pull
 ```
 
-El backend debe devolver únicamente los bloques que puedan ser reservados.
+Después debe ir a su rama:
 
-## Reglas mínimas
+```bash
+git switch nombre-rama
+```
 
-Un horario podrá considerarse disponible cuando:
+Ejemplo:
+
+```bash
+git switch vivian
+```
+
+### 2. Verificar que el proyecto funcione
+
+Antes de empezar Fase 2:
+
+- [ ] MySQL está encendido.
+- [ ] Existe `citas_medicas`.
+- [ ] Spring Boot inicia.
+- [ ] Login funciona.
+- [ ] Postman funciona.
+- [ ] Se pueden listar médicos.
+- [ ] Se pueden consultar horarios.
+- [ ] Se pueden listar citas.
+
+Si algo ya está roto antes de comenzar, avisar al equipo antes de modificar código.
+
+---
+
+# PASO 1 - DANIELA
+
+## Responsable de Base de Datos / DBA
+
+### Objetivo
+
+Daniela debe comprobar que la base de datos pueda soportar correctamente las reglas nuevas de horarios y citas.
+
+**No necesita rehacer la base de datos.**
+
+Debe trabajar principalmente revisando:
 
 ```text
-El horario existe
-        +
-Pertenece al médico solicitado
-        +
-Corresponde a la fecha solicitada
-        +
-disponible = true
-        +
-No existe una cita activa que ocupe el bloque
+medicos
+horarios_disponibles
+citas
 ```
 
 ---
 
-# 2. Prevención de cruces de horarios
+## Tarea 1.1 - Revisar las relaciones
 
-Uno de los requisitos principales de esta fase es impedir conflictos de horarios.
+Comprobar en MySQL que existan correctamente:
 
-## Regla general de solapamiento
+```text
+medicos.id
+    ↓
+horarios_disponibles.medico_id
+```
 
-Para dos intervalos:
+y:
+
+```text
+horarios_disponibles.id
+    ↓
+citas.horario_id
+```
+
+También:
+
+```text
+usuarios.id
+    ↓
+citas.paciente_id
+```
+
+y:
+
+```text
+medicos.id
+    ↓
+citas.medico_id
+```
+
+### Resultado esperado
+
+No debe haber registros que apunten a IDs inexistentes.
+
+---
+
+## Tarea 1.2 - Revisar estructura de horarios
+
+La tabla:
+
+```text
+horarios_disponibles
+```
+
+debe permitir identificar como mínimo:
+
+```text
+id
+medico_id
+fecha_hora_inicio
+fecha_hora_fin
+disponible
+```
+
+Debe confirmar que:
+
+```text
+fecha_hora_inicio < fecha_hora_fin
+```
+
+será una regla manejada por el backend.
+
+No necesita agregar otra columna si la información ya está disponible.
+
+---
+
+## Tarea 1.3 - Revisar estructura de citas
+
+La tabla `citas` debe conservar:
+
+```text
+paciente_id
+medico_id
+horario_id
+estado
+motivo
+diagnostico
+receta
+fecha_creacion
+fecha_actualizacion
+```
+
+No volver a agregar campos antiguos o duplicados como:
+
+```text
+fecha_hora
+```
+
+si la fecha de la cita ya se obtiene mediante `horario_id`.
+
+---
+
+## Tarea 1.4 - Revisar índices
+
+Consultar con el equipo antes de cambiar algo, pero revisar si sería útil tener índices en:
+
+```text
+horarios_disponibles.medico_id
+horarios_disponibles.fecha_hora_inicio
+citas.paciente_id
+citas.medico_id
+citas.horario_id
+```
+
+Las claves foráneas de MySQL ya pueden generar parte de estos índices, así que primero debe revisar antes de crear duplicados.
+
+---
+
+## Tarea 1.5 - Actualizar schema.sql
+
+Si Daniela realiza cualquier cambio real en la estructura de MySQL:
+
+```text
+DEBE actualizar schema.sql
+```
+
+Si no cambia la estructura:
+
+```text
+NO necesita modificar schema.sql
+```
+
+---
+
+## Tarea 1.6 - Actualizar DER
+
+Solo si cambia una tabla o relación:
+
+```text
+actualizar DER
+```
+
+Si no cambia nada:
+
+```text
+DER actual se mantiene
+```
+
+---
+
+## Daniela termina cuando:
+
+- [ ] La estructura de horarios está correcta.
+- [ ] La estructura de citas está correcta.
+- [ ] Las FK están correctas.
+- [ ] No existen columnas duplicadas innecesarias.
+- [ ] `schema.sql` coincide con MySQL si hubo cambios.
+- [ ] DER coincide con MySQL si hubo cambios.
+
+### Daniela debe avisar al equipo:
+
+```text
+"Base de datos revisada. Vivian puede trabajar sobre horarios y citas."
+```
+
+---
+
+# PASO 2 - VIVIAN
+
+## Responsable de Backend / API REST
+
+Esta es la parte más grande de la Fase 2.
+
+Vivian trabajará principalmente en:
+
+```text
+service/
+controller/
+dto/
+repository/
+```
+
+---
+
+# Tarea 2.1 - Evitar cruces de horarios
+
+Actualmente se pueden crear horarios.
+
+Ahora debe impedirse que un médico tenga bloques que se traslapen.
+
+Ejemplo:
 
 ```text
 Horario existente:
-[inicioExistente, finExistente)
-
-Horario nuevo:
-[inicioNuevo, finNuevo)
+09:00 - 10:00
 ```
 
-existe un cruce cuando:
+Debe rechazarse:
+
+```text
+09:30 - 10:30
+```
+
+Pero debe permitirse:
+
+```text
+10:00 - 11:00
+```
+
+---
+
+## Regla para detectar cruces
+
+Existe conflicto cuando:
 
 ```text
 inicioNuevo < finExistente
@@ -124,92 +309,137 @@ Y
 finNuevo > inicioExistente
 ```
 
-Por ejemplo:
+Vivian debe implementar esta lógica en el backend.
+
+El lugar recomendado es:
 
 ```text
-Horario existente: 09:00 - 10:00
-Horario nuevo:      09:30 - 10:30
-
-Resultado: CONFLICTO
+HorarioDisponibleService
 ```
 
-Mientras que:
-
-```text
-Horario existente: 09:00 - 10:00
-Horario nuevo:      10:00 - 11:00
-
-Resultado: PERMITIDO
-```
-
-Esto permite crear bloques consecutivos sin considerarlos un cruce.
-
-## Validaciones necesarias
-
-Antes de crear un horario:
-
-- [ ] El médico debe existir.
-- [ ] La fecha/hora de inicio debe existir.
-- [ ] La fecha/hora de fin debe existir.
-- [ ] La hora final debe ser posterior a la hora inicial.
-- [ ] El médico no debe tener otro horario que se cruce con el nuevo bloque.
-
-Antes de crear una cita:
-
-- [ ] El paciente debe existir.
-- [ ] El horario debe existir.
-- [ ] El horario debe estar disponible.
-- [ ] El horario no debe estar reservado por otra cita activa.
-- [ ] El médico debe corresponder al horario seleccionado.
-- [ ] La cita debe crearse inicialmente con un estado válido.
+No poner toda la validación directamente en el Controller.
 
 ---
 
-# 3. Cancelación de citas
+## Tarea 2.2 - Validar inicio y fin
 
-El enunciado general establece que `ROLE_PATIENT` debe poder cancelar citas.
-
-Por lo tanto, durante esta fase debe revisarse o implementarse la cancelación.
-
-El estado correspondiente es:
+Antes de guardar un horario:
 
 ```text
-CANCELADA
+fechaHoraInicio debe ser menor que fechaHoraFin
 ```
 
-Al cancelar una cita, se debe determinar según las reglas de negocio del proyecto si el horario vuelve a estar disponible.
+Debe rechazarse algo como:
 
-Flujo esperado:
+```text
+inicio: 15:00
+fin:    14:00
+```
+
+---
+
+## Tarea 2.3 - Crear consulta para detectar cruce
+
+Probablemente se necesitará agregar una consulta en:
+
+```text
+HorarioDisponibleRepository
+```
+
+La consulta debe permitir saber si el médico ya tiene un horario que choque con el nuevo rango.
+
+Vivian puede implementar la consulta mediante:
+
+- métodos derivados de Spring Data, o
+- `@Query`.
+
+Debe elegir la opción que deje el código más claro.
+
+---
+
+# Tarea 2.4 - Revisar motor de disponibilidad
+
+Ya existe:
+
+```http
+GET /api/v1/schedules/available
+```
+
+Vivian debe revisar que solo regrese horarios:
+
+```text
+del médico correcto
++
+de la fecha correcta
++
+disponible = true
+```
+
+y que no devuelva un bloque ya reservado.
+
+---
+
+# Tarea 2.5 - Mantener creación de citas
+
+Actualmente `CitaService` ya hace varias validaciones.
+
+Debe conservar:
+
+```text
+horario existe
+horario disponible
+horario no reservado
+medico obtenido desde el horario
+estado inicial PENDIENTE
+horario pasa a false
+```
+
+NO eliminar:
+
+```java
+@Transactional
+```
+
+de la creación de citas.
+
+---
+
+# Tarea 2.6 - Implementar cancelación
+
+El paciente debe poder cancelar una cita.
+
+Crear un endpoint apropiado, por ejemplo:
+
+```http
+PUT /api/v1/appointments/{id}/cancel
+```
+
+Flujo:
 
 ```text
 Cita PENDIENTE
-      ↓
-Paciente cancela
-      ↓
+     ↓
+Cancelar
+     ↓
 Cita CANCELADA
-      ↓
-Horario nuevamente disponible
+     ↓
+Horario disponible = true
 ```
 
-La cancelación no debería eliminar físicamente la cita de la base de datos, ya que conservarla permite mantener trazabilidad e historial.
+La cita **no debe borrarse**.
+
+Debe conservarse en el historial.
 
 ---
 
-# 4. DTOs
+# Tarea 2.7 - Crear DTOs
 
-Durante la Fase 1 algunos endpoints pueden trabajar directamente con entidades JPA.
+Actualmente varios endpoints reciben entidades completas.
 
-En la Fase 2 se debe mejorar esta arquitectura utilizando DTOs.
-
-## Objetivo
-
-Evitar utilizar las entidades directamente como contratos de entrada y salida de la API cuando no sea necesario.
-
-Estructura recomendada:
+Se debe crear una estructura similar a:
 
 ```text
 dto/
-│
 ├── LoginRequest.java
 ├── LoginResponse.java
 ├── UsuarioRequest.java
@@ -223,454 +453,624 @@ dto/
 └── DiagnosticoRequest.java
 ```
 
-Los nombres pueden adaptarse a la estructura actual del proyecto.
+No necesariamente deben tener exactamente esos nombres, pero sí separar entrada/salida cuando sea útil.
 
-## Ventajas
+---
 
-Los DTOs permiten:
+## Primeros DTOs recomendados
 
-- Evitar exponer información sensible.
-- Controlar los campos que recibe el cliente.
-- Controlar los campos que devuelve la API.
-- Aplicar validaciones.
-- Evitar enviar estructuras JPA innecesariamente grandes.
-- Facilitar posteriormente el consumo desde Angular e Ionic.
+Vivian debe empezar con los más importantes:
 
-Por ejemplo, nunca se debe devolver:
+### Crear cita
+
+```text
+CitaRequest
+```
+
+Debe recibir algo simple como:
+
+```json
+{
+  "pacienteId": 3,
+  "horarioId": 1,
+  "motivo": "Dolor de cabeza"
+}
+```
+
+En lugar de:
+
+```json
+{
+  "paciente": {
+    "id": 3
+  },
+  "horario": {
+    "id": 1
+  }
+}
+```
+
+---
+
+### Diagnóstico
+
+Crear:
+
+```text
+DiagnosticoRequest
+```
+
+Con:
+
+```text
+diagnostico
+receta
+```
+
+---
+
+### Usuario
+
+Crear DTO de respuesta para nunca exponer:
 
 ```text
 password
 ```
 
-en una respuesta de usuario.
+---
+
+# Tarea 2.8 - Implementar @Valid
+
+Los Controllers deben comenzar a utilizar:
+
+```java
+@Valid
+```
+
+Ejemplo:
+
+```java
+public ResponseEntity<?> crear(
+        @Valid @RequestBody CitaRequest request)
+```
 
 ---
 
-# 5. Validaciones con @Valid
+## Validaciones recomendadas
 
-Los datos enviados por el cliente deben validarse antes de ejecutar la lógica de negocio.
-
-Ejemplo:
+### Usuario
 
 ```java
-@PostMapping
-public ResponseEntity<?> crear(
-        @Valid @RequestBody CitaRequest request) {
-    // lógica
-}
+@NotBlank
+@Email
 ```
 
-Las validaciones se colocarán principalmente en los DTOs.
-
-Ejemplo:
+para email.
 
 ```java
-@NotNull(message = "El paciente es obligatorio")
-private Long pacienteId;
-
-@NotNull(message = "El horario es obligatorio")
-private Long horarioId;
-
-@NotBlank(message = "El motivo de la cita es obligatorio")
-@Size(max = 500, message = "El motivo no puede superar los 500 caracteres")
-private String motivo;
+@NotBlank
+@Size(min = 6)
 ```
 
-Otras anotaciones que pueden utilizarse según corresponda:
+para password.
+
+### Cita
 
 ```java
 @NotNull
-@NotBlank
-@Email
-@Size
-@Future
-@FutureOrPresent
-@Positive
 ```
 
-No se deben agregar validaciones únicamente por agregarlas; deben corresponder a las reglas reales del sistema.
+para:
+
+```text
+pacienteId
+horarioId
+```
+
+y:
+
+```java
+@NotBlank
+```
+
+para motivo si el proyecto decide hacerlo obligatorio.
+
+### Horario
+
+```java
+@NotNull
+```
+
+para inicio, fin y médico.
 
 ---
 
-# 6. Manejo global de excepciones
+# Vivian termina cuando:
 
-El proyecto debe implementar un controlador global mediante:
+- [ ] No se pueden crear horarios cruzados.
+- [ ] No se permite fin anterior al inicio.
+- [ ] Disponibilidad funciona.
+- [ ] Reserva duplicada continúa bloqueada.
+- [ ] Cancelación funciona.
+- [ ] El horario vuelve a estar disponible al cancelar.
+- [ ] Los DTOs principales están implementados.
+- [ ] Los endpoints principales utilizan DTOs.
+- [ ] `@Valid` funciona.
+- [ ] `@Transactional` continúa protegiendo creación/cancelación.
+
+Después debe hacer Pull Request.
+
+---
+
+# PASO 3 - ALEXIS
+
+## Responsable de Seguridad / QA
+
+Alexis trabaja después de que las reglas principales de Vivian estén listas.
+
+Trabajará principalmente en:
+
+```text
+security/
+exception/
+controller/
+Postman
+```
+
+---
+
+# Tarea 3.1 - Crear manejo global de excepciones
+
+Crear paquete:
+
+```text
+exception/
+```
+
+y como mínimo:
+
+```text
+GlobalExceptionHandler.java
+```
+
+Debe utilizar:
 
 ```java
 @RestControllerAdvice
 ```
 
-o:
+---
 
-```java
-@ControllerAdvice
-```
+# Tarea 3.2 - Crear excepciones de negocio
 
-Estructura recomendada:
+Por ejemplo:
 
 ```text
-exception/
-│
-├── GlobalExceptionHandler.java
-├── ResourceNotFoundException.java
-├── BusinessException.java
-└── ScheduleConflictException.java
+ResourceNotFoundException
+BusinessException
+ScheduleConflictException
 ```
 
-Los nombres pueden adaptarse a la arquitectura definitiva.
+No es obligatorio usar exactamente estos nombres.
 
-## Objetivo
+El objetivo es reemplazar:
 
-Actualmente una excepción sin manejar puede producir una respuesta genérica como:
-
-```json
-{
-  "status": 500,
-  "error": "Internal Server Error"
-}
+```java
+throw new RuntimeException(...)
 ```
 
-Durante la Fase 2 se deben producir respuestas más claras y controladas.
+por errores más claros.
+
+---
+
+# Tarea 3.3 - Respuestas HTTP correctas
+
+Debe comprobar que:
+
+```text
+400 → datos inválidos
+401 → sin autenticación
+403 → sin permisos
+404 → recurso no encontrado
+409 → conflicto
+```
+
+Los errores normales del usuario no deberían producir:
+
+```text
+500 Internal Server Error
+```
+
+---
+
+# Tarea 3.4 - Manejar errores de @Valid
+
+Cuando falte un campo, la API debería regresar algo entendible.
 
 Ejemplo:
 
 ```json
 {
-  "status": 409,
-  "error": "Conflict",
-  "message": "El horario seleccionado ya se encuentra reservado",
-  "path": "/api/v1/appointments"
+  "status": 400,
+  "errors": {
+    "horarioId": "El horario es obligatorio",
+    "motivo": "El motivo es obligatorio"
+  }
 }
 ```
 
 ---
 
-# 7. Códigos HTTP
+# Tarea 3.5 - Configurar permisos por rol
 
-Los endpoints deben utilizar códigos HTTP adecuados.
-
-| Código | Uso |
-|---|---|
-| `200 OK` | Consulta o actualización exitosa |
-| `201 Created` | Recurso creado correctamente |
-| `400 Bad Request` | Datos inválidos |
-| `401 Unauthorized` | Usuario no autenticado |
-| `403 Forbidden` | Usuario autenticado sin permisos |
-| `404 Not Found` | Recurso inexistente |
-| `409 Conflict` | Conflicto de horario o recurso |
-| `500 Internal Server Error` | Error interno no controlado |
-
-Los errores de negocio esperados no deberían terminar como `500`.
-
----
-
-# 8. Control de acceso por roles (RBAC)
-
-Durante esta fase también se debe comprobar que los permisos establecidos en el enunciado se respeten.
-
-## ROLE_ADMIN
-
-Debe tener acceso a:
-
-- CRUD de usuarios.
-- CRUD de médicos.
-- CRUD de especialidades.
-- Reporterías generales.
-
-## ROLE_DOCTOR
-
-Debe poder:
-
-- Definir horarios de atención.
-- Consultar su agenda.
-- Consultar citas correspondientes.
-- Registrar diagnósticos.
-- Registrar recetas.
-
-## ROLE_PATIENT
-
-Debe poder:
-
-- Consultar médicos.
-- Buscar disponibilidad.
-- Reservar citas.
-- Cancelar citas.
-- Consultar su historial.
-
-Debe evitarse depender únicamente de que un endpoint tenga un JWT válido. También debe comprobarse que el **rol tenga autorización para ejecutar la operación correspondiente**.
-
----
-
-# 9. Configuración CORS
-
-El enunciado general requiere una configuración explícita de CORS para permitir posteriormente la comunicación con Angular e Ionic.
-
-Durante esta fase se debe dejar preparada la configuración para los orígenes de desarrollo que utilizarán las interfaces.
-
-No se recomienda dejar permanentemente:
-
-```text
-*
-```
-
-como origen permitido cuando la configuración definitiva de desarrollo ya sea conocida.
-
-Esta configuración será especialmente importante durante las Fases 3 y 4.
-
----
-
-# 10. Transacciones
-
-Las operaciones que modifican varios registros relacionados deben utilizar transacciones cuando corresponda.
-
-Ejemplo importante:
-
-```text
-Crear cita
-    ↓
-Guardar cita
-    +
-Cambiar disponibilidad del horario
-```
-
-Estas operaciones deben comportarse como una unidad.
-
-Si una operación falla, no debería quedar:
-
-```text
-horario ocupado
-+
-cita no creada
-```
-
-o el caso contrario.
-
-Spring permite manejar este comportamiento mediante:
+Actualmente varios endpoints únicamente requieren:
 
 ```java
-@Transactional
+authenticated()
 ```
 
-La lógica existente de creación de citas debe conservar este comportamiento.
+Alexis debe empezar a separar permisos.
 
----
+## ADMIN
 
-# Orden recomendado de desarrollo
-
-Para evitar que diferentes integrantes trabajen sobre código dependiente al mismo tiempo, se recomienda seguir este orden.
-
-## Etapa 1 - Revisión inicial
-
-**Responsables: Todo el equipo**
-
-- [ ] Descargar/actualizar `main`.
-- [ ] Ejecutar Spring Boot.
-- [ ] Verificar conexión con MySQL.
-- [ ] Ejecutar Login.
-- [ ] Probar la colección Postman de Fase 1.
-- [ ] Confirmar que el proyecto funciona antes de comenzar Fase 2.
-
----
-
-## Etapa 2 - Base de datos y disponibilidad
-
-**Responsable principal: Daniela**
-
-- [ ] Revisar tablas de horarios y citas.
-- [ ] Revisar claves foráneas.
-- [ ] Revisar restricciones.
-- [ ] Analizar consultas necesarias para detectar cruces.
-- [ ] Revisar índices de campos utilizados frecuentemente.
-- [ ] Actualizar `schema.sql` si se modifica la estructura.
-- [ ] Actualizar el DER si cambia el modelo.
-
----
-
-## Etapa 3 - Lógica de negocio
-
-**Responsable principal: Vivian**
-
-- [ ] Implementar/revisar motor de disponibilidad.
-- [ ] Implementar prevención de cruces.
-- [ ] Revisar reserva duplicada.
-- [ ] Implementar/revisar cancelación de citas.
-- [ ] Implementar DTOs.
-- [ ] Implementar mapeo Entity ↔ DTO.
-- [ ] Implementar `@Valid`.
-- [ ] Revisar Services.
-- [ ] Mantener operaciones transaccionales.
-
----
-
-## Etapa 4 - Seguridad y excepciones
-
-**Responsable principal: Alexis**
-
-- [ ] Revisar permisos `ROLE_ADMIN`.
-- [ ] Revisar permisos `ROLE_DOCTOR`.
-- [ ] Revisar permisos `ROLE_PATIENT`.
-- [ ] Implementar/revisar `@ControllerAdvice`.
-- [ ] Definir respuestas de error.
-- [ ] Probar `400`.
-- [ ] Probar `401`.
-- [ ] Probar `403`.
-- [ ] Probar `404`.
-- [ ] Probar `409`.
-- [ ] Actualizar pruebas de Postman.
-
----
-
-## Etapa 5 - Integración
-
-**Responsable principal: Andre**
-
-- [ ] Revisar cambios de todas las ramas.
-- [ ] Comprobar que los formatos JSON sean adecuados para Angular e Ionic.
-- [ ] Revisar consistencia de nombres de endpoints.
-- [ ] Revisar CORS.
-- [ ] Ejecutar pruebas completas.
-- [ ] Revisar Pull Requests.
-- [ ] Integrar los cambios estables a `main`.
-- [ ] Actualizar documentación.
-
----
-
-# Casos de prueba obligatorios
-
-La colección Postman de Fase 2 debería comprobar al menos los siguientes escenarios.
-
-## Casos exitosos
-
-- [ ] Login correcto.
-- [ ] Consulta de médicos.
-- [ ] Filtro de médicos por especialidad.
-- [ ] Creación de horario válido.
-- [ ] Consulta de disponibilidad.
-- [ ] Creación de cita.
-- [ ] Consulta de historial.
-- [ ] Registro de diagnóstico.
-- [ ] Cancelación de cita.
-
-## Casos inválidos
-
-- [ ] Login incorrecto.
-- [ ] Request sin JWT.
-- [ ] Usuario sin el rol requerido.
-- [ ] Crear horario con hora final anterior a la inicial.
-- [ ] Crear dos horarios que se cruzan.
-- [ ] Reservar un horario ocupado.
-- [ ] Reservar un horario inexistente.
-- [ ] Enviar campos obligatorios vacíos.
-- [ ] Consultar un recurso inexistente.
-- [ ] Registrar diagnóstico sobre una cita inexistente.
-- [ ] Intentar cancelar una cita no permitida por las reglas definidas.
-
----
-
-# Colección Postman - Fase 2
-
-No es necesario eliminar la colección de Fase 1.
-
-Se debe ampliar:
+Debe administrar:
 
 ```text
-Sistema_Citas_Medicas.postman_collection.json
+usuarios
+medicos
+especialidades
 ```
 
-agregando las nuevas pruebas correspondientes a:
+## DOCTOR
+
+Debe poder:
 
 ```text
-Disponibilidad
-Cruces de horarios
-Validaciones
+crear horarios
+ver agenda
+registrar diagnóstico
+```
+
+## PATIENT
+
+Debe poder:
+
+```text
+consultar disponibilidad
+crear citas
+cancelar citas
+ver my-history
+```
+
+---
+
+## Puede utilizar
+
+```java
+@PreAuthorize(...)
+```
+
+o reglas dentro de:
+
+```text
+SecurityConfig
+```
+
+La decisión debe mantenerse consistente en el proyecto.
+
+---
+
+# Tarea 3.6 - Probar acceso incorrecto
+
+Debe comprobar por ejemplo:
+
+```text
+PATIENT intentando crear especialidad → 403
+PATIENT intentando registrar diagnóstico → 403
+
+DOCTOR intentando crear otro usuario → 403
+
+Sin JWT consultando citas → 401/403 según configuración
+```
+
+---
+
+# Tarea 3.7 - Configurar CORS explícito
+
+Actualmente CORS no debe quedar como configuración vacía indefinidamente.
+
+Debe prepararse para los futuros clientes:
+
+```text
+Angular
+Ionic
+```
+
+Durante desarrollo puede permitirse el origen local correspondiente.
+
+Ejemplo futuro de Angular:
+
+```text
+http://localhost:4200
+```
+
+Los orígenes definitivos pueden ajustarse cuando comiencen Fase 3 y Fase 4.
+
+---
+
+# Tarea 3.8 - Actualizar Postman
+
+Alexis debe ampliar la colección.
+
+Agregar pruebas para:
+
+```text
+Horarios cruzados
+Horario inválido
+Cita duplicada
 Cancelación
-Roles
-Excepciones
+@Valid
+401
+403
+404
+409
 ```
 
-Antes de subirla al repositorio se debe verificar nuevamente que no contenga tokens JWT reales ni credenciales.
+NO guardar JWT reales en la colección.
 
 ---
 
-# Git durante la Fase 2
+# Alexis termina cuando:
 
-Cada integrante continuará trabajando en su rama:
+- [ ] Existe `GlobalExceptionHandler`.
+- [ ] Los errores esperados no producen 500.
+- [ ] Las validaciones producen 400.
+- [ ] Los conflictos producen 409.
+- [ ] Los recursos inexistentes producen 404.
+- [ ] Los roles están protegidos.
+- [ ] Los accesos incorrectos producen 403.
+- [ ] CORS está explícitamente configurado.
+- [ ] Postman tiene pruebas positivas y negativas.
 
-```text
-main
-│
-├── andre
-├── daniela
-├── vivian
-└── alexis
-```
-
-La rama:
-
-```text
-main
-```
-
-debe mantenerse estable.
-
-El flujo recomendado es:
-
-```text
-Rama individual
-      ↓
-Desarrollo
-      ↓
-Pruebas
-      ↓
-Commit
-      ↓
-Push
-      ↓
-Pull Request
-      ↓
-Revisión
-      ↓
-Merge a main
-```
-
-No realizar cambios grandes directamente sobre `main`.
+Después debe hacer Pull Request.
 
 ---
 
-# Definición de terminado - Fase 2
+# PASO 4 - ANDRE
 
-La Fase 2 podrá considerarse terminada cuando:
+## Responsable de Liderazgo / Integración
 
-- [ ] Los horarios no puedan cruzarse para un mismo médico.
-- [ ] La consulta de disponibilidad devuelva únicamente horarios válidos.
-- [ ] Un horario ocupado no pueda reservarse dos veces.
-- [ ] La cancelación de citas funcione según las reglas definidas.
-- [ ] Los endpoints principales utilicen DTOs donde corresponda.
-- [ ] Los datos de entrada tengan validaciones mediante `@Valid`.
-- [ ] Los errores sean gestionados mediante `@ControllerAdvice`.
-- [ ] Los errores esperados utilicen códigos HTTP apropiados.
-- [ ] Los permisos de ADMIN, DOCTOR y PATIENT hayan sido comprobados.
-- [ ] Las operaciones relacionadas con citas mantengan integridad transaccional.
-- [ ] CORS quede preparado para Angular e Ionic.
-- [ ] La colección Postman esté actualizada.
-- [ ] Todos los casos principales hayan sido probados.
-- [ ] Spring Boot compile y ejecute correctamente desde `main`.
-- [ ] El README esté actualizado.
+Andre no debe rehacer el código de todos.
+
+Su responsabilidad principal es **integrar y comprobar que todo funcione junto**.
 
 ---
 
-# Resultado esperado de la Fase 2
+# Tarea 4.1 - Revisar Pull Request de Daniela
 
-Al finalizar esta fase, el backend debe quedar preparado para ser consumido por las interfaces del sistema.
+Verificar:
 
 ```text
-             BACKEND LISTO
-                   │
-          ┌────────┴────────┐
-          ↓                 ↓
-      FASE 3             FASE 4
-      Angular              Ionic
-   Panel Web          App de Pacientes
+¿Cambió tablas?
+¿Actualizó schema.sql?
+¿Actualizó DER si era necesario?
+¿La BD sigue funcionando?
 ```
 
-La **Fase 3** utilizará estos servicios para construir el panel web administrativo y médico, mientras que la **Fase 4** utilizará la misma API para implementar el flujo de agendamiento desde la aplicación móvil.
+Si todo está bien:
+
+```text
+Merge
+```
+
+---
+
+# Tarea 4.2 - Revisar Pull Request de Vivian
+
+Probar:
+
+```text
+crear horario normal
+crear horario cruzado
+consultar disponibilidad
+crear cita
+intentar reservar nuevamente
+cancelar cita
+volver a consultar disponibilidad
+```
+
+También revisar los DTOs.
+
+---
+
+# Tarea 4.3 - Revisar Pull Request de Alexis
+
+Probar:
+
+```text
+sin JWT
+JWT ADMIN
+JWT DOCTOR
+JWT PATIENT
+```
+
+Comprobar:
+
+```text
+400
+401
+403
+404
+409
+```
+
+---
+
+# Tarea 4.4 - Revisar formatos JSON
+
+Como Andre desarrollará posteriormente el frontend, debe comprobar que las respuestas sean sencillas de consumir desde Angular e Ionic.
+
+Evitar respuestas innecesariamente gigantes o estructuras anidadas repetidas.
+
+Ejemplo:
+
+En lugar de responder una cita con el médico repetido varias veces dentro del horario, posteriormente puede ser mejor utilizar un `CitaResponse`.
+
+---
+
+# Tarea 4.5 - Actualizar documentación
+
+Actualizar:
+
+```text
+README.md
+README_FASE_2.md
+Postman
+DER (si cambió)
+```
+
+---
+
+# Tarea 4.6 - Clean and Build final
+
+Desde `main`:
+
+```bash
+mvnw.cmd clean install
+```
+
+Debe terminar en:
+
+```text
+BUILD SUCCESS
+```
+
+Después ejecutar Spring Boot.
+
+---
+
+# Tarea 4.7 - Prueba final completa
+
+Ejecutar este flujo:
+
+```text
+ADMIN LOGIN
+    ↓
+Crear especialidad
+    ↓
+Crear doctor
+    ↓
+DOCTOR LOGIN
+    ↓
+Crear horario
+    ↓
+Intentar crear horario cruzado
+    ↓
+Debe fallar
+    ↓
+PATIENT LOGIN
+    ↓
+Consultar disponibilidad
+    ↓
+Crear cita
+    ↓
+Intentar reservar el mismo horario
+    ↓
+Debe fallar
+    ↓
+Consultar my-history
+    ↓
+Cancelar una cita de prueba
+    ↓
+Verificar que horario regresa
+    ↓
+Crear otra cita
+    ↓
+DOCTOR registra diagnóstico
+    ↓
+Cita COMPLETADA
+```
+
+Si ese flujo funciona, la lógica principal de Fase 2 está integrada.
+
+---
+
+# Resumen súper corto de responsabilidades
+
+Si alguien tiene duda sobre qué le toca, usar esta tabla:
+
+| Persona | Qué debe entregar |
+|---|---|
+| **Daniela** | Revisar MySQL, relaciones, estructura de horarios/citas, `schema.sql` y DER si hay cambios. |
+| **Vivian** | Cruces de horarios, disponibilidad, cancelación, DTOs, mapeos, `@Valid` y lógica de negocio. |
+| **Alexis** | `@ControllerAdvice`, excepciones, códigos HTTP, RBAC, CORS y pruebas Postman. |
+| **Andre** | Revisar Pull Requests, integrar ramas, probar flujo completo, revisar JSON y mantener documentación. |
+
+---
+
+# Orden de entrega entre integrantes
+
+```text
+DANIELA
+Base de datos lista
+      ↓
+VIVIAN
+Backend y DTOs listos
+      ↓
+ALEXIS
+Seguridad, errores y QA listos
+      ↓
+ANDRE
+Integración y pruebas finales
+      ↓
+MAIN
+FASE 2 COMPLETADA
+```
+
+---
+
+# Qué NO debe hacer cada integrante
+
+## Daniela
+
+No modificar Controllers o Security salvo que sea estrictamente necesario y esté coordinado.
+
+## Vivian
+
+No cambiar tablas de MySQL sin hablar primero con Daniela.
+
+No desactivar Security para dejarlo así.
+
+## Alexis
+
+No cambiar la lógica central de reserva sin coordinar con Vivian.
+
+No borrar endpoints para solucionar errores de permisos.
+
+## Andre
+
+No hacer merge sin probar la rama.
+
+No corregir directamente en `main` un problema grande; devolver el Pull Request para que se corrija en la rama correspondiente.
+
+---
+
+# Fase 2 se considera terminada cuando
+
+```text
+DANIELA ✓
+BD revisada
+
+VIVIAN ✓
+Lógica + DTOs + @Valid
+
+ALEXIS ✓
+Exceptions + RBAC + QA + CORS
+
+ANDRE ✓
+Integración + prueba final
+
+        ↓
+
+FASE 2 COMPLETADA
+```
