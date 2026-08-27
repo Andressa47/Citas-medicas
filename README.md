@@ -267,6 +267,9 @@ El DER representa las relaciones entre:
 - Horarios disponibles.
 - Citas.
 
+<img width="888" height="522" alt="image" src="https://github.com/user-attachments/assets/c28b7ffc-aad3-4d27-bb6b-4a00a09e8eea" />
+
+
 Se recomienda guardar la documentación del proyecto dentro de:
 
 ```text
