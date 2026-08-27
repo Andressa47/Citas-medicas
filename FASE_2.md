@@ -1,4 +1,4 @@
-# Fase 2 - Guía de trabajo por persona
+# Fase 2 - Guía
 
 ## Objetivo de esta guía
 
