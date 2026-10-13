@@ -1,0 +1,243 @@
+<div class="usuarios-container">
+
+  <div class="titulo">
+
+    <div>
+      <h2>Gestión de usuarios</h2>
+
+      <p>
+        Administra las cuentas y roles
+        registrados en el sistema.
+      </p>
+    </div>
+
+
+    <button
+      class="btn-primary"
+      (click)="abrirFormulario()"
+    >
+      + Nuevo usuario
+    </button>
+
+  </div>
+
+
+  <!-- MENSAJE DE ÉXITO -->
+
+  <div
+    class="mensaje exito"
+    *ngIf="mensaje"
+  >
+    {{ mensaje }}
+  </div>
+
+
+  <!-- MENSAJE DE ERROR -->
+
+  <div
+    class="mensaje error"
+    *ngIf="error"
+  >
+    {{ error }}
+  </div>
+
+
+  <!-- FORMULARIO -->
+
+  <section
+    class="form-card"
+    *ngIf="mostrarFormulario"
+  >
+
+    <h3>
+      Nuevo usuario
+    </h3>
+
+
+    <div class="form-group">
+
+      <label>
+        Nombre completo
+      </label>
+
+      <input
+        type="text"
+        [(ngModel)]="nuevoUsuario.nombreCompleto"
+        placeholder="Ej. Carlos López"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Correo electrónico
+      </label>
+
+      <input
+        type="email"
+        [(ngModel)]="nuevoUsuario.email"
+        placeholder="correo@ejemplo.com"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Contraseña
+      </label>
+
+      <input
+        type="password"
+        [(ngModel)]="nuevoUsuario.password"
+        placeholder="Contraseña"
+      >
+
+    </div>
+
+
+    <div class="form-group">
+
+      <label>
+        Rol
+      </label>
+
+      <select
+        [(ngModel)]="nuevoUsuario.rol"
+      >
+
+        <option value="ROLE_ADMIN">
+          Administrador
+        </option>
+
+        <option value="ROLE_DOCTOR">
+          Médico
+        </option>
+
+        <option value="ROLE_PATIENT">
+          Paciente
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="form-actions">
+
+      <button
+        class="btn-secondary"
+        (click)="cancelarFormulario()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        class="btn-primary"
+        (click)="guardarUsuario()"
+      >
+        Guardar
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- CARGANDO -->
+
+  <div
+    class="loading"
+    *ngIf="cargando"
+  >
+    Cargando usuarios...
+  </div>
+
+
+  <!-- TABLA -->
+
+  <section
+    class="table-card"
+    *ngIf="!cargando"
+  >
+
+    <table
+      *ngIf="usuarios.length > 0"
+    >
+
+      <thead>
+
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Acciones</th>
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <tr
+          *ngFor="let usuario of usuarios"
+        >
+
+          <td>
+            {{ usuario.id }}
+          </td>
+
+          <td>
+            <strong>
+              {{ usuario.nombreCompleto }}
+            </strong>
+          </td>
+
+          <td>
+            {{ usuario.email }}
+          </td>
+
+          <td>
+
+            {{
+              usuario.rol === 'ROLE_ADMIN'
+                ? 'Administrador'
+                : usuario.rol === 'ROLE_DOCTOR'
+                ? 'Médico'
+                : 'Paciente'
+            }}
+
+          </td>
+
+          <td>
+
+            <button
+              class="btn-delete"
+              (click)="eliminarUsuario(usuario)"
+            >
+              Eliminar
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+
+    <div
+      class="empty-state"
+      *ngIf="usuarios.length === 0"
+    >
+      No hay usuarios registrados.
+    </div>
+
+  </section>
+
+</div>

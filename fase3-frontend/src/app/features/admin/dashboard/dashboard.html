@@ -1,0 +1,161 @@
+<section class="dashboard">
+
+  <!-- ===================================== -->
+  <!-- ENCABEZADO -->
+  <!-- ===================================== -->
+
+  <div class="dashboard-header">
+
+    <div>
+      <span class="section-label">
+        RESUMEN GENERAL
+      </span>
+
+      <h1>
+        Bienvenido al panel administrativo
+      </h1>
+
+      <p>
+        Gestiona usuarios, médicos, especialidades y horarios
+        desde un único lugar.
+      </p>
+    </div>
+
+  </div>
+
+
+  <!-- ===================================== -->
+  <!-- TARJETAS -->
+  <!-- ===================================== -->
+
+  <div class="dashboard-grid">
+
+    <a
+      routerLink="/admin/especialidades"
+      class="dashboard-card"
+    >
+
+      <div class="card-icon blue">
+        +
+      </div>
+
+      <div class="card-content">
+
+        <span class="card-label">
+          CATÁLOGO MÉDICO
+        </span>
+
+        <h2>
+          Especialidades
+        </h2>
+
+        <p>
+          Registra y administra las especialidades disponibles.
+        </p>
+
+        <span class="card-link">
+          Gestionar especialidades →
+        </span>
+
+      </div>
+
+    </a>
+
+
+    <a
+      routerLink="/admin/usuarios"
+      class="dashboard-card"
+    >
+
+      <div class="card-icon violet">
+        ♟
+      </div>
+
+      <div class="card-content">
+
+        <span class="card-label">
+          ACCESO AL SISTEMA
+        </span>
+
+        <h2>
+          Usuarios
+        </h2>
+
+        <p>
+          Administra las cuentas y roles registrados.
+        </p>
+
+        <span class="card-link">
+          Gestionar usuarios →
+        </span>
+
+      </div>
+
+    </a>
+
+
+    <a
+      routerLink="/admin/medicos"
+      class="dashboard-card"
+    >
+
+      <div class="card-icon green">
+        ⚕
+      </div>
+
+      <div class="card-content">
+
+        <span class="card-label">
+          PERSONAL MÉDICO
+        </span>
+
+        <h2>
+          Médicos
+        </h2>
+
+        <p>
+          Gestiona perfiles médicos y sus especialidades.
+        </p>
+
+        <span class="card-link">
+          Gestionar médicos →
+        </span>
+
+      </div>
+
+    </a>
+
+
+    <a
+      routerLink="/admin/horarios"
+      class="dashboard-card"
+    >
+
+      <div class="card-icon orange">
+        ◷
+      </div>
+
+      <div class="card-content">
+
+        <span class="card-label">
+          DISPONIBILIDAD
+        </span>
+
+        <h2>
+          Horarios
+        </h2>
+
+        <p>
+          Organiza los bloques disponibles para citas médicas.
+        </p>
+
+        <span class="card-link">
+          Gestionar horarios →
+        </span>
+
+      </div>
+
+    </a>
+
+  </div>
+</section>

@@ -1,0 +1,557 @@
+/* ==========================================================
+   SISTEMA MÉDICO - DISEÑO GLOBAL DEL PANEL ADMINISTRATIVO
+   ========================================================== */
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --primary-soft: #eff6ff;
+
+  --navy: #153b75;
+
+  --background: #f5f7fb;
+  --surface: #ffffff;
+
+  --text: #172033;
+  --text-soft: #64748b;
+
+  --border: #e2e8f0;
+
+  --success: #15803d;
+  --success-bg: #dcfce7;
+
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+
+  --warning: #b45309;
+  --warning-bg: #fef3c7;
+
+  --shadow:
+    0 4px 18px rgba(15, 23, 42, 0.06);
+
+  --radius: 14px;
+}
+
+
+/* ==========================================================
+   BASE GENERAL
+   ========================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+
+  color: var(--text);
+  background: var(--background);
+}
+
+
+/* ==========================================================
+   ÁREA DE CONTENIDO DEL ADMIN
+   ========================================================== */
+
+.page-content {
+  width: 100%;
+  max-width: 1450px;
+
+  margin: 0 auto;
+
+  padding: 38px 42px 60px;
+}
+
+
+/* ==========================================================
+   TÍTULOS
+   ========================================================== */
+
+.page-content h1,
+.page-content h2,
+.page-content h3 {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+
+  color: #172033;
+}
+
+.page-content h1 {
+  margin-top: 0;
+
+  font-size: 30px;
+  font-weight: 750;
+
+  letter-spacing: -0.6px;
+}
+
+.page-content h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.page-content h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.page-content p {
+  color: var(--text-soft);
+}
+
+
+/* ==========================================================
+   TARJETAS / CONTENEDORES
+   ========================================================== */
+
+.page-content form,
+.page-content table,
+.page-content .card,
+.page-content .form-card,
+.page-content .table-card,
+.page-content .table-container {
+  border-radius: var(--radius);
+
+  background: var(--surface);
+
+  box-shadow: var(--shadow);
+}
+
+
+/* ==========================================================
+   TABLAS
+   ========================================================== */
+
+.page-content table {
+  width: 100%;
+
+  border-collapse: collapse;
+  overflow: hidden;
+
+  background: white;
+}
+
+.page-content thead {
+  background: #f8fafc;
+}
+
+.page-content th {
+  padding: 17px 18px;
+
+  border-bottom: 1px solid var(--border);
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-align: left;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.5px;
+}
+
+.page-content td {
+  padding: 17px 18px;
+
+  border-bottom: 1px solid #edf2f7;
+
+  color: #334155;
+
+  font-size: 14px;
+
+  vertical-align: middle;
+}
+
+.page-content tbody tr {
+  transition:
+    background-color 0.18s ease;
+}
+
+.page-content tbody tr:hover {
+  background: #f8fbff;
+}
+
+.page-content tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* ==========================================================
+   FORMULARIOS
+   ========================================================== */
+
+.page-content label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #334155;
+
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.page-content input,
+.page-content select,
+.page-content textarea {
+  width: 100%;
+
+  border: 1px solid #cbd5e1;
+
+  border-radius: 9px;
+
+  background: white;
+
+  color: #1e293b;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.page-content input,
+.page-content select {
+  min-height: 46px;
+
+  padding: 0 14px;
+}
+
+.page-content textarea {
+  min-height: 115px;
+
+  padding: 13px 14px;
+
+  resize: vertical;
+}
+
+.page-content input:focus,
+.page-content select:focus,
+.page-content textarea:focus {
+  border-color: var(--primary);
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+/* ==========================================================
+   BOTONES
+   ========================================================== */
+
+.page-content button {
+  min-height: 40px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  padding: 9px 17px;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.page-content button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.page-content button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+
+/* ==========================================================
+   BOTONES AZULES
+   ========================================================== */
+
+.page-content .btn-primary,
+.page-content .primary-button,
+.page-content .btn-save,
+.page-content .new-button {
+  background: var(--primary);
+
+  color: white;
+}
+
+.page-content .btn-primary:hover,
+.page-content .primary-button:hover,
+.page-content .btn-save:hover,
+.page-content .new-button:hover {
+  background: var(--primary-dark);
+
+  box-shadow:
+    0 5px 12px rgba(37, 99, 235, 0.22);
+}
+
+
+/* ==========================================================
+   BOTÓN EDITAR
+   ========================================================== */
+
+.page-content .btn-edit,
+.page-content .edit-button {
+  background: #e0e7ff;
+
+  color: #3730a3;
+}
+
+.page-content .btn-edit:hover,
+.page-content .edit-button:hover {
+  background: #c7d2fe;
+}
+
+
+/* ==========================================================
+   BOTÓN ELIMINAR
+   ========================================================== */
+
+.page-content .btn-delete,
+.page-content .delete-button {
+  background: var(--danger-bg);
+
+  color: var(--danger);
+}
+
+.page-content .btn-delete:hover,
+.page-content .delete-button:hover {
+  background: #fecaca;
+}
+
+
+/* ==========================================================
+   BOTÓN SECUNDARIO
+   ========================================================== */
+
+.page-content .btn-secondary,
+.page-content .secondary-button,
+.page-content .btn-cancel {
+  background: #e9eef5;
+
+  color: #334155;
+}
+
+.page-content .btn-secondary:hover,
+.page-content .secondary-button:hover,
+.page-content .btn-cancel:hover {
+  background: #dce3ed;
+}
+
+
+/* ==========================================================
+   MENSAJES DEL SISTEMA
+   ========================================================== */
+
+.page-content .success-message,
+.page-content .alert-success {
+  margin-bottom: 22px;
+
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+
+  padding: 14px 17px;
+
+  background: var(--success-bg);
+
+  color: #166534;
+}
+
+.page-content .error-message,
+.page-content .alert-error {
+  margin-bottom: 22px;
+
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+
+  padding: 14px 17px;
+
+  background: var(--danger-bg);
+
+  color: #b91c1c;
+}
+
+
+/* ==========================================================
+   VALIDACIONES
+   ========================================================== */
+
+.page-content .field-error,
+.page-content .validation-error {
+  display: block;
+
+  margin-top: 6px;
+
+  color: var(--danger);
+
+  font-size: 12px;
+}
+
+
+/* ==========================================================
+   SCROLL
+   ========================================================== */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+
+  background: #cbd5e1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 900px) {
+
+  .page-content {
+    padding: 28px 24px 50px;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .page-content {
+    padding: 22px 16px 40px;
+  }
+
+  .page-content h1 {
+    font-size: 25px;
+  }
+
+  .page-content table {
+    min-width: 650px;
+  }
+
+  .page-content .table-container {
+    overflow-x: auto;
+  }
+
+}/* You can add global styles to this file, and also import other style files */
+
+/* IDENTIDAD VISUAL MEDULAR */
+
+/* Logotipo de la pantalla de inicio de sesión */
+
+.medular-login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 18px;
+  width: 100%;
+}
+
+.medular-login-logo {
+  display: block;
+  width: 340px;
+  max-width: 85%;
+  height: auto;
+  object-fit: contain;
+}
+
+.medular-login-brand h1 {
+  color: #ffffff;
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.medular-login-brand p {
+  color: #e5efff;
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 430px;
+  margin: 0;
+}
+
+/* Logotipo de las barras laterales */
+
+.medular-sidebar-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+}
+
+.medular-sidebar-logo {
+  display: block;
+  width: 215px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.medular-sidebar-brand span {
+  color: #cbd5e1;
+  font-size: 13px;
+  padding-left: 76px;
+}
+
+/* Adaptación a pantallas pequeñas */
+
+@media (max-width: 768px) {
+  .medular-login-logo {
+    width: 260px;
+  }
+
+  .medular-login-brand h1 {
+    font-size: 28px;
+  }
+
+  .medular-sidebar-logo {
+    width: 175px;
+  }
+
+  .medular-sidebar-brand span {
+    padding-left: 60px;
+  }
+}

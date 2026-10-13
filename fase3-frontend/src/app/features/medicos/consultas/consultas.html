@@ -1,0 +1,470 @@
+<div class="consulta-layout">
+
+  <!-- ===================================== -->
+  <!-- SIDEBAR -->
+  <!-- ===================================== -->
+
+  <aside class="sidebar">
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        +
+      </div>
+
+      <div class="brand-text">
+
+        <h2>
+          Sistema Médico
+        </h2>
+
+        <p>
+          Portal médico
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="menu-title">
+      CONSULTA
+    </div>
+
+
+    <nav class="menu">
+
+      <button
+        type="button"
+        class="menu-item"
+        (click)="volver()"
+      >
+
+        <span class="menu-icon">
+          ⌂
+        </span>
+
+        <span>
+          Mi agenda
+        </span>
+
+      </button>
+
+
+      <div class="menu-item active">
+
+        <span class="menu-icon">
+          ✚
+        </span>
+
+        <span>
+          Consulta médica
+        </span>
+
+      </div>
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="volver()"
+      >
+        ← Volver a mi agenda
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ===================================== -->
+  <!-- CONTENIDO PRINCIPAL -->
+  <!-- ===================================== -->
+
+  <div class="main-area">
+
+    <header class="topbar">
+
+      <div>
+
+        <p class="topbar-label">
+          Atención médica
+        </p>
+
+        <h1>
+          Consulta médica
+        </h1>
+
+      </div>
+
+    </header>
+
+
+    <main class="page-content">
+
+      <!-- ================================= -->
+      <!-- LOADING -->
+      <!-- ================================= -->
+
+      <div
+        class="loading-card"
+        *ngIf="cargando"
+      >
+        Cargando información de la cita...
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- ERROR -->
+      <!-- ================================= -->
+
+      <div
+        class="message error"
+        *ngIf="error"
+      >
+        {{ error }}
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- ÉXITO -->
+      <!-- ================================= -->
+
+      <div
+        class="message success"
+        *ngIf="mensaje"
+      >
+        {{ mensaje }}
+      </div>
+
+
+      <!-- ================================= -->
+      <!-- CONTENIDO -->
+      <!-- ================================= -->
+
+      <ng-container
+        *ngIf="!cargando && cita"
+      >
+
+        <!-- ================================= -->
+        <!-- INFORMACIÓN DEL PACIENTE -->
+        <!-- ================================= -->
+
+        <section class="patient-card">
+
+          <div class="patient-header">
+
+            <div>
+
+              <span class="section-label">
+                DATOS DEL PACIENTE
+              </span>
+
+
+              <div class="patient-title">
+
+                <h2>
+                  {{ cita.pacienteNombre }}
+                </h2>
+
+
+                <span
+                  class="status-badge"
+                  [class.completed]="
+                    cita.estado === 'COMPLETADA'
+                  "
+                >
+                  {{ cita.estado }}
+                </span>
+
+              </div>
+
+
+              <p>
+                Cita #{{ cita.id }}
+              </p>
+
+            </div>
+
+
+            <button
+              type="button"
+              class="secondary-button top-back"
+              (click)="volver()"
+            >
+              ← Volver
+            </button>
+
+          </div>
+
+
+          <div class="info-grid">
+
+            <div class="info-card">
+
+              <span>
+                Médico
+              </span>
+
+              <strong>
+                {{ cita.medicoNombre }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-card">
+
+              <span>
+                Especialidad
+              </span>
+
+              <strong>
+                {{ cita.especialidadNombre }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-card">
+
+              <span>
+                Fecha
+              </span>
+
+              <strong>
+                {{
+                  cita.fechaHoraInicio
+                    | date:'dd/MM/yyyy'
+                }}
+              </strong>
+
+            </div>
+
+
+            <div class="info-card">
+
+              <span>
+                Horario
+              </span>
+
+              <strong>
+
+                {{
+                  cita.fechaHoraInicio
+                    | date:'HH:mm'
+                }}
+
+                -
+
+                {{
+                  cita.fechaHoraFin
+                    | date:'HH:mm'
+                }}
+
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="reason-card">
+
+            <span>
+              Motivo de consulta
+            </span>
+
+            <p>
+              {{ cita.motivo }}
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- ================================= -->
+        <!-- FICHA MÉDICA -->
+        <!-- ================================= -->
+
+        <section class="clinical-card">
+
+          <div class="clinical-header">
+
+            <div>
+
+              <span class="section-label">
+                REGISTRO CLÍNICO
+              </span>
+
+              <h2>
+                Ficha médica
+              </h2>
+
+              <p>
+                Registra el diagnóstico y el tratamiento
+                correspondiente al paciente.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <form
+            [formGroup]="consultaForm"
+            (ngSubmit)="completarConsulta()"
+          >
+
+            <!-- DIAGNÓSTICO -->
+
+            <div class="form-group">
+
+              <label for="diagnostico">
+                Diagnóstico
+              </label>
+
+              <textarea
+                id="diagnostico"
+                rows="6"
+                formControlName="diagnostico"
+                placeholder="Describe el diagnóstico del paciente..."
+              ></textarea>
+
+
+              <small
+                class="validation-message"
+                *ngIf="
+                  consultaForm
+                    .get('diagnostico')
+                    ?.touched
+                  &&
+                  consultaForm
+                    .get('diagnostico')
+                    ?.invalid
+                "
+              >
+                El diagnóstico es obligatorio
+                y debe contener al menos 5 caracteres.
+              </small>
+
+            </div>
+
+
+            <!-- RECETA -->
+
+            <div class="form-group">
+
+              <label for="receta">
+                Receta / tratamiento
+              </label>
+
+              <textarea
+                id="receta"
+                rows="6"
+                formControlName="receta"
+                placeholder="Medicamentos, indicaciones y tratamiento..."
+              ></textarea>
+
+
+              <small
+                class="validation-message"
+                *ngIf="
+                  consultaForm
+                    .get('receta')
+                    ?.touched
+                  &&
+                  consultaForm
+                    .get('receta')
+                    ?.invalid
+                "
+              >
+                Debes registrar la receta
+                o el tratamiento indicado.
+              </small>
+
+            </div>
+
+
+            <!-- ================================= -->
+            <!-- ACCIONES -->
+            <!-- ================================= -->
+
+            <div
+              class="form-actions"
+              *ngIf="
+                cita.estado !== 'COMPLETADA'
+              "
+            >
+
+              <button
+                type="button"
+                class="secondary-button"
+                (click)="volver()"
+              >
+                Cancelar
+              </button>
+
+
+              <button
+                type="submit"
+                class="primary-button"
+                [disabled]="guardando"
+              >
+
+                {{
+                  guardando
+                    ? 'Guardando...'
+                    : 'Completar consulta'
+                }}
+
+              </button>
+
+            </div>
+
+          </form>
+
+
+          <!-- ================================= -->
+          <!-- CONSULTA COMPLETADA -->
+          <!-- ================================= -->
+
+          <div
+            class="completed-box"
+            *ngIf="
+              cita.estado === 'COMPLETADA'
+            "
+          >
+
+            <div class="completed-icon">
+              ✓
+            </div>
+
+            <div>
+
+              <strong>
+                Consulta completada
+              </strong>
+
+              <p>
+                El diagnóstico y tratamiento ya fueron registrados.
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </ng-container>
+
+    </main>
+
+  </div>
+
+</div>

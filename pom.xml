@@ -21,9 +21,11 @@
     <description>Sistema de Citas Médicas y Portal de Salud</description>
 
     <properties>
-        <java.version>21</java.version>
-        <start-class>com.umg.citasmedicas.CitasmedicasApplication</start-class>
-    </properties>
+    <java.version>21</java.version>
+    <start-class>com.umg.citasmedicas.CitasmedicasApplication</start-class>
+
+    <lombok.version>1.18.48</lombok.version>
+</properties>
 
     <dependencies>
 
@@ -45,6 +47,12 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- VALIDATION -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        
         <!-- MYSQL -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -73,12 +81,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        
         <!-- LOMBOK -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>${lombok.version}</version>
+    <optional>true</optional>
+</dependency>
 
         <!-- TEST -->
         <dependency>
@@ -98,19 +108,26 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
 
-                <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
+    <configuration>
 
-            </plugin>
+        <annotationProcessorPaths>
+
+            <path>
+
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+
+            </path>
+
+        </annotationProcessorPaths>
+
+    </configuration>
+
+</plugin>
 
         </plugins>
     </build>

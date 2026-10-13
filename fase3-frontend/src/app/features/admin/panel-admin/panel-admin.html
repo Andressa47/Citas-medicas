@@ -1,0 +1,247 @@
+<div class="admin-container">
+
+
+  <!-- ===================================== -->
+  <!-- CONTENIDO -->
+  <!-- ===================================== -->
+
+  <main class="admin-content">
+
+    <div class="page-title">
+
+      <div>
+        <h2>Especialidades médicas</h2>
+
+        <p>
+          Gestiona las especialidades disponibles
+          en el sistema.
+        </p>
+      </div>
+
+
+      <button
+        class="btn-primary"
+        (click)="nuevaEspecialidad()"
+      >
+        + Nueva especialidad
+      </button>
+
+    </div>
+
+
+    <!-- =================================== -->
+    <!-- MENSAJES -->
+    <!-- =================================== -->
+
+    <div
+      class="mensaje exito"
+      *ngIf="mensaje"
+    >
+      {{ mensaje }}
+    </div>
+
+
+    <div
+      class="mensaje error"
+      *ngIf="error"
+    >
+      {{ error }}
+    </div>
+
+
+    <!-- =================================== -->
+    <!-- FORMULARIO -->
+    <!-- =================================== -->
+
+    <section
+      class="form-card"
+      *ngIf="mostrarFormulario"
+    >
+
+      <h3>
+        {{
+          modoEdicion
+            ? 'Editar especialidad'
+            : 'Nueva especialidad'
+        }}
+      </h3>
+
+
+      <div class="form-group">
+
+        <label for="nombre">
+          Nombre
+        </label>
+
+        <input
+          id="nombre"
+          type="text"
+          [(ngModel)]="especialidadSeleccionada.nombre"
+          placeholder="Ej. Cardiología"
+        >
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="descripcion">
+          Descripción
+        </label>
+
+        <textarea
+          id="descripcion"
+          [(ngModel)]="especialidadSeleccionada.descripcion"
+          placeholder="Descripción de la especialidad"
+          rows="4"
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          class="btn-secondary"
+          type="button"
+          (click)="cancelarFormulario()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          class="btn-primary"
+          type="button"
+          (click)="guardarEspecialidad()"
+        >
+          {{
+            modoEdicion
+              ? 'Actualizar'
+              : 'Guardar'
+          }}
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================== -->
+    <!-- CARGANDO -->
+    <!-- =================================== -->
+
+    <div
+      class="loading"
+      *ngIf="cargando"
+    >
+      Cargando especialidades...
+    </div>
+
+
+    <!-- =================================== -->
+    <!-- LISTA -->
+    <!-- =================================== -->
+
+    <section
+      class="table-card"
+      *ngIf="!cargando"
+    >
+
+      <table
+        *ngIf="especialidades.length > 0"
+      >
+
+        <thead>
+
+          <tr>
+
+            <th>ID</th>
+
+            <th>Nombre</th>
+
+            <th>Descripción</th>
+
+            <th>Acciones</th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody>
+
+          <tr
+            *ngFor="let especialidad of especialidades"
+          >
+
+            <td>
+              {{ especialidad.id }}
+            </td>
+
+            <td>
+              <strong>
+                {{ especialidad.nombre }}
+              </strong>
+            </td>
+
+            <td>
+              {{ especialidad.descripcion || 'Sin descripción' }}
+            </td>
+
+            <td class="acciones">
+
+              <button
+                class="btn-edit"
+                (click)="editarEspecialidad(especialidad)"
+              >
+                Editar
+              </button>
+
+              <button
+                class="btn-delete"
+                (click)="eliminarEspecialidad(especialidad)"
+              >
+                Eliminar
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+
+      <!-- ================================= -->
+      <!-- LISTA VACÍA -->
+      <!-- ================================= -->
+
+      <div
+        class="empty-state"
+        *ngIf="especialidades.length === 0"
+      >
+
+        <h3>
+          No hay especialidades registradas
+        </h3>
+
+        <p>
+          Puedes comenzar agregando una nueva
+          especialidad médica.
+        </p>
+
+        <button
+          class="btn-primary"
+          (click)="nuevaEspecialidad()"
+        >
+          + Agregar especialidad
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>

@@ -1,0 +1,416 @@
+<div class="horarios-container">
+
+
+  <!-- ====================================== -->
+  <!-- TÍTULO -->
+  <!-- ====================================== -->
+
+  <div class="titulo">
+
+    <div>
+
+      <h2>
+        Gestión de horarios
+      </h2>
+
+      <p>
+        Administra los bloques disponibles
+        para la atención médica.
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- ====================================== -->
+  <!-- MENSAJES -->
+  <!-- ====================================== -->
+
+  <div
+    class="mensaje exito"
+    *ngIf="mensaje"
+  >
+    {{ mensaje }}
+  </div>
+
+
+  <div
+    class="mensaje error"
+    *ngIf="error"
+  >
+    {{ error }}
+  </div>
+
+
+  <!-- ====================================== -->
+  <!-- FILTROS -->
+  <!-- ====================================== -->
+
+  <section
+    class="filtros-card"
+    [formGroup]="filtroForm"
+  >
+
+
+    <!-- MÉDICO -->
+
+    <div class="form-group">
+
+      <label>
+        Médico
+      </label>
+
+
+      <select
+        formControlName="medicoId"
+      >
+
+        <option
+          [ngValue]="null"
+        >
+          Seleccione un médico
+        </option>
+
+
+        <option
+          *ngFor="let medico of medicos"
+          [ngValue]="medico.id"
+        >
+
+          {{ medico.usuario?.nombreCompleto }}
+          -
+          {{ medico.especialidad?.nombre }}
+
+        </option>
+
+      </select>
+
+
+      <small
+        class="validacion"
+        *ngIf="
+          filtroForm.get('medicoId')?.touched
+          &&
+          filtroForm.get('medicoId')?.invalid
+        "
+      >
+        Debes seleccionar un médico.
+      </small>
+
+    </div>
+
+
+    <!-- FECHA -->
+
+    <div class="form-group">
+
+      <label>Filtrar por fecha</label>
+
+
+      <input
+        type="date"
+        formControlName="fecha"
+      >
+      <p class="field-help">
+  Selecciona una fecha para mostrar únicamente los horarios de ese día.
+</p>
+
+    </div>
+
+
+    <!-- BOTONES -->
+
+    <div class="acciones-superiores">
+
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="buscarHorarios()"
+      >
+        Buscar horarios
+      </button>
+
+
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="abrirFormulario()"
+      >
+        + Nuevo horario
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ====================================== -->
+  <!-- FORMULARIO NUEVO HORARIO -->
+  <!-- ====================================== -->
+
+  <section
+    class="form-card"
+    *ngIf="mostrarFormulario"
+  >
+
+    <h3>
+      Nuevo horario
+    </h3>
+
+
+    <form
+      [formGroup]="horarioForm"
+      (ngSubmit)="guardarHorario()"
+    >
+
+
+      <!-- INICIO -->
+
+      <div class="form-group">
+
+        <label>
+          Fecha y hora de inicio
+        </label>
+
+
+        <input
+          type="datetime-local"
+          formControlName="fechaHoraInicio"
+        >
+
+
+        <small
+          class="validacion"
+          *ngIf="
+            horarioForm
+              .get('fechaHoraInicio')
+              ?.touched
+            &&
+            horarioForm
+              .get('fechaHoraInicio')
+              ?.hasError('required')
+          "
+        >
+          La fecha y hora de inicio es obligatoria.
+        </small>
+
+      </div>
+
+
+      <!-- FIN -->
+
+      <div class="form-group">
+
+        <label>
+          Fecha y hora de fin
+        </label>
+
+
+        <input
+          type="datetime-local"
+          formControlName="fechaHoraFin"
+        >
+
+
+        <small
+          class="validacion"
+          *ngIf="
+            horarioForm
+              .get('fechaHoraFin')
+              ?.touched
+            &&
+            horarioForm
+              .get('fechaHoraFin')
+              ?.hasError('required')
+          "
+        >
+          La fecha y hora de fin es obligatoria.
+        </small>
+
+
+        <small
+          class="validacion"
+          *ngIf="
+            horarioForm.touched
+            &&
+            horarioForm.hasError('rangoInvalido')
+          "
+        >
+          La hora de fin debe ser posterior
+          a la hora de inicio.
+        </small>
+
+      </div>
+
+
+      <!-- BOTONES -->
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cancelarFormulario()"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="submit"
+          class="btn-primary"
+        >
+          Guardar
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
+
+
+  <!-- ====================================== -->
+  <!-- CARGANDO -->
+  <!-- ====================================== -->
+
+  <div
+    class="loading"
+    *ngIf="cargando"
+  >
+    Cargando horarios...
+  </div>
+
+
+  <!-- ====================================== -->
+  <!-- TABLA -->
+  <!-- ====================================== -->
+
+  <section
+    class="table-card"
+    *ngIf="
+      !cargando
+      &&
+      medicoSeleccionadoId
+    "
+  >
+
+
+    <table
+      *ngIf="horarios.length > 0"
+    >
+
+      <thead>
+
+        <tr>
+
+          <th>
+            ID
+          </th>
+
+          <th>
+            Inicio
+          </th>
+
+          <th>
+            Fin
+          </th>
+
+          <th>
+            Estado
+          </th>
+
+          <th>
+            Acciones
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <tbody>
+
+        <tr
+          *ngFor="let horario of horarios"
+        >
+
+
+          <td>
+            {{ horario.id }}
+          </td>
+
+
+          <td>
+
+            {{
+              horario.fechaHoraInicio
+                | date:'dd/MM/yyyy HH:mm'
+            }}
+
+          </td>
+
+
+          <td>
+
+            {{
+              horario.fechaHoraFin
+                | date:'dd/MM/yyyy HH:mm'
+            }}
+
+          </td>
+
+
+          <td>
+
+            <span
+              class="estado-disponible"
+              *ngIf="horario.disponible"
+            >
+              Disponible
+            </span>
+
+
+            <span
+              class="estado-no-disponible"
+              *ngIf="!horario.disponible"
+            >
+              No disponible
+            </span>
+
+          </td>
+
+
+          <td>
+
+            <button
+              type="button"
+              class="btn-delete"
+              (click)="eliminarHorario(horario)"
+            >
+              Eliminar
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+
+    <div
+      class="empty-state"
+      *ngIf="horarios.length === 0"
+    >
+
+      No hay horarios disponibles
+      para el médico seleccionado.
+
+    </div>
+
+  </section>
+
+</div>

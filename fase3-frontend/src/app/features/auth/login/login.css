@@ -1,0 +1,181 @@
+/* Eliminamos cualquier margen residual de la app */
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.split-layout {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Lado izquierdo (Azul médico) */
+.brand-section {
+  flex: 1; /* Ocupa la mitad exacta de la pantalla */
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.brand-content {
+  max-width: 420px;
+}
+
+.logo-placeholder {
+  background: rgba(255, 255, 255, 0.15);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 40px;
+  font-weight: bold;
+  backdrop-filter: blur(5px);
+}
+
+.brand-content h1 {
+  font-size: 36px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.brand-content p {
+  font-size: 16px;
+  color: #e0e7ff;
+  line-height: 1.6;
+}
+
+/* Lado derecho (Formulario blanco) */
+.form-section {
+  flex: 1;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+}
+
+.login-box h2 {
+  color: #0f172a;
+  font-size: 30px;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.subtitle {
+  color: #64748b;
+  font-size: 15px;
+  margin-bottom: 35px;
+}
+
+.input-group {
+  margin-bottom: 24px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #334155;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px; /* Aquí están tus bordes redondeados */
+  box-sizing: border-box;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); /* Resplandor azul al hacer clic */
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  transform: translateY(-1px); /* Pequeño efecto de elevación al pasar el mouse */
+}
+
+button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.error-message {
+  color: #ef4444;
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Diseño responsivo para pantallas más pequeñas */
+@media (max-width: 768px) {
+  .split-layout {
+    flex-direction: column;
+  }
+  .brand-section {
+    flex: none;
+    padding: 60px 20px;
+  }
+  .form-section {
+    padding: 40px 20px;
+  }
+}
+
+.error-message {
+  margin-top: 15px;
+  margin-bottom: 15px;
+
+  padding: 12px 15px;
+
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+
+  background: #fef2f2;
+  color: #dc2626;
+
+  text-align: center;
+  font-size: 14px;
+}

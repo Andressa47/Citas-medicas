@@ -1,0 +1,169 @@
+<div class="admin-layout">
+
+  <!-- ===================================== -->
+  <!-- SIDEBAR -->
+  <!-- ===================================== -->
+
+  <aside class="sidebar">
+
+    <div class="medular-sidebar-brand">
+  <img
+    src="/branding/medular-horizontal.png"
+    alt="Medular"
+    class="medular-sidebar-logo"
+  />
+
+  <span>Administración</span>
+</div>
+
+
+    <nav class="sidebar-nav">
+
+      <p class="nav-title">
+        GESTIÓN
+      </p>
+
+
+      <!-- INICIO -->
+
+      <a
+        routerLink="/admin"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <span class="nav-icon">
+          ⌂
+        </span>
+
+        Inicio
+      </a>
+
+
+      <!-- ESPECIALIDADES -->
+
+      <a
+        routerLink="/admin/especialidades"
+        routerLinkActive="active"
+      >
+        <span class="nav-icon">
+          ✚
+        </span>
+
+        Especialidades
+      </a>
+
+
+      <!-- USUARIOS -->
+
+      <a
+        routerLink="/admin/usuarios"
+        routerLinkActive="active"
+      >
+        <span class="nav-icon">
+          ♟
+        </span>
+
+        Usuarios
+      </a>
+
+
+      <!-- MÉDICOS -->
+
+      <a
+        routerLink="/admin/medicos"
+        routerLinkActive="active"
+      >
+        <span class="nav-icon">
+          ⚕
+        </span>
+
+        Médicos
+      </a>
+
+
+      <!-- HORARIOS -->
+
+      <a
+        routerLink="/admin/horarios"
+        routerLinkActive="active"
+      >
+        <span class="nav-icon">
+          ◷
+        </span>
+
+        Horarios
+      </a>
+
+    </nav>
+
+
+    <!-- ===================================== -->
+    <!-- PARTE INFERIOR -->
+    <!-- ===================================== -->
+
+    <div class="sidebar-bottom">
+
+      <div class="admin-info">
+
+        <div class="avatar">
+          A
+        </div>
+
+        <div>
+          <strong>
+            Administrador
+          </strong>
+
+          <span>
+            Panel administrativo
+          </span>
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="logout-button"
+        (click)="cerrarSesion()"
+      >
+        Cerrar sesión
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ===================================== -->
+  <!-- CONTENIDO -->
+  <!-- ===================================== -->
+
+  <div class="main-area">
+
+    <header class="topbar">
+
+      <div>
+
+        <p class="topbar-label">
+          Sistema de gestión médica
+        </p>
+
+        <h1>
+          Panel administrativo
+        </h1>
+
+      </div>
+
+    </header>
+
+
+    <main class="page-content">
+
+      <router-outlet></router-outlet>
+
+    </main>
+
+  </div>
+
+</div>
