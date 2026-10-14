@@ -1,0 +1,164 @@
+
+<section class="gestion-citas">
+
+  <div class="encabezado">
+    <div>
+      <span class="subtitulo">ADMINISTRACIÓN MÉDICA</span>
+      <h1>Gestión de citas</h1>
+      <p>Consulta y organiza las citas médicas registradas en Medular.</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn-recargar"
+      (click)="cargarCitas()"
+      [disabled]="cargando">
+      {{ cargando ? 'Cargando...' : 'Actualizar citas' }}
+    </button>
+  </div>
+
+  <div class="resumen">
+    <div class="tarjeta">
+      <span>Total de citas</span>
+      <strong>{{ citas.length }}</strong>
+    </div>
+
+    <div class="tarjeta">
+      <span>Pendientes</span>
+      <strong>{{ pendientes }}</strong>
+    </div>
+
+    <div class="tarjeta">
+      <span>Completadas</span>
+      <strong>{{ completadas }}</strong>
+    </div>
+
+    <div class="tarjeta">
+      <span>Canceladas</span>
+      <strong>{{ canceladas }}</strong>
+    </div>
+  </div>
+
+  <div class="panel-filtros">
+    <h2>Buscar citas</h2>
+
+    <div class="filtros">
+      <div class="campo">
+        <label for="medico">Médico</label>
+        <select
+          id="medico"
+          [(ngModel)]="filtroMedico">
+          <option [ngValue]="0">Todos los médicos</option>
+          <option
+            *ngFor="let medico of medicos"
+            [ngValue]="medico.id">
+            {{ medico.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="paciente">Paciente</label>
+        <input
+          id="paciente"
+          type="text"
+          placeholder="Nombre del paciente"
+          [(ngModel)]="filtroPaciente">
+      </div>
+
+      <div class="campo">
+        <label for="fecha">Fecha</label>
+        <input
+          id="fecha"
+          type="date"
+          [(ngModel)]="filtroFecha">
+      </div>
+
+      <div class="campo">
+        <label for="estado">Estado</label>
+        <select
+          id="estado"
+          [(ngModel)]="filtroEstado">
+          <option value="">Todos los estados</option>
+          <option value="PENDIENTE">Pendiente</option>
+          <option value="COMPLETADA">Completada</option>
+          <option value="CANCELADA">Cancelada</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="acciones-filtros">
+      <span>{{ citasFiltradas.length }} resultados</span>
+      <button
+        type="button"
+        class="btn-limpiar"
+        (click)="limpiarFiltros()">
+        Limpiar filtros
+      </button>
+    </div>
+  </div>
+
+  <div class="panel-tabla">
+    <h2>Citas registradas</h2>
+
+    <p *ngIf="cargando" class="mensaje">
+      Consultando citas médicas...
+    </p>
+
+    <p *ngIf="error" class="mensaje error">
+      {{ error }}
+    </p>
+
+    <div
+      *ngIf="!cargando && !error && citasFiltradas.length === 0"
+      class="mensaje">
+      No se encontraron citas que coincidan con los filtros.
+    </div>
+
+    <div
+      class="tabla-contenedor"
+      *ngIf="!cargando && !error && citasFiltradas.length > 0">
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Fecha</th>
+            <th>Horario</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let cita of citasFiltradas">
+            <td>#{{ cita.id }}</td>
+            <td>{{ cita.pacienteNombre }}</td>
+            <td>
+              <strong>{{ cita.medicoNombre }}</strong>
+              <small>{{ cita.especialidadNombre }}</small>
+            </td>
+            <td>
+              {{ cita.fechaHoraInicio | date:'dd/MM/yyyy' }}
+            </td>
+            <td>
+              {{ cita.fechaHoraInicio | date:'HH:mm' }}
+              -
+              {{ cita.fechaHoraFin | date:'HH:mm' }}
+            </td>
+            <td>
+              <span
+                class="estado"
+                [ngClass]="cita.estado.toLowerCase()">
+                {{ cita.estado }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+</section>

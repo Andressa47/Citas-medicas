@@ -92,6 +92,15 @@ export const routes: Routes = [
   },
 
 
+// GESTIÓN DE CITAS
+{
+  path: 'citas',
+  loadComponent: () =>
+    import('./features/admin/citas-admin/citas-admin')
+      .then(m => m.CitasAdmin)
+},
+
+
   // ==========================================
   // PANEL MÉDICO
   // ==========================================
