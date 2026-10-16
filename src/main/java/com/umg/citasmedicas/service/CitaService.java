@@ -5,6 +5,7 @@ import com.umg.citasmedicas.entity.HorarioDisponible;
 import com.umg.citasmedicas.entity.Usuario;
 
 import com.umg.citasmedicas.enums.EstadoCita;
+import com.umg.citasmedicas.enums.Rol;
 
 import com.umg.citasmedicas.exception.BusinessException;
 import com.umg.citasmedicas.exception.ResourceNotFoundException;
@@ -82,6 +83,12 @@ public class CitaService {
                                 + pacienteId + "."
                         )
                 );
+
+        if (paciente.getRol() != Rol.ROLE_PATIENT) {
+            throw new BusinessException(
+                    "El usuario seleccionado no tiene rol de paciente."
+            );
+        }
 
         HorarioDisponible horario = horarioRepository
                 .findById(horarioId)

@@ -55,6 +55,14 @@ export class CitasService {
     );
   }
 
+crearAdministrativa(cita: any): Observable<any> {
+
+  return this.http.post<any>(
+    `${this.apiUrl}/admin`,
+    cita
+  );
+}
+
   registrarDiagnostico(
     id: number,
     datos: any

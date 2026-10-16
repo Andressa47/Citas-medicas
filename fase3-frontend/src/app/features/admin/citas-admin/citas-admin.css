@@ -1,4 +1,3 @@
-
 .gestion-citas {
   padding: 34px;
   background: #f3f6fb;
@@ -6,11 +5,16 @@
   color: #15284a;
 }
 
+
+/* ========================================= */
+/* ENCABEZADO */
+/* ========================================= */
+
 .encabezado {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
   margin-bottom: 28px;
 }
 
@@ -36,20 +40,284 @@ h2 {
   margin: 0;
 }
 
+.acciones-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+/* ========================================= */
+/* BOTONES DEL ENCABEZADO */
+/* ========================================= */
+
+.btn-nueva-cita,
 .btn-recargar {
   border: none;
   border-radius: 9px;
-  background: #2563eb;
-  color: white;
   padding: 13px 20px;
   cursor: pointer;
   font-weight: 600;
+  transition:
+    background .2s ease,
+    transform .2s ease,
+    opacity .2s ease;
 }
 
+.btn-nueva-cita {
+  background: #0f766e;
+  color: #fff;
+}
+
+.btn-nueva-cita:hover:not(:disabled) {
+  background: #0d655f;
+  transform: translateY(-1px);
+}
+
+.btn-recargar {
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn-recargar:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.btn-nueva-cita:disabled,
 .btn-recargar:disabled {
-  opacity: .6;
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* ========================================= */
+/* ALERTAS */
+/* ========================================= */
+
+.alerta {
+  border-radius: 10px;
+  padding: 13px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.alerta.exito {
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.alerta.error {
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+
+/* ========================================= */
+/* FORMULARIO NUEVA CITA */
+/* ========================================= */
+
+.panel-nueva-cita {
+  background: #fff;
+  border-radius: 16px;
+  padding: 26px;
+  margin-bottom: 26px;
+  box-shadow: 0 3px 16px rgba(20, 45, 85, .06);
+  border: 1px solid #e8eef7;
+}
+
+.encabezado-formulario {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.encabezado-formulario h2 {
+  margin: 7px 0 6px;
+  font-size: 22px;
+}
+
+.encabezado-formulario p {
+  margin: 0;
+  color: #6b7890;
+  font-size: 14px;
+}
+
+.btn-cerrar-formulario {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  border: 1px solid #d8e1ed;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  transition: background .2s ease;
+}
+
+.btn-cerrar-formulario:hover:not(:disabled) {
+  background: #eef2f7;
+}
+
+.btn-cerrar-formulario:disabled {
+  opacity: .5;
   cursor: not-allowed;
 }
+
+.mensaje-formulario {
+  padding: 18px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  text-align: center;
+  font-size: 14px;
+}
+
+
+/* ========================================= */
+/* GRID DEL FORMULARIO */
+/* ========================================= */
+
+.grid-formulario {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.campo label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #15284a;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  padding: 12px;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d8e1ed;
+  border-radius: 8px;
+  background: #fff;
+  color: #253858;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+}
+
+.campo input:disabled,
+.campo select:disabled,
+.campo textarea:disabled {
+  background: #f5f7fa;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.campo textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.campo-motivo {
+  grid-column: 1 / -1;
+}
+
+.ayuda-campo {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.contador {
+  text-align: right;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+
+/* ========================================= */
+/* ACCIONES DEL FORMULARIO */
+/* ========================================= */
+
+.acciones-formulario {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e6edf5;
+}
+
+.btn-cancelar,
+.btn-guardar-cita {
+  border-radius: 9px;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: inherit;
+  transition:
+    background .2s ease,
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+.btn-cancelar {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+
+.btn-cancelar:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
+.btn-guardar-cita {
+  border: none;
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn-guardar-cita:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.btn-cancelar:disabled,
+.btn-guardar-cita:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* ========================================= */
+/* RESUMEN */
+/* ========================================= */
 
 .resumen {
   display: grid;
@@ -83,6 +351,11 @@ h2 {
   color: #1d4ed8;
 }
 
+
+/* ========================================= */
+/* FILTROS */
+/* ========================================= */
+
 .panel-filtros {
   margin-bottom: 26px;
 }
@@ -91,29 +364,6 @@ h2 {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-}
-
-.campo {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.campo label {
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.campo input,
-.campo select {
-  padding: 12px;
-  width: 100%;
-  min-width: 0;
-  border: 1px solid #d8e1ed;
-  border-radius: 8px;
-  background: #fff;
-  color: #253858;
-  box-sizing: border-box;
 }
 
 .acciones-filtros {
@@ -133,6 +383,15 @@ h2 {
   font-weight: 600;
 }
 
+.btn-limpiar:hover {
+  text-decoration: underline;
+}
+
+
+/* ========================================= */
+/* TABLA */
+/* ========================================= */
+
 .tabla-contenedor {
   overflow-x: auto;
 }
@@ -143,7 +402,8 @@ table {
   text-align: left;
 }
 
-th, td {
+th,
+td {
   padding: 16px 12px;
   border-bottom: 1px solid #e6edf5;
 }
@@ -163,6 +423,11 @@ td small {
   margin-top: 5px;
   color: #64748b;
 }
+
+
+/* ========================================= */
+/* ESTADOS */
+/* ========================================= */
 
 .estado {
   display: inline-block;
@@ -187,6 +452,11 @@ td small {
   background: #fee2e2;
 }
 
+
+/* ========================================= */
+/* MENSAJES */
+/* ========================================= */
+
 .mensaje {
   text-align: center;
   padding: 35px;
@@ -197,13 +467,24 @@ td small {
   color: #b91c1c;
 }
 
+
+/* ========================================= */
+/* RESPONSIVE */
+/* ========================================= */
+
 @media (max-width: 1100px) {
-  .resumen, .filtros {
+
+  .resumen,
+  .filtros,
+  .grid-formulario {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
 }
 
-@media (max-width: 650px) {
+
+@media (max-width: 750px) {
+
   .gestion-citas {
     padding: 16px;
   }
@@ -213,7 +494,36 @@ td small {
     align-items: flex-start;
   }
 
-  .resumen, .filtros {
+  .acciones-encabezado {
+    width: 100%;
+  }
+
+  .btn-nueva-cita,
+  .btn-recargar {
+    flex: 1;
+  }
+
+  .resumen,
+  .filtros,
+  .grid-formulario {
     grid-template-columns: 1fr;
   }
+
+  .campo-motivo {
+    grid-column: auto;
+  }
+
+  .encabezado-formulario {
+    gap: 12px;
+  }
+
+  .acciones-formulario {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancelar,
+  .btn-guardar-cita {
+    width: 100%;
+  }
+
 }

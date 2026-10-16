@@ -113,6 +113,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/schedules/**").hasAnyAuthority("DOCTOR", "ROLE_DOCTOR", "ADMIN", "ROLE_ADMIN")
 
                         // 7. CITAS
+                        .requestMatchers(HttpMethod.POST, "/api/v1/appointments/admin").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/appointments").hasAnyAuthority("PATIENT", "ROLE_PATIENT")
                         .requestMatchers(HttpMethod.GET, "/api/v1/appointments/my-history").hasAnyAuthority("PATIENT", "ROLE_PATIENT")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/appointments/*/cancel").hasAnyAuthority("PATIENT", "ROLE_PATIENT")

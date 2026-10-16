@@ -1,5 +1,6 @@
 package com.umg.citasmedicas.controller;
 
+import com.umg.citasmedicas.dto.CitaAdministrativaRequest;
 import com.umg.citasmedicas.dto.CitaMapper;
 import com.umg.citasmedicas.dto.CitaRequest;
 import com.umg.citasmedicas.dto.CitaResponse;
@@ -16,6 +17,7 @@ import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -54,6 +56,26 @@ public class CitaController {
 
         Cita cita = citaService.crearCita(
                 paciente.getId(),
+                request.getHorarioId(),
+                request.getMotivo()
+        );
+
+        return ResponseEntity
+                .status(201)
+                .body(CitaMapper.toResponse(cita));
+    }
+
+    // ==========================================
+    // ASIGNAR CITA DESDE ADMINISTRACIÓN
+    // Solo el administrador puede elegir el paciente
+    // ==========================================
+    @PostMapping("/admin")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN')")
+    public ResponseEntity<CitaResponse> crearAdministrativa(
+            @Valid @RequestBody CitaAdministrativaRequest request) {
+
+        Cita cita = citaService.crearCita(
+                request.getPacienteId(),
                 request.getHorarioId(),
                 request.getMotivo()
         );

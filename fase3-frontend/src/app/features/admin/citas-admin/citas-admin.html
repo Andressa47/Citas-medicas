@@ -1,126 +1,641 @@
-
 <section class="gestion-citas">
 
+  <!-- ===================================== -->
+  <!-- ENCABEZADO -->
+  <!-- ===================================== -->
+
   <div class="encabezado">
+
     <div>
-      <span class="subtitulo">ADMINISTRACIÓN MÉDICA</span>
-      <h1>Gestión de citas</h1>
-      <p>Consulta y organiza las citas médicas registradas en Medular.</p>
+      <span class="subtitulo">
+        ADMINISTRACIÓN MÉDICA
+      </span>
+
+      <h1>
+        Gestión de citas
+      </h1>
+
+      <p>
+        Consulta, organiza y asigna las citas médicas
+        registradas en Medular.
+      </p>
     </div>
 
-    <button
-      type="button"
-      class="btn-recargar"
-      (click)="cargarCitas()"
-      [disabled]="cargando">
-      {{ cargando ? 'Cargando...' : 'Actualizar citas' }}
-    </button>
+
+    <div class="acciones-encabezado">
+
+      <button
+        type="button"
+        class="btn-nueva-cita"
+        (click)="abrirFormulario()"
+        [disabled]="
+          mostrarFormulario ||
+          cargandoDatosFormulario
+        "
+      >
+        + Nueva cita
+      </button>
+
+
+      <button
+        type="button"
+        class="btn-recargar"
+        (click)="cargarCitas()"
+        [disabled]="cargando"
+      >
+        {{ cargando ? 'Cargando...' : 'Actualizar citas' }}
+      </button>
+
+    </div>
+
   </div>
 
-  <div class="resumen">
-    <div class="tarjeta">
-      <span>Total de citas</span>
-      <strong>{{ citas.length }}</strong>
-    </div>
 
-    <div class="tarjeta">
-      <span>Pendientes</span>
-      <strong>{{ pendientes }}</strong>
-    </div>
+  <!-- ===================================== -->
+  <!-- MENSAJE DE ÉXITO -->
+  <!-- ===================================== -->
 
-    <div class="tarjeta">
-      <span>Completadas</span>
-      <strong>{{ completadas }}</strong>
-    </div>
-
-    <div class="tarjeta">
-      <span>Canceladas</span>
-      <strong>{{ canceladas }}</strong>
-    </div>
+  <div
+    class="alerta exito"
+    *ngIf="mensaje"
+  >
+    {{ mensaje }}
   </div>
 
-  <div class="panel-filtros">
-    <h2>Buscar citas</h2>
 
-    <div class="filtros">
-      <div class="campo">
-        <label for="medico">Médico</label>
-        <select
-          id="medico"
-          [(ngModel)]="filtroMedico">
-          <option [ngValue]="0">Todos los médicos</option>
-          <option
-            *ngFor="let medico of medicos"
-            [ngValue]="medico.id">
-            {{ medico.nombre }}
-          </option>
-        </select>
+  <!-- ===================================== -->
+  <!-- FORMULARIO NUEVA CITA -->
+  <!-- ===================================== -->
+
+  <div
+    class="panel-nueva-cita"
+    *ngIf="mostrarFormulario"
+  >
+
+    <div class="encabezado-formulario">
+
+      <div>
+        <span class="subtitulo">
+          NUEVA ASIGNACIÓN
+        </span>
+
+        <h2>
+          Asignar nueva cita
+        </h2>
+
+        <p>
+          Selecciona el paciente, la especialidad,
+          el médico y un horario disponible.
+        </p>
       </div>
 
+
+      <button
+        type="button"
+        class="btn-cerrar-formulario"
+        (click)="cancelarFormulario()"
+        [disabled]="guardandoCita"
+        aria-label="Cerrar formulario"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <!-- CARGANDO DATOS -->
+
+    <div
+      class="mensaje-formulario"
+      *ngIf="cargandoDatosFormulario"
+    >
+      Cargando pacientes y especialidades...
+    </div>
+
+
+    <!-- ERROR DEL FORMULARIO -->
+
+    <div
+      class="alerta error"
+      *ngIf="errorFormulario"
+    >
+      {{ errorFormulario }}
+    </div>
+
+
+    <!-- FORMULARIO -->
+
+    <form
+      *ngIf="!cargandoDatosFormulario"
+      (ngSubmit)="guardarCita()"
+    >
+
+      <div class="grid-formulario">
+
+
+        <!-- PACIENTE -->
+
+        <div class="campo">
+
+          <label for="nuevoPaciente">
+            Paciente
+          </label>
+
+          <select
+            id="nuevoPaciente"
+            name="pacienteId"
+            [(ngModel)]="nuevaCita.pacienteId"
+            [disabled]="guardandoCita"
+          >
+
+            <option [ngValue]="0">
+              Seleccione un paciente
+            </option>
+
+            <option
+              *ngFor="let paciente of pacientes"
+              [ngValue]="paciente.id"
+            >
+              {{ paciente.nombreCompleto }}
+              - {{ paciente.email }}
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- ESPECIALIDAD -->
+
+        <div class="campo">
+
+          <label for="nuevaEspecialidad">
+            Especialidad
+          </label>
+
+          <select
+            id="nuevaEspecialidad"
+            name="especialidadId"
+            [(ngModel)]="nuevaCita.especialidadId"
+            (ngModelChange)="cambiarEspecialidad()"
+            [disabled]="guardandoCita"
+          >
+
+            <option [ngValue]="0">
+              Seleccione una especialidad
+            </option>
+
+            <option
+              *ngFor="let especialidad of especialidades"
+              [ngValue]="especialidad.id"
+            >
+              {{ especialidad.nombre }}
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- MÉDICO -->
+
+        <div class="campo">
+
+          <label for="nuevoMedico">
+            Médico
+          </label>
+
+          <select
+            id="nuevoMedico"
+            name="medicoId"
+            [(ngModel)]="nuevaCita.medicoId"
+            (ngModelChange)="cambiarMedico()"
+            [disabled]="
+              !nuevaCita.especialidadId ||
+              cargandoMedicos ||
+              guardandoCita
+            "
+          >
+
+            <option [ngValue]="0">
+
+              {{
+                cargandoMedicos
+                  ? 'Cargando médicos...'
+                  : 'Seleccione un médico'
+              }}
+
+            </option>
+
+            <option
+              *ngFor="let medico of medicosDisponibles"
+              [ngValue]="medico.id"
+            >
+              {{ medico.usuario?.nombreCompleto }}
+            </option>
+
+          </select>
+
+
+          <small
+            class="ayuda-campo"
+            *ngIf="
+              nuevaCita.especialidadId &&
+              !cargandoMedicos &&
+              medicosDisponibles.length === 0
+            "
+          >
+            No hay médicos registrados para esta especialidad.
+          </small>
+
+        </div>
+
+
+        <!-- FECHA -->
+
+        <div class="campo">
+
+          <label for="nuevaFecha">
+            Fecha
+          </label>
+
+          <input
+            id="nuevaFecha"
+            name="fecha"
+            type="date"
+            [(ngModel)]="nuevaCita.fecha"
+            (ngModelChange)="cambiarFecha()"
+            [min]="fechaMinima"
+            [disabled]="
+              !nuevaCita.medicoId ||
+              guardandoCita
+            "
+          >
+
+        </div>
+
+
+        <!-- HORARIO -->
+
+        <div class="campo">
+
+          <label for="nuevoHorario">
+            Horario disponible
+          </label>
+
+          <select
+            id="nuevoHorario"
+            name="horarioId"
+            [(ngModel)]="nuevaCita.horarioId"
+            [disabled]="
+              !nuevaCita.fecha ||
+              cargandoHorarios ||
+              guardandoCita
+            "
+          >
+
+            <option [ngValue]="0">
+
+              {{
+                cargandoHorarios
+                  ? 'Buscando horarios...'
+                  : 'Seleccione un horario'
+              }}
+
+            </option>
+
+            <option
+              *ngFor="let horario of horariosDisponibles"
+              [ngValue]="horario.id"
+            >
+              {{ horario.fechaHoraInicio | date:'HH:mm' }}
+              -
+              {{ horario.fechaHoraFin | date:'HH:mm' }}
+            </option>
+
+          </select>
+
+
+          <small
+            class="ayuda-campo"
+            *ngIf="
+              nuevaCita.fecha &&
+              !cargandoHorarios &&
+              horariosDisponibles.length === 0
+            "
+          >
+            No hay horarios disponibles para esta fecha.
+          </small>
+
+        </div>
+
+
+        <!-- MOTIVO -->
+
+        <div class="campo campo-motivo">
+
+          <label for="nuevoMotivo">
+            Motivo de consulta
+          </label>
+
+          <textarea
+            id="nuevoMotivo"
+            name="motivo"
+            rows="4"
+            maxlength="500"
+            placeholder="Describe brevemente el motivo de la consulta..."
+            [(ngModel)]="nuevaCita.motivo"
+            [disabled]="guardandoCita"
+          ></textarea>
+
+          <small class="contador">
+            {{ nuevaCita.motivo.length }}/500
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- BOTONES -->
+
+      <div class="acciones-formulario">
+
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="cancelarFormulario()"
+          [disabled]="guardandoCita"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          type="submit"
+          class="btn-guardar-cita"
+          [disabled]="guardandoCita"
+        >
+          {{
+            guardandoCita
+              ? 'Asignando cita...'
+              : 'Asignar cita'
+          }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+
+  <!-- ===================================== -->
+  <!-- RESUMEN -->
+  <!-- ===================================== -->
+
+  <div class="resumen">
+
+    <div class="tarjeta">
+
+      <span>
+        Total de citas
+      </span>
+
+      <strong>
+        {{ citas.length }}
+      </strong>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+      <span>
+        Pendientes
+      </span>
+
+      <strong>
+        {{ pendientes }}
+      </strong>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+      <span>
+        Completadas
+      </span>
+
+      <strong>
+        {{ completadas }}
+      </strong>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+      <span>
+        Canceladas
+      </span>
+
+      <strong>
+        {{ canceladas }}
+      </strong>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===================================== -->
+  <!-- FILTROS -->
+  <!-- ===================================== -->
+
+  <div class="panel-filtros">
+
+    <h2>
+      Buscar citas
+    </h2>
+
+
+    <div class="filtros">
+
+
+      <!-- MÉDICO -->
+
       <div class="campo">
-        <label for="paciente">Paciente</label>
+
+        <label for="medico">
+          Médico
+        </label>
+
+        <select
+          id="medico"
+          [(ngModel)]="filtroMedico"
+        >
+
+          <option [ngValue]="0">
+            Todos los médicos
+          </option>
+
+          <option
+            *ngFor="let medico of medicos"
+            [ngValue]="medico.id"
+          >
+            {{ medico.nombre }}
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- PACIENTE -->
+
+      <div class="campo">
+
+        <label for="paciente">
+          Paciente
+        </label>
+
         <input
           id="paciente"
           type="text"
           placeholder="Nombre del paciente"
-          [(ngModel)]="filtroPaciente">
+          [(ngModel)]="filtroPaciente"
+        >
+
       </div>
 
+
+      <!-- FECHA -->
+
       <div class="campo">
-        <label for="fecha">Fecha</label>
+
+        <label for="fecha">
+          Fecha
+        </label>
+
         <input
           id="fecha"
           type="date"
-          [(ngModel)]="filtroFecha">
+          [(ngModel)]="filtroFecha"
+        >
+
       </div>
+
+
+      <!-- ESTADO -->
 
       <div class="campo">
-        <label for="estado">Estado</label>
+
+        <label for="estado">
+          Estado
+        </label>
+
         <select
           id="estado"
-          [(ngModel)]="filtroEstado">
-          <option value="">Todos los estados</option>
-          <option value="PENDIENTE">Pendiente</option>
-          <option value="COMPLETADA">Completada</option>
-          <option value="CANCELADA">Cancelada</option>
+          [(ngModel)]="filtroEstado"
+        >
+
+          <option value="">
+            Todos los estados
+          </option>
+
+          <option value="PENDIENTE">
+            Pendiente
+          </option>
+
+          <option value="COMPLETADA">
+            Completada
+          </option>
+
+          <option value="CANCELADA">
+            Cancelada
+          </option>
+
         </select>
+
       </div>
+
     </div>
 
+
     <div class="acciones-filtros">
-      <span>{{ citasFiltradas.length }} resultados</span>
+
+      <span>
+        {{ citasFiltradas.length }} resultados
+      </span>
+
       <button
         type="button"
         class="btn-limpiar"
-        (click)="limpiarFiltros()">
+        (click)="limpiarFiltros()"
+      >
         Limpiar filtros
       </button>
+
     </div>
+
   </div>
 
-  <div class="panel-tabla">
-    <h2>Citas registradas</h2>
 
-    <p *ngIf="cargando" class="mensaje">
+  <!-- ===================================== -->
+  <!-- TABLA -->
+  <!-- ===================================== -->
+
+  <div class="panel-tabla">
+
+    <h2>
+      Citas registradas
+    </h2>
+
+
+    <p
+      *ngIf="cargando"
+      class="mensaje"
+    >
       Consultando citas médicas...
     </p>
 
-    <p *ngIf="error" class="mensaje error">
+
+    <p
+      *ngIf="error"
+      class="mensaje error"
+    >
       {{ error }}
     </p>
 
+
     <div
-      *ngIf="!cargando && !error && citasFiltradas.length === 0"
-      class="mensaje">
-      No se encontraron citas que coincidan con los filtros.
+      *ngIf="
+        !cargando &&
+        !error &&
+        citasFiltradas.length === 0
+      "
+      class="mensaje"
+    >
+      No se encontraron citas que coincidan
+      con los filtros.
     </div>
+
 
     <div
       class="tabla-contenedor"
-      *ngIf="!cargando && !error && citasFiltradas.length > 0">
+      *ngIf="
+        !cargando &&
+        !error &&
+        citasFiltradas.length > 0
+      "
+    >
 
       <table>
+
         <thead>
+
           <tr>
             <th>ID</th>
             <th>Paciente</th>
@@ -129,36 +644,74 @@
             <th>Horario</th>
             <th>Estado</th>
           </tr>
+
         </thead>
 
+
         <tbody>
-          <tr *ngFor="let cita of citasFiltradas">
-            <td>#{{ cita.id }}</td>
-            <td>{{ cita.pacienteNombre }}</td>
+
+          <tr
+            *ngFor="let cita of citasFiltradas"
+          >
+
             <td>
-              <strong>{{ cita.medicoNombre }}</strong>
-              <small>{{ cita.especialidadNombre }}</small>
+              #{{ cita.id }}
             </td>
+
+
+            <td>
+              {{ cita.pacienteNombre }}
+            </td>
+
+
+            <td>
+
+              <strong>
+                {{ cita.medicoNombre }}
+              </strong>
+
+              <small>
+                {{ cita.especialidadNombre }}
+              </small>
+
+            </td>
+
+
             <td>
               {{ cita.fechaHoraInicio | date:'dd/MM/yyyy' }}
             </td>
+
+
             <td>
+
               {{ cita.fechaHoraInicio | date:'HH:mm' }}
+
               -
+
               {{ cita.fechaHoraFin | date:'HH:mm' }}
+
             </td>
+
+
             <td>
+
               <span
                 class="estado"
-                [ngClass]="cita.estado.toLowerCase()">
+                [ngClass]="cita.estado.toLowerCase()"
+              >
                 {{ cita.estado }}
               </span>
+
             </td>
+
           </tr>
+
         </tbody>
+
       </table>
 
     </div>
+
   </div>
 
 </section>
