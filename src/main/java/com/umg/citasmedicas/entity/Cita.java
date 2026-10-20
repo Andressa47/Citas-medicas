@@ -26,11 +26,10 @@ public class Cita {
     @JoinColumn(name = "medico_id", nullable = false)
     private Medico medico;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(
-        name = "horario_id",
-        nullable = false,
-        unique = true
+    name = "horario_id",
+    nullable = false
     )
     private HorarioDisponible horario;
 

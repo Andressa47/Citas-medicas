@@ -105,11 +105,14 @@ public class CitaService {
             );
         }
 
-        if (citaRepository.existsByHorarioId(horarioId)) {
-            throw new ScheduleConflictException(
-                    "El horario ya fue reservado."
-            );
-        }
+        if (citaRepository.existsByHorarioIdAndEstadoNot(
+        horarioId,
+        EstadoCita.CANCELADA)) {
+
+    throw new ScheduleConflictException(
+            "El horario ya fue reservado."
+    );
+}
 
         Cita cita = new Cita();
 

@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS citas (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     paciente_id BIGINT NOT NULL,
     medico_id BIGINT NOT NULL,
-    horario_id BIGINT NOT NULL UNIQUE,
+    horario_id BIGINT NOT NULL,
     estado VARCHAR(20) NOT NULL,
     motivo VARCHAR(500),
     diagnostico TEXT,
