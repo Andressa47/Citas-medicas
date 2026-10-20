@@ -100,21 +100,10 @@
 .menu-item {
   display: flex;
   align-items: center;
-
   gap: 12px;
-  padding: 12px 14px;
 
-  border-radius: 9px;
-
-  color: #dbeafe;
-  text-decoration: none;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
+  cursor: pointer;
+  user-select: none;
 }
 
 .menu-item:hover {

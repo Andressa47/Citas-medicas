@@ -7,14 +7,18 @@
   <aside class="sidebar">
 
     <div class="medular-sidebar-brand">
-  <img
-    src="/branding/medular-horizontal.png"
-    alt="Medular"
-    class="medular-sidebar-logo"
-  />
 
-  <span>Portal médico</span>
-</div>
+      <img
+        src="/branding/medular-horizontal.png"
+        alt="Medular"
+        class="medular-sidebar-logo"
+      />
+
+      <span>
+        Portal médico
+      </span>
+
+    </div>
 
 
     <div class="menu-title">
@@ -24,16 +28,49 @@
 
     <nav class="menu">
 
-      <div class="menu-item active">
-        <span class="menu-icon">⌂</span>
+      <!-- MI AGENDA -->
+
+      <div
+        class="menu-item"
+        [class.active]="vistaActual === 'agenda'"
+        (click)="cambiarVista('agenda')"
+      >
+
+        <span class="menu-icon">
+          ⌂
+        </span>
 
         <span>
           Mi agenda
         </span>
+
+      </div>
+
+
+      <!-- MENSAJES -->
+
+      <div
+        class="menu-item"
+        [class.active]="vistaActual === 'mensajes'"
+        (click)="cambiarVista('mensajes')"
+      >
+
+        <span class="menu-icon">
+          ✉
+        </span>
+
+        <span>
+          Mensajes
+        </span>
+
       </div>
 
     </nav>
 
+
+    <!-- ===================================== -->
+    <!-- PARTE INFERIOR -->
+    <!-- ===================================== -->
 
     <div class="sidebar-footer">
 
@@ -43,11 +80,14 @@
       >
 
         <div class="avatar">
+
           {{
             medico.usuario?.nombreCompleto
               ?.charAt(0)
           }}
+
         </div>
+
 
         <div class="doctor-mini-info">
 
@@ -104,335 +144,141 @@
 
     <main class="page-content">
 
-      <!-- ================================ -->
-      <!-- CARGANDO -->
-      <!-- ================================ -->
-
-      <div
-        class="loading-card"
-        *ngIf="cargando"
-      >
-        Cargando información...
-      </div>
-
-
-      <!-- ================================ -->
-      <!-- ERROR -->
-      <!-- ================================ -->
-
-      <div
-        class="mensaje-error"
-        *ngIf="error"
-      >
-        {{ error }}
-      </div>
-
-
-      <!-- ================================ -->
-      <!-- CONTENIDO -->
-      <!-- ================================ -->
+      <!-- ===================================== -->
+      <!-- VISTA: AGENDA -->
+      <!-- ===================================== -->
 
       <ng-container
-        *ngIf="!cargando && medico"
+        *ngIf="vistaActual === 'agenda'"
       >
 
-        <!-- PERFIL -->
+        <!-- ================================ -->
+        <!-- CARGANDO -->
+        <!-- ================================ -->
 
-        <section class="doctor-profile">
-
-          <div class="doctor-info">
-
-            <span class="section-label">
-              MÉDICO AUTENTICADO
-            </span>
-
-            <h2>
-              Dra.
-              {{
-                medico.usuario
-                  ?.nombreCompleto
-              }}
-            </h2>
-
-            <p>
-              {{
-                medico.especialidad
-                  ?.nombre
-              }}
-
-              <span class="separator">
-                •
-              </span>
-
-              Colegiado:
-              {{
-                medico.numeroColegiado
-              }}
-            </p>
-
-          </div>
-
-
-          <div class="stats">
-
-            <div class="stat-card primary">
-
-              <span class="stat-number">
-                {{ citasHoy.length }}
-              </span>
-
-              <span class="stat-label">
-                Citas de hoy
-              </span>
-
-            </div>
-
-
-            <div class="stat-card">
-
-              <span class="stat-number">
-                {{ proximasCitas.length }}
-              </span>
-
-              <span class="stat-label">
-                Próximas citas
-              </span>
-
-            </div>
-
-          </div>
-
-        </section>
+        <div
+          class="loading-card"
+          *ngIf="cargando"
+        >
+          Cargando información...
+        </div>
 
 
         <!-- ================================ -->
-        <!-- AGENDA -->
+        <!-- ERROR -->
         <!-- ================================ -->
 
-        <section class="agenda">
+        <div
+          class="mensaje-error"
+          *ngIf="error"
+        >
+          {{ error }}
+        </div>
 
-          <div class="agenda-heading">
 
-            <div>
+        <!-- ================================ -->
+        <!-- CONTENIDO -->
+        <!-- ================================ -->
+
+        <ng-container
+          *ngIf="!cargando && medico"
+        >
+
+          <!-- ===================================== -->
+          <!-- PERFIL -->
+          <!-- ===================================== -->
+
+          <section class="doctor-profile">
+
+            <div class="doctor-info">
 
               <span class="section-label">
-                AGENDA MÉDICA
+                MÉDICO AUTENTICADO
               </span>
 
               <h2>
-                Mis citas
+                Dra.
+                {{
+                  medico.usuario
+                    ?.nombreCompleto
+                }}
               </h2>
 
               <p>
-                Consulta las citas pendientes asignadas a tu perfil médico.
+
+                {{
+                  medico.especialidad
+                    ?.nombre
+                }}
+
+                <span class="separator">
+                  •
+                </span>
+
+                Colegiado:
+
+                {{
+                  medico.numeroColegiado
+                }}
+
               </p>
 
             </div>
 
-          </div>
 
+            <div class="stats">
 
-          <!-- ===================================== -->
-          <!-- CITAS DE HOY -->
-          <!-- ===================================== -->
+              <div class="stat-card primary">
 
-          <div class="appointment-section">
+                <span class="stat-number">
+                  {{ citasHoy.length }}
+                </span>
 
-            <div class="section-heading">
+                <span class="stat-label">
+                  Citas de hoy
+                </span>
 
-              <h3>
-                Citas de hoy
-              </h3>
-
-              <span class="counter-badge">
-                {{ citasHoy.length }}
-              </span>
-
-            </div>
-
-
-            <div
-              class="empty-state"
-              *ngIf="citasHoy.length === 0"
-            >
-
-              <div class="empty-icon">
-                ✓
               </div>
 
-              <div>
-                <strong>
-                  Sin citas pendientes
-                </strong>
 
-                <p>
-                  No tienes citas pendientes para hoy.
-                </p>
+              <div class="stat-card">
+
+                <span class="stat-number">
+                  {{ proximasCitas.length }}
+                </span>
+
+                <span class="stat-label">
+                  Próximas citas
+                </span>
+
               </div>
 
             </div>
 
-
-            <div
-              class="appointments-grid"
-              *ngIf="citasHoy.length > 0"
-            >
-
-              <article
-                class="appointment-card"
-                *ngFor="let cita of citasHoy"
-              >
-
-                <div class="appointment-top">
-
-                  <div>
-
-                    <span class="status-badge">
-                      {{ cita.estado }}
-                    </span>
-
-                    <h3>
-                      {{ cita.pacienteNombre }}
-                    </h3>
-
-                  </div>
-
-
-                  <span class="appointment-id">
-                    Cita #{{ cita.id }}
-                  </span>
-
-                </div>
-
-
-                <div class="appointment-details">
-
-                  <div class="detail-card">
-
-                    <span class="detail-label">
-                      Fecha
-                    </span>
-
-                    <strong>
-                      {{
-                        cita.fechaHoraInicio
-                          | date:'dd/MM/yyyy'
-                      }}
-                    </strong>
-
-                  </div>
-
-
-                  <div class="detail-card">
-
-                    <span class="detail-label">
-                      Horario
-                    </span>
-
-                    <strong>
-
-                      {{
-                        cita.fechaHoraInicio
-                          | date:'HH:mm'
-                      }}
-
-                      -
-
-                      {{
-                        cita.fechaHoraFin
-                          | date:'HH:mm'
-                      }}
-
-                    </strong>
-
-                  </div>
-
-
-                  <div class="detail-card">
-
-                    <span class="detail-label">
-                      Especialidad
-                    </span>
-
-                    <strong>
-                      {{
-                        cita.especialidadNombre
-                      }}
-                    </strong>
-
-                  </div>
-
-                </div>
-
-
-                <div class="appointment-reason">
-
-                  <span class="detail-label">
-                    Motivo de consulta
-                  </span>
-
-                  <p>
-                    {{ cita.motivo }}
-                  </p>
-
-                </div>
-
-
-                <div class="appointment-actions">
-
-                  <button
-                    type="button"
-                    class="primary-button"
-                    (click)="atenderPaciente(cita)"
-                  >
-                    Atender paciente
-                  </button>
-
-                </div>
-
-              </article>
-
-            </div>
-
-          </div>
+          </section>
 
 
           <!-- ===================================== -->
-          <!-- PRÓXIMAS CITAS -->
+          <!-- AGENDA -->
           <!-- ===================================== -->
 
-          <div class="appointment-section future">
+          <section class="agenda">
 
-            <div class="section-heading">
-
-              <h3>
-                Próximas citas
-              </h3>
-
-              <span class="counter-badge secondary">
-                {{ proximasCitas.length }}
-              </span>
-
-            </div>
-
-
-            <div
-              class="empty-state"
-              *ngIf="proximasCitas.length === 0"
-            >
-
-              <div class="empty-icon neutral">
-                ◷
-              </div>
+            <div class="agenda-heading">
 
               <div>
 
-                <strong>
-                  Sin próximas citas
-                </strong>
+                <span class="section-label">
+                  AGENDA MÉDICA
+                </span>
+
+                <h2>
+                  Mis citas
+                </h2>
 
                 <p>
-                  No tienes citas futuras pendientes.
+                  Consulta las citas pendientes asignadas
+                  a tu perfil médico.
                 </p>
 
               </div>
@@ -440,130 +286,403 @@
             </div>
 
 
-            <div
-              class="appointments-grid"
-              *ngIf="proximasCitas.length > 0"
-            >
+            <!-- ===================================== -->
+            <!-- CITAS DE HOY -->
+            <!-- ===================================== -->
 
-              <article
-                class="appointment-card"
-                *ngFor="let cita of proximasCitas"
+            <div class="appointment-section">
+
+              <div class="section-heading">
+
+                <h3>
+                  Citas de hoy
+                </h3>
+
+                <span class="counter-badge">
+                  {{ citasHoy.length }}
+                </span>
+
+              </div>
+
+
+              <!-- SIN CITAS -->
+
+              <div
+                class="empty-state"
+                *ngIf="citasHoy.length === 0"
               >
 
-                <div class="appointment-top">
-
-                  <div>
-
-                    <span class="status-badge">
-                      {{ cita.estado }}
-                    </span>
-
-                    <h3>
-                      {{ cita.pacienteNombre }}
-                    </h3>
-
-                  </div>
-
-
-                  <span class="appointment-id">
-                    Cita #{{ cita.id }}
-                  </span>
-
+                <div class="empty-icon">
+                  ✓
                 </div>
 
+                <div>
 
-                <div class="appointment-details">
-
-                  <div class="detail-card">
-
-                    <span class="detail-label">
-                      Fecha
-                    </span>
-
-                    <strong>
-                      {{
-                        cita.fechaHoraInicio
-                          | date:'dd/MM/yyyy'
-                      }}
-                    </strong>
-
-                  </div>
-
-
-                  <div class="detail-card">
-
-                    <span class="detail-label">
-                      Horario
-                    </span>
-
-                    <strong>
-
-                      {{
-                        cita.fechaHoraInicio
-                          | date:'HH:mm'
-                      }}
-
-                      -
-
-                      {{
-                        cita.fechaHoraFin
-                          | date:'HH:mm'
-                      }}
-
-                    </strong>
-
-                  </div>
-
-
-                  <div class="detail-card">
-
-                    <span class="detail-label">
-                      Especialidad
-                    </span>
-
-                    <strong>
-                      {{
-                        cita.especialidadNombre
-                      }}
-                    </strong>
-
-                  </div>
-
-                </div>
-
-
-                <div class="appointment-reason">
-
-                  <span class="detail-label">
-                    Motivo de consulta
-                  </span>
+                  <strong>
+                    Sin citas pendientes
+                  </strong>
 
                   <p>
-                    {{ cita.motivo }}
+                    No tienes citas pendientes para hoy.
                   </p>
 
                 </div>
 
+              </div>
 
-                <div class="appointment-actions">
 
-                  <button
-                    type="button"
-                    class="primary-button"
-                    (click)="atenderPaciente(cita)"
-                  >
-                    Atender paciente
-                  </button>
+              <!-- LISTADO -->
 
-                </div>
+              <div
+                class="appointments-grid"
+                *ngIf="citasHoy.length > 0"
+              >
 
-              </article>
+                <article
+                  class="appointment-card"
+                  *ngFor="let cita of citasHoy"
+                >
+
+                  <div class="appointment-top">
+
+                    <div>
+
+                      <span class="status-badge">
+                        {{ cita.estado }}
+                      </span>
+
+                      <h3>
+                        {{ cita.pacienteNombre }}
+                      </h3>
+
+                    </div>
+
+
+                    <span class="appointment-id">
+                      Cita #{{ cita.id }}
+                    </span>
+
+                  </div>
+
+
+                  <div class="appointment-details">
+
+                    <!-- FECHA -->
+
+                    <div class="detail-card">
+
+                      <span class="detail-label">
+                        Fecha
+                      </span>
+
+                      <strong>
+                        {{
+                          cita.fechaHoraInicio
+                            | date:'dd/MM/yyyy'
+                        }}
+                      </strong>
+
+                    </div>
+
+
+                    <!-- HORARIO -->
+
+                    <div class="detail-card">
+
+                      <span class="detail-label">
+                        Horario
+                      </span>
+
+                      <strong>
+
+                        {{
+                          cita.fechaHoraInicio
+                            | date:'HH:mm'
+                        }}
+
+                        -
+
+                        {{
+                          cita.fechaHoraFin
+                            | date:'HH:mm'
+                        }}
+
+                      </strong>
+
+                    </div>
+
+
+                    <!-- ESPECIALIDAD -->
+
+                    <div class="detail-card">
+
+                      <span class="detail-label">
+                        Especialidad
+                      </span>
+
+                      <strong>
+                        {{
+                          cita.especialidadNombre
+                        }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- MOTIVO -->
+
+                  <div class="appointment-reason">
+
+                    <span class="detail-label">
+                      Motivo de consulta
+                    </span>
+
+                    <p>
+                      {{ cita.motivo }}
+                    </p>
+
+                  </div>
+
+
+                  <!-- ACCIONES -->
+
+                  <div class="appointment-actions">
+
+                    <button
+                      type="button"
+                      class="primary-button"
+                      (click)="atenderPaciente(cita)"
+                    >
+                      Atender paciente
+                    </button>
+
+                  </div>
+
+                </article>
+
+              </div>
 
             </div>
 
-          </div>
 
-        </section>
+            <!-- ===================================== -->
+            <!-- PRÓXIMAS CITAS -->
+            <!-- ===================================== -->
+
+            <div class="appointment-section future">
+
+              <div class="section-heading">
+
+                <h3>
+                  Próximas citas
+                </h3>
+
+                <span class="counter-badge secondary">
+                  {{ proximasCitas.length }}
+                </span>
+
+              </div>
+
+
+              <!-- SIN CITAS -->
+
+              <div
+                class="empty-state"
+                *ngIf="proximasCitas.length === 0"
+              >
+
+                <div class="empty-icon neutral">
+                  ◷
+                </div>
+
+                <div>
+
+                  <strong>
+                    Sin próximas citas
+                  </strong>
+
+                  <p>
+                    No tienes citas futuras pendientes.
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <!-- LISTADO -->
+
+              <div
+                class="appointments-grid"
+                *ngIf="proximasCitas.length > 0"
+              >
+
+                <article
+                  class="appointment-card"
+                  *ngFor="let cita of proximasCitas"
+                >
+
+                  <div class="appointment-top">
+
+                    <div>
+
+                      <span class="status-badge">
+                        {{ cita.estado }}
+                      </span>
+
+                      <h3>
+                        {{ cita.pacienteNombre }}
+                      </h3>
+
+                    </div>
+
+
+                    <span class="appointment-id">
+                      Cita #{{ cita.id }}
+                    </span>
+
+                  </div>
+
+
+                  <div class="appointment-details">
+
+                    <!-- FECHA -->
+
+                    <div class="detail-card">
+
+                      <span class="detail-label">
+                        Fecha
+                      </span>
+
+                      <strong>
+                        {{
+                          cita.fechaHoraInicio
+                            | date:'dd/MM/yyyy'
+                        }}
+                      </strong>
+
+                    </div>
+
+
+                    <!-- HORARIO -->
+
+                    <div class="detail-card">
+
+                      <span class="detail-label">
+                        Horario
+                      </span>
+
+                      <strong>
+
+                        {{
+                          cita.fechaHoraInicio
+                            | date:'HH:mm'
+                        }}
+
+                        -
+
+                        {{
+                          cita.fechaHoraFin
+                            | date:'HH:mm'
+                        }}
+
+                      </strong>
+
+                    </div>
+
+
+                    <!-- ESPECIALIDAD -->
+
+                    <div class="detail-card">
+
+                      <span class="detail-label">
+                        Especialidad
+                      </span>
+
+                      <strong>
+                        {{
+                          cita.especialidadNombre
+                        }}
+                      </strong>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- MOTIVO -->
+
+                  <div class="appointment-reason">
+
+                    <span class="detail-label">
+                      Motivo de consulta
+                    </span>
+
+                    <p>
+                      {{ cita.motivo }}
+                    </p>
+
+                  </div>
+
+
+                  <!-- ACCIONES -->
+
+                  <div class="appointment-actions">
+
+                    <button
+                      type="button"
+                      class="primary-button"
+                      (click)="atenderPaciente(cita)"
+                    >
+                      Atender paciente
+                    </button>
+
+                  </div>
+
+                </article>
+
+              </div>
+
+            </div>
+
+          </section>
+
+        </ng-container>
+
+      </ng-container>
+
+
+      <!-- ===================================== -->
+      <!-- VISTA: MENSAJES -->
+      <!-- ===================================== -->
+
+      <ng-container
+        *ngIf="vistaActual === 'mensajes'"
+      >
+
+        <div
+          class="loading-card"
+          *ngIf="cargando"
+        >
+          Cargando información del médico...
+        </div>
+
+
+        <div
+          class="mensaje-error"
+          *ngIf="!cargando && error"
+        >
+          {{ error }}
+        </div>
+
+
+        <app-chat-medico
+          *ngIf="!cargando && medico"
+          [medico]="medico"
+        >
+        </app-chat-medico>
 
       </ng-container>
 

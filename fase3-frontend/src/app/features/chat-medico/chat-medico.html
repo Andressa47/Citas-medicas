@@ -1,0 +1,314 @@
+<section class="chat-medico">
+
+  <div class="chat-heading">
+
+    <span class="section-label">
+      COMUNICACIÓN MÉDICA
+    </span>
+
+    <h2>
+      Mensajes
+    </h2>
+
+    <p>
+      Comunícate con los pacientes que han tenido
+      citas asignadas contigo.
+    </p>
+
+  </div>
+
+
+  <div
+    class="chat-error"
+    *ngIf="error"
+  >
+    {{ error }}
+  </div>
+
+
+  <div class="chat-layout">
+
+    <!-- ===================================== -->
+    <!-- CONVERSACIONES -->
+    <!-- ===================================== -->
+
+    <aside class="conversations-panel">
+
+      <div class="new-chat">
+
+        <label for="pacienteChat">
+          Nueva conversación
+        </label>
+
+        <select
+          id="pacienteChat"
+          [(ngModel)]="pacienteSeleccionado"
+          [disabled]="creandoConversacion"
+        >
+
+          <option [ngValue]="0">
+            Selecciona un paciente
+          </option>
+
+          <option
+            *ngFor="let paciente of pacientes"
+            [ngValue]="paciente.id"
+          >
+            {{ paciente.nombre }}
+          </option>
+
+        </select>
+
+
+        <button
+          type="button"
+          (click)="crearConversacion()"
+          [disabled]="
+            !pacienteSeleccionado ||
+            creandoConversacion
+          "
+        >
+          {{
+            creandoConversacion
+              ? 'Abriendo...'
+              : 'Iniciar chat'
+          }}
+        </button>
+
+      </div>
+
+
+      <div class="conversations-title">
+        Conversaciones
+      </div>
+
+
+      <div
+        class="loading-list"
+        *ngIf="cargandoConversaciones"
+      >
+        Cargando conversaciones...
+      </div>
+
+
+      <div
+        class="empty-conversations"
+        *ngIf="
+          !cargandoConversaciones &&
+          conversaciones.length === 0
+        "
+      >
+        Todavía no tienes conversaciones.
+      </div>
+
+
+      <button
+        type="button"
+        class="conversation-item"
+        *ngFor="let conversacion of conversaciones"
+        [class.active]="
+          conversacionSeleccionada?.id ===
+          conversacion.id
+        "
+        (click)="seleccionarConversacion(conversacion)"
+      >
+
+        <div class="conversation-avatar">
+          {{
+            conversacion.pacienteNombre
+              ?.charAt(0)
+          }}
+        </div>
+
+
+        <div class="conversation-info">
+
+          <strong>
+            {{ conversacion.pacienteNombre }}
+          </strong>
+
+          <span>
+            {{ conversacion.especialidadNombre }}
+          </span>
+
+        </div>
+
+      </button>
+
+    </aside>
+
+
+    <!-- ===================================== -->
+    <!-- CHAT -->
+    <!-- ===================================== -->
+
+    <section class="messages-panel">
+
+      <div
+        class="chat-empty"
+        *ngIf="!conversacionSeleccionada"
+      >
+
+        <div class="chat-empty-icon">
+          ✉
+        </div>
+
+        <h3>
+          Selecciona una conversación
+        </h3>
+
+        <p>
+          Elige un paciente para consultar
+          o enviar mensajes.
+        </p>
+
+      </div>
+
+
+      <ng-container
+        *ngIf="conversacionSeleccionada"
+      >
+
+        <header class="conversation-header">
+
+          <div class="patient-avatar">
+            {{
+              conversacionSeleccionada
+                .pacienteNombre
+                ?.charAt(0)
+            }}
+          </div>
+
+
+          <div>
+
+            <strong>
+              {{
+                conversacionSeleccionada
+                  .pacienteNombre
+              }}
+            </strong>
+
+            <span>
+              Paciente ·
+              {{
+                conversacionSeleccionada
+                  .especialidadNombre
+              }}
+            </span>
+
+          </div>
+
+        </header>
+
+
+        <div
+          #mensajesContenedor
+          class="messages-container"
+        >
+
+          <div
+            class="messages-loading"
+            *ngIf="cargandoMensajes"
+          >
+            Cargando mensajes...
+          </div>
+
+
+          <div
+            class="no-messages"
+            *ngIf="
+              !cargandoMensajes &&
+              mensajes.length === 0
+            "
+          >
+            Aún no hay mensajes.
+            Puedes iniciar la conversación.
+          </div>
+
+
+          <div
+            class="message-row"
+            *ngFor="let mensaje of mensajes"
+            [class.mine]="mensaje.enviadoPorMi"
+          >
+
+            <div class="message-bubble">
+
+              <span
+                class="message-sender"
+                *ngIf="!mensaje.enviadoPorMi"
+              >
+                {{ mensaje.remitenteNombre }}
+              </span>
+
+
+              <p>
+                {{ mensaje.contenido }}
+              </p>
+
+
+              <div class="message-meta">
+
+                <span>
+                  {{
+                    mensaje.fechaEnvio
+                      | date:'HH:mm'
+                  }}
+                </span>
+
+
+                <span
+                  *ngIf="mensaje.enviadoPorMi"
+                  class="read-status"
+                >
+                  {{ mensaje.leido ? '✓✓' : '✓' }}
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <form
+          class="message-form"
+          (ngSubmit)="enviarMensaje()"
+        >
+
+          <textarea
+            name="nuevoMensaje"
+            rows="2"
+            maxlength="1000"
+            placeholder="Escribe un mensaje..."
+            [(ngModel)]="nuevoMensaje"
+            [disabled]="enviando"
+          ></textarea>
+
+
+          <button
+            type="submit"
+            [disabled]="
+              enviando ||
+              !nuevoMensaje.trim()
+            "
+          >
+            {{
+              enviando
+                ? 'Enviando...'
+                : 'Enviar'
+            }}
+          </button>
+
+        </form>
+
+      </ng-container>
+
+    </section>
+
+  </div>
+
+</section>

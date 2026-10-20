@@ -7,30 +7,68 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { MedicosService } from '../../../core/services/medicos';
-import { CitasService } from '../../../core/services/citas';
+import {
+  MedicosService
+} from '../../../core/services/medicos';
+
+import {
+  CitasService
+} from '../../../core/services/citas';
+
+import {
+  ChatMedico
+} from '../../chat-medico/chat-medico';
+
 
 @Component({
   selector: 'app-panel-medico',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    ChatMedico
   ],
   templateUrl: './panel-medico.html',
   styleUrl: './panel-medico.css'
 })
 export class PanelMedico implements OnInit {
 
+  // ==========================================
+  // VISTA ACTUAL
+  // ==========================================
+
+  vistaActual:
+    'agenda' | 'mensajes' =
+      'agenda';
+
+
+  // ==========================================
+  // MÉDICO
+  // ==========================================
+
   medico: any = null;
 
+
+  // ==========================================
+  // CITAS
+  // ==========================================
+
   citas: any[] = [];
+
   citasPendientes: any[] = [];
 
   citasHoy: any[] = [];
+
   proximasCitas: any[] = [];
 
+
+  // ==========================================
+  // ESTADO
+  // ==========================================
+
   cargando = true;
+
   error = '';
+
 
   constructor(
     private medicosService: MedicosService,
@@ -39,9 +77,26 @@ export class PanelMedico implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
+
   ngOnInit(): void {
+
     this.cargarMedicoActual();
+
   }
+
+
+  // ==========================================
+  // CAMBIAR VISTA
+  // ==========================================
+
+  cambiarVista(
+    vista: 'agenda' | 'mensajes'
+  ): void {
+
+    this.vistaActual = vista;
+
+  }
+
 
   // ==========================================
   // OBTENER EMAIL DEL JWT
@@ -52,9 +107,13 @@ export class PanelMedico implements OnInit {
     const token =
       localStorage.getItem('token');
 
+
     if (!token) {
+
       return null;
+
     }
+
 
     try {
 
@@ -65,6 +124,7 @@ export class PanelMedico implements OnInit {
           )
         );
 
+
       return payload.sub || null;
 
     } catch (error) {
@@ -74,9 +134,13 @@ export class PanelMedico implements OnInit {
         error
       );
 
+
       return null;
+
     }
+
   }
+
 
   // ==========================================
   // OBTENER FECHA ACTUAL
@@ -84,23 +148,36 @@ export class PanelMedico implements OnInit {
 
   obtenerFechaHoy(): string {
 
-    const hoy = new Date();
+    const hoy =
+      new Date();
+
 
     const anio =
       hoy.getFullYear();
 
+
     const mes =
       String(
         hoy.getMonth() + 1
-      ).padStart(2, '0');
+      ).padStart(
+        2,
+        '0'
+      );
+
 
     const dia =
       String(
         hoy.getDate()
-      ).padStart(2, '0');
+      ).padStart(
+        2,
+        '0'
+      );
+
 
     return `${anio}-${mes}-${dia}`;
+
   }
+
 
   // ==========================================
   // IDENTIFICAR MÉDICO LOGUEADO
@@ -111,21 +188,29 @@ export class PanelMedico implements OnInit {
     const email =
       this.obtenerEmailDelToken();
 
+
     if (!email) {
 
       this.error =
         'No se pudo identificar al usuario autenticado.';
 
+
       this.cargando = false;
 
+
+      this.cdr.markForCheck();
+
+
       return;
+
     }
+
 
     this.medicosService
       .listarTodos()
       .subscribe({
 
-        next: (medicos) => {
+        next: (medicos: any[]) => {
 
           this.medico =
             medicos.find(
@@ -133,36 +218,52 @@ export class PanelMedico implements OnInit {
                 medico.usuario?.email === email
             );
 
+
           if (!this.medico) {
 
             this.error =
               'No se encontró el perfil médico del usuario autenticado.';
 
+
             this.cargando = false;
+
+
             this.cdr.markForCheck();
 
+
             return;
+
           }
 
+
           this.cargarCitas();
+
         },
 
-        error: (err) => {
+
+        error: (err: any) => {
 
           console.error(
             'Error al cargar médico:',
             err
           );
 
+
           this.error =
             'No se pudo cargar el perfil médico.';
 
+
           this.cargando = false;
+
+
           this.cdr.markForCheck();
+
         }
 
       });
+
   }
+
 
   // ==========================================
   // CARGAR CITAS
@@ -170,15 +271,24 @@ export class PanelMedico implements OnInit {
 
   cargarCitas(): void {
 
+    if (!this.medico?.id) {
+
+      return;
+
+    }
+
+
     this.citasService
       .listarPorMedico(
         this.medico.id
       )
       .subscribe({
 
-        next: (data) => {
+        next: (data: any[]) => {
 
-          this.citas = data;
+          this.citas =
+            data;
+
 
           this.citasPendientes =
             data.filter(
@@ -186,15 +296,20 @@ export class PanelMedico implements OnInit {
                 cita.estado === 'PENDIENTE'
             );
 
+
           const hoy =
             this.obtenerFechaHoy();
+
 
           this.citasHoy =
             this.citasPendientes
               .filter(
                 (cita: any) =>
                   cita.fechaHoraInicio
-                    ?.substring(0, 10) === hoy
+                    ?.substring(
+                      0,
+                      10
+                    ) === hoy
               )
               .sort(
                 (a: any, b: any) =>
@@ -203,13 +318,17 @@ export class PanelMedico implements OnInit {
                       b.fechaHoraInicio
                     )
               );
+
 
           this.proximasCitas =
             this.citasPendientes
               .filter(
                 (cita: any) =>
                   cita.fechaHoraInicio
-                    ?.substring(0, 10) > hoy
+                    ?.substring(
+                      0,
+                      10
+                    ) > hoy
               )
               .sort(
                 (a: any, b: any) =>
@@ -219,32 +338,46 @@ export class PanelMedico implements OnInit {
                     )
               );
 
+
           this.cargando = false;
+
+
           this.cdr.markForCheck();
+
         },
 
-        error: (err) => {
+
+        error: (err: any) => {
 
           console.error(
             'Error al cargar citas:',
             err
           );
 
+
           this.error =
             'No se pudieron cargar las citas.';
 
+
           this.cargando = false;
+
+
           this.cdr.markForCheck();
+
         }
 
       });
+
   }
+
 
   // ==========================================
   // ABRIR CONSULTA
   // ==========================================
 
-  atenderPaciente(cita: any): void {
+  atenderPaciente(
+    cita: any
+  ): void {
 
     this.router.navigate(
       [
@@ -252,7 +385,9 @@ export class PanelMedico implements OnInit {
         cita.id
       ]
     );
+
   }
+
 
   // ==========================================
   // CERRAR SESIÓN
@@ -260,11 +395,22 @@ export class PanelMedico implements OnInit {
 
   cerrarSesion(): void {
 
-    localStorage.removeItem('token');
-    localStorage.removeItem('rol');
+    localStorage.removeItem(
+      'token'
+    );
 
-    this.router.navigate([
-      '/login'
-    ]);
+
+    localStorage.removeItem(
+      'rol'
+    );
+
+
+    this.router.navigate(
+      [
+        '/login'
+      ]
+    );
+
   }
+
 }

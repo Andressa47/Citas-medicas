@@ -122,8 +122,17 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/appointments/patient/**").hasAnyAuthority("DOCTOR", "ROLE_DOCTOR", "ADMIN", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/appointments").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/appointments/*").hasAnyAuthority("DOCTOR", "ROLE_DOCTOR", "ADMIN", "ROLE_ADMIN")
+                        
+                        // 8. CHAT MÉDICO - PACIENTE
+                        .requestMatchers("/api/v1/chat/**")
+                        .hasAnyAuthority(
+                        "PATIENT",
+                        "ROLE_PATIENT",
+                        "DOCTOR",
+                        "ROLE_DOCTOR"
+)
 
-                        // 8. CUALQUIER OTRA PETICIÓN
+                        // 9. CUALQUIER OTRA PETICIÓN
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

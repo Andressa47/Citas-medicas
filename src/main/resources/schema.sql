@@ -66,4 +66,57 @@ CREATE TABLE IF NOT EXISTS citas (
     CONSTRAINT fk_cita_horario
         FOREIGN KEY (horario_id)
         REFERENCES horarios_disponibles(id)
+    -- ==========================================
+-- CONVERSACIONES DE CHAT
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS conversaciones (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    paciente_id BIGINT NOT NULL,
+    medico_id BIGINT NOT NULL,
+    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_conversacion_paciente
+        FOREIGN KEY (paciente_id)
+        REFERENCES usuarios(id),
+
+    CONSTRAINT fk_conversacion_medico
+        FOREIGN KEY (medico_id)
+        REFERENCES medicos(id),
+
+    CONSTRAINT uk_conversacion_paciente_medico
+        UNIQUE (paciente_id, medico_id)
+);
+
+
+-- ==========================================
+-- MENSAJES DEL CHAT
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS mensajes_chat (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    conversacion_id BIGINT NOT NULL,
+    remitente_id BIGINT NOT NULL,
+    contenido TEXT NOT NULL,
+    fecha_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    leido BOOLEAN NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT fk_mensaje_conversacion
+        FOREIGN KEY (conversacion_id)
+        REFERENCES conversaciones(id),
+
+    CONSTRAINT fk_mensaje_remitente
+        FOREIGN KEY (remitente_id)
+        REFERENCES usuarios(id)
+);
+
+
+CREATE INDEX idx_mensaje_conversacion
+ON mensajes_chat (conversacion_id);
+
+
+CREATE INDEX idx_mensaje_fecha
+ON mensajes_chat (fecha_envio);
 );
