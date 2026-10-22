@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     nombre_completo VARCHAR(150) NOT NULL,
-    rol VARCHAR(30) NOT NULL
+    rol VARCHAR(30) NOT NULL,
+    debe_cambiar_password BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS especialidades (
