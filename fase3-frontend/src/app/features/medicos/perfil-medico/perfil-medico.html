@@ -1,0 +1,349 @@
+<section class="perfil-page">
+
+  <div
+    class="loading-card"
+    *ngIf="cargando"
+  >
+    Cargando perfil profesional...
+  </div>
+
+
+  <div
+    class="mensaje error"
+    *ngIf="!cargando && error"
+  >
+    {{ error }}
+  </div>
+
+
+  <ng-container
+    *ngIf="!cargando && perfil"
+  >
+
+    <!-- CABECERA -->
+
+    <section class="profile-header">
+
+      <div class="profile-avatar">
+
+        {{ obtenerInicial() }}
+
+      </div>
+
+
+      <div class="profile-main">
+
+        <span class="eyebrow">
+          PERFIL PROFESIONAL
+        </span>
+
+
+        <h2>
+          {{ perfil.nombreCompleto }}
+        </h2>
+
+
+        <p class="specialty">
+
+          {{ perfil.especialidadNombre }}
+
+          <span>
+            •
+          </span>
+
+          Colegiado
+          {{ perfil.numeroColegiado }}
+
+        </p>
+
+
+        <p
+          class="bio-preview"
+          *ngIf="perfil.biografia"
+        >
+          {{ perfil.biografia }}
+        </p>
+
+
+        <p
+          class="bio-preview empty"
+          *ngIf="!perfil.biografia"
+        >
+          Completa tu información profesional
+          para mostrar un perfil más completo.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- INFORMACIÓN FIJA -->
+
+    <section class="info-grid">
+
+      <article class="info-card">
+
+        <span>
+          Correo
+        </span>
+
+        <strong>
+          {{ perfil.email }}
+        </strong>
+
+      </article>
+
+
+      <article class="info-card">
+
+        <span>
+          Especialidad
+        </span>
+
+        <strong>
+          {{ perfil.especialidadNombre }}
+        </strong>
+
+      </article>
+
+
+      <article class="info-card">
+
+        <span>
+          Número de colegiado
+        </span>
+
+        <strong>
+          {{ perfil.numeroColegiado }}
+        </strong>
+
+      </article>
+
+
+      <article class="info-card">
+
+        <span>
+          Experiencia
+        </span>
+
+        <strong>
+          {{ perfil.aniosExperiencia || 0 }}
+          años
+        </strong>
+
+      </article>
+
+    </section>
+
+
+    <!-- FORMULARIO -->
+
+    <section class="edit-card">
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="eyebrow">
+            INFORMACIÓN PÚBLICA
+          </span>
+
+          <h3>
+            Editar perfil profesional
+          </h3>
+
+          <p>
+            Esta información puede utilizarse
+            para presentar tu perfil a los
+            pacientes.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        class="mensaje success"
+        *ngIf="mensaje"
+      >
+        {{ mensaje }}
+      </div>
+
+
+      <div
+        class="mensaje error"
+        *ngIf="error"
+      >
+        {{ error }}
+      </div>
+
+
+      <form
+        (ngSubmit)="guardarPerfil()"
+        #perfilForm="ngForm"
+      >
+
+        <div class="form-group full">
+
+          <label for="biografia">
+            Biografía profesional
+          </label>
+
+          <textarea
+            id="biografia"
+            name="biografia"
+            [(ngModel)]="formulario.biografia"
+            maxlength="2000"
+            rows="5"
+            placeholder="Describe brevemente tu experiencia, enfoque profesional y áreas de interés..."
+          ></textarea>
+
+          <span class="helper">
+            Máximo 2000 caracteres.
+          </span>
+
+        </div>
+
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="telefono">
+              Teléfono profesional
+            </label>
+
+            <input
+              id="telefono"
+              name="telefono"
+              type="text"
+              maxlength="30"
+              [(ngModel)]="
+                formulario.telefonoProfesional
+              "
+              placeholder="Ej. 5555-5555"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="experiencia">
+              Años de experiencia
+            </label>
+
+            <input
+              id="experiencia"
+              name="experiencia"
+              type="number"
+              min="0"
+              max="80"
+              [(ngModel)]="
+                formulario.aniosExperiencia
+              "
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="idiomas">
+              Idiomas
+            </label>
+
+            <input
+              id="idiomas"
+              name="idiomas"
+              type="text"
+              maxlength="255"
+              [(ngModel)]="formulario.idiomas"
+              placeholder="Ej. Español, Inglés"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="ubicacion">
+              Clínica o ubicación
+            </label>
+
+            <input
+              id="ubicacion"
+              name="ubicacion"
+              type="text"
+              maxlength="255"
+              [(ngModel)]="
+                formulario.ubicacionConsultorio
+              "
+              placeholder="Ej. Zona 10, Ciudad de Guatemala"
+            >
+
+          </div>
+
+
+          <div class="form-group full">
+
+            <label for="formacion">
+              Formación académica
+            </label>
+
+            <textarea
+              id="formacion"
+              name="formacion"
+              rows="4"
+              maxlength="500"
+              [(ngModel)]="
+                formulario.formacionAcademica
+              "
+              placeholder="Ej. Médico y Cirujano, Universidad de San Carlos de Guatemala..."
+            ></textarea>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            (click)="cancelarCambios()"
+            [disabled]="guardando"
+          >
+            Descartar cambios
+          </button>
+
+
+          <button
+            type="submit"
+            class="primary-button"
+            [disabled]="
+              guardando ||
+              !perfilForm.form.valid
+            "
+          >
+
+            {{
+              guardando
+                ? 'Guardando...'
+                : 'Guardar perfil'
+            }}
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </section>
+
+  </ng-container>
+
+</section>

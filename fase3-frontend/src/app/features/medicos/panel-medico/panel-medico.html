@@ -65,6 +65,20 @@
 
       </div>
 
+      <div
+  class="menu-item"
+  [class.active]="vistaActual === 'perfil'"
+  (click)="cambiarVista('perfil')"
+>
+  <span class="menu-icon">
+    ◎
+  </span>
+
+  <span>
+    Mi perfil
+  </span>
+</div>
+
     </nav>
 
 
@@ -658,35 +672,53 @@
       <!-- VISTA: MENSAJES -->
       <!-- ===================================== -->
 
-      <ng-container
-        *ngIf="vistaActual === 'mensajes'"
-      >
+      <!-- ===================================== -->
+<!-- VISTA: MENSAJES -->
+<!-- ===================================== -->
 
-        <div
-          class="loading-card"
-          *ngIf="cargando"
-        >
-          Cargando información del médico...
-        </div>
+<ng-container
+  *ngIf="vistaActual === 'mensajes'"
+>
 
-
-        <div
-          class="mensaje-error"
-          *ngIf="!cargando && error"
-        >
-          {{ error }}
-        </div>
+  <div
+    class="loading-card"
+    *ngIf="cargando"
+  >
+    Cargando información del médico...
+  </div>
 
 
-        <app-chat-medico
-          *ngIf="!cargando && medico"
-          [medico]="medico"
-        >
-        </app-chat-medico>
+  <div
+    class="mensaje-error"
+    *ngIf="!cargando && error"
+  >
+    {{ error }}
+  </div>
 
-      </ng-container>
 
-    </main>
+  <app-chat-medico
+    *ngIf="!cargando && medico"
+    [medico]="medico"
+  >
+  </app-chat-medico>
+
+</ng-container>
+
+
+<!-- ===================================== -->
+<!-- VISTA: MI PERFIL -->
+<!-- ===================================== -->
+
+<ng-container
+  *ngIf="vistaActual === 'perfil'"
+>
+
+  <app-perfil-medico>
+  </app-perfil-medico>
+
+</ng-container>
+
+</main>
 
   </div>
 

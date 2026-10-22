@@ -19,14 +19,16 @@ import {
   ChatMedico
 } from '../../chat-medico/chat-medico';
 
+import { PerfilMedico } from '../perfil-medico/perfil-medico';
 
 @Component({
   selector: 'app-panel-medico',
   standalone: true,
   imports: [
-    CommonModule,
-    ChatMedico
-  ],
+  CommonModule,
+  ChatMedico,
+  PerfilMedico
+],
   templateUrl: './panel-medico.html',
   styleUrl: './panel-medico.css'
 })
@@ -36,9 +38,7 @@ export class PanelMedico implements OnInit {
   // VISTA ACTUAL
   // ==========================================
 
-  vistaActual:
-    'agenda' | 'mensajes' =
-      'agenda';
+  vistaActual: 'agenda' | 'mensajes' | 'perfil' = 'agenda';
 
 
   // ==========================================
@@ -90,12 +90,10 @@ export class PanelMedico implements OnInit {
   // ==========================================
 
   cambiarVista(
-    vista: 'agenda' | 'mensajes'
-  ): void {
-
-    this.vistaActual = vista;
-
-  }
+  vista: 'agenda' | 'mensajes' | 'perfil'
+): void {
+  this.vistaActual = vista;
+}
 
 
   // ==========================================

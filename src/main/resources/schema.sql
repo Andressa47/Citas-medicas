@@ -32,6 +32,21 @@ CREATE TABLE IF NOT EXISTS medicos (
         REFERENCES especialidades(id)
 );
 
+CREATE TABLE IF NOT EXISTS perfiles_medicos (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    medico_id BIGINT NOT NULL UNIQUE,
+    biografia TEXT,
+    telefono_profesional VARCHAR(30),
+    anios_experiencia INT NOT NULL DEFAULT 0,
+    formacion_academica VARCHAR(500),
+    idiomas VARCHAR(255),
+    ubicacion_consultorio VARCHAR(255),
+
+    CONSTRAINT fk_perfil_medico
+        FOREIGN KEY (medico_id)
+        REFERENCES medicos(id)
+);
+
 CREATE TABLE IF NOT EXISTS horarios_disponibles (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     medico_id BIGINT NOT NULL,
