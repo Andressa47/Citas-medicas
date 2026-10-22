@@ -11,6 +11,7 @@ import {
   UsuariosService
 } from '../../../core/services/usuarios';
 
+
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -23,7 +24,25 @@ import {
 })
 export class Usuarios implements OnInit {
 
+  // ==========================================
+  // USUARIOS
+  // ==========================================
+
   usuarios: any[] = [];
+
+
+  // ==========================================
+  // FILTROS
+  // ==========================================
+
+  busqueda = '';
+
+  filtroRol = '';
+
+
+  // ==========================================
+  // ESTADO
+  // ==========================================
 
   cargando = false;
 
@@ -32,6 +51,11 @@ export class Usuarios implements OnInit {
   mensaje = '';
 
   error = '';
+
+
+  // ==========================================
+  // NUEVO USUARIO
+  // ==========================================
 
   nuevoUsuario = {
     nombreCompleto: '',
@@ -54,43 +78,63 @@ export class Usuarios implements OnInit {
   }
 
 
+  // ==========================================
+  // CARGAR USUARIOS
+  // ==========================================
+
   cargarUsuarios(): void {
 
     this.cargando = true;
 
     this.error = '';
 
+
     this.usuariosService
       .listarTodos()
       .subscribe({
 
-        next: (data) => {
+        next: (data: any[]) => {
 
-          this.usuarios = data;
+          this.usuarios =
+            [...data]
+              .sort(
+                (a: any, b: any) =>
+                  (a.nombreCompleto || '')
+                    .localeCompare(
+                      b.nombreCompleto || ''
+                    )
+              );
+
 
           this.cargando = false;
 
+
           console.log(
             'Usuarios cargados:',
-            data
+            this.usuarios
           );
+
 
           this.cdr.markForCheck();
 
         },
 
-        error: (err) => {
+
+        error: (err: any) => {
 
           console.error(
             'Error al cargar usuarios:',
             err
           );
 
+
           this.error =
             err?.error?.message ||
             'No se pudieron cargar los usuarios.';
 
+
           this.cargando = false;
+
 
           this.cdr.markForCheck();
 
@@ -101,6 +145,185 @@ export class Usuarios implements OnInit {
   }
 
 
+  // ==========================================
+  // USUARIOS FILTRADOS
+  // ==========================================
+
+  get usuariosFiltrados(): any[] {
+
+    const texto =
+      this.busqueda
+        .trim()
+        .toLowerCase();
+
+
+    return this.usuarios.filter(
+      (usuario: any) => {
+
+        const nombre =
+          (usuario.nombreCompleto || '')
+            .toLowerCase();
+
+
+        const email =
+          (usuario.email || '')
+            .toLowerCase();
+
+
+        const id =
+          String(
+            usuario.id || ''
+          );
+
+
+        const coincideBusqueda =
+          !texto ||
+          nombre.includes(texto) ||
+          email.includes(texto) ||
+          id.includes(texto);
+
+
+        const coincideRol =
+          !this.filtroRol ||
+          usuario.rol ===
+            this.filtroRol;
+
+
+        return (
+          coincideBusqueda &&
+          coincideRol
+        );
+
+      }
+    );
+
+  }
+
+
+  // ==========================================
+  // CONTADORES
+  // ==========================================
+
+  get totalUsuarios(): number {
+
+    return this.usuarios.length;
+
+  }
+
+
+  get totalAdministradores(): number {
+
+    return this.usuarios.filter(
+      (usuario: any) =>
+        usuario.rol === 'ROLE_ADMIN'
+    ).length;
+
+  }
+
+
+  get totalMedicos(): number {
+
+    return this.usuarios.filter(
+      (usuario: any) =>
+        usuario.rol === 'ROLE_DOCTOR'
+    ).length;
+
+  }
+
+
+  get totalPacientes(): number {
+
+    return this.usuarios.filter(
+      (usuario: any) =>
+        usuario.rol === 'ROLE_PATIENT'
+    ).length;
+
+  }
+
+
+  // ==========================================
+  // NOMBRE DEL ROL
+  // ==========================================
+
+  obtenerNombreRol(
+    rol: string
+  ): string {
+
+    switch (rol) {
+
+      case 'ROLE_ADMIN':
+        return 'Administrador';
+
+      case 'ROLE_DOCTOR':
+        return 'Médico';
+
+      case 'ROLE_PATIENT':
+        return 'Paciente';
+
+      case 'ROLE_NURSE':
+        return 'Enfermería';
+
+      case 'ROLE_SECRETARY':
+        return 'Secretaría';
+
+      default:
+        return rol || 'Sin rol';
+
+    }
+
+  }
+
+
+  // ==========================================
+  // CLASE DEL ROL
+  // ==========================================
+
+  obtenerClaseRol(
+    rol: string
+  ): string {
+
+    switch (rol) {
+
+      case 'ROLE_ADMIN':
+        return 'admin';
+
+      case 'ROLE_DOCTOR':
+        return 'doctor';
+
+      case 'ROLE_PATIENT':
+        return 'patient';
+
+      case 'ROLE_NURSE':
+        return 'nurse';
+
+      case 'ROLE_SECRETARY':
+        return 'secretary';
+
+      default:
+        return 'default';
+
+    }
+
+  }
+
+
+  // ==========================================
+  // LIMPIAR FILTROS
+  // ==========================================
+
+  limpiarFiltros(): void {
+
+    this.busqueda = '';
+
+    this.filtroRol = '';
+
+  }
+
+
+  // ==========================================
+  // FORMULARIO
+  // ==========================================
+
   abrirFormulario(): void {
 
     this.nuevoUsuario = {
@@ -109,6 +332,7 @@ export class Usuarios implements OnInit {
       password: '',
       rol: 'ROLE_DOCTOR'
     };
+
 
     this.mostrarFormulario = true;
 
@@ -128,6 +352,10 @@ export class Usuarios implements OnInit {
   }
 
 
+  // ==========================================
+  // GUARDAR USUARIO
+  // ==========================================
+
   guardarUsuario(): void {
 
     this.mensaje = '';
@@ -136,50 +364,68 @@ export class Usuarios implements OnInit {
 
 
     if (
-      !this.nuevoUsuario.nombreCompleto.trim() ||
-      !this.nuevoUsuario.email.trim() ||
-      !this.nuevoUsuario.password.trim()
+      !this.nuevoUsuario
+        .nombreCompleto
+        .trim() ||
+      !this.nuevoUsuario
+        .email
+        .trim() ||
+      !this.nuevoUsuario
+        .password
+        .trim()
     ) {
 
       this.error =
         'Todos los campos son obligatorios.';
 
+
       return;
+
     }
 
 
     this.usuariosService
-      .crear(this.nuevoUsuario)
+      .crear(
+        this.nuevoUsuario
+      )
       .subscribe({
 
-        next: (usuarioCreado) => {
+        next: (usuarioCreado: any) => {
 
           console.log(
             'Usuario creado:',
             usuarioCreado
           );
 
+
           this.mensaje =
             'Usuario creado correctamente.';
 
-          this.mostrarFormulario = false;
+
+          this.mostrarFormulario =
+            false;
+
 
           this.cargarUsuarios();
+
 
           this.cdr.markForCheck();
 
         },
 
-        error: (err) => {
+
+        error: (err: any) => {
 
           console.error(
             'Error al crear usuario:',
             err
           );
 
+
           this.error =
             err?.error?.message ||
             'No se pudo crear el usuario.';
+
 
           this.cdr.markForCheck();
 
@@ -190,23 +436,38 @@ export class Usuarios implements OnInit {
   }
 
 
-  eliminarUsuario(usuario: any): void {
+  // ==========================================
+  // ELIMINAR USUARIO
+  // ==========================================
+
+  eliminarUsuario(
+    usuario: any
+  ): void {
 
     if (!usuario.id) {
+
       return;
+
     }
 
-    const confirmar = confirm(
-      `¿Deseas eliminar al usuario "${usuario.nombreCompleto}"?`
-    );
+
+    const confirmar =
+      confirm(
+        `¿Deseas eliminar al usuario "${usuario.nombreCompleto}"?`
+      );
+
 
     if (!confirmar) {
+
       return;
+
     }
 
 
     this.usuariosService
-      .eliminar(usuario.id)
+      .eliminar(
+        usuario.id
+      )
       .subscribe({
 
         next: () => {
@@ -214,22 +475,27 @@ export class Usuarios implements OnInit {
           this.mensaje =
             'Usuario eliminado correctamente.';
 
+
           this.cargarUsuarios();
+
 
           this.cdr.markForCheck();
 
         },
 
-        error: (err) => {
+
+        error: (err: any) => {
 
           console.error(
             'Error al eliminar usuario:',
             err
           );
 
+
           this.error =
             err?.error?.message ||
             'No se pudo eliminar el usuario.';
+
 
           this.cdr.markForCheck();
 
