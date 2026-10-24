@@ -1,0 +1,156 @@
+ion-content {
+  --background: #f6f8fb;
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #1f2937;
+}
+
+ion-title {
+    font-weight: 700;
+  }
+
+.appointments-container {
+  padding: 20px;
+}
+
+.intro {
+  margin-bottom: 22px;
+}
+
+.intro h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.intro p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.appointment-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.specialty {
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.status {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pending {
+  background: #fff4cc;
+  color: #a16207;
+}
+
+.completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.appointment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.info-row ion-icon {
+  font-size: 20px;
+  color: #3b82f6;
+}
+
+.section-title {
+  margin: 26px 0 14px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+ion-button {
+  --border-radius: 12px;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.appointment-card {
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.appointment-card:active {
+  transform: scale(0.98);
+}
+
+.unread-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  margin: 8px 0 14px;
+  padding: 7px 11px;
+
+  background: #eff6ff;
+  border-radius: 20px;
+
+  color: #2563eb;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+
+  background: #2563eb;
+
+  border-radius: 50%;
+}

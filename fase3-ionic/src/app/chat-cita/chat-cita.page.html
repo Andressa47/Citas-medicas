@@ -1,0 +1,102 @@
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/tabs/tab3">
+      </ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Chat con el médico</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div
+    class="loading-container"
+    *ngIf="cargando">
+
+    <ion-spinner></ion-spinner>
+
+    <p>Cargando conversación...</p>
+
+  </div>
+
+
+  <div
+    class="chat-container"
+    *ngIf="!cargando">
+
+    <div
+      class="empty-chat"
+      *ngIf="mensajes.length === 0">
+
+      <ion-icon
+        name="chatbubble-ellipses-outline">
+      </ion-icon>
+
+      <h2>Inicia la conversación</h2>
+
+      <p>
+        Puedes escribirle al médico sobre
+        cualquier duda relacionada con tu cita.
+      </p>
+
+    </div>
+
+
+    <div
+      class="message-row"
+      *ngFor="let mensaje of mensajes"
+      [class.own]="esMensajePropio(mensaje)">
+
+      <div class="message-bubble">
+
+        <small class="sender">
+          {{ mensaje.remitenteNombre }}
+        </small>
+
+        <p>
+          {{ mensaje.contenido }}
+        </p>
+
+        <span class="time">
+          {{ mensaje.fechaHora | date:'h:mm a' }}
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>
+
+
+<div class="message-input">
+
+  <ion-textarea
+    [(ngModel)]="nuevoMensaje"
+    placeholder="Escribe un mensaje..."
+    [autoGrow]="true"
+    [rows]="1">
+  </ion-textarea>
+
+  <ion-button
+    fill="clear"
+    class="send-button"
+    [disabled]="
+      !nuevoMensaje.trim() ||
+      enviando
+    "
+    (click)="enviarMensaje()">
+
+    <ion-icon
+      name="send-outline">
+    </ion-icon>
+
+  </ion-button>
+
+</div>

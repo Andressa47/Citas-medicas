@@ -1,0 +1,77 @@
+<ion-content [fullscreen]="true">
+
+  <div class="login-container">
+
+    <div class="logo-section">
+
+      <div class="logo-circle">
+        <ion-icon name="medical-outline"></ion-icon>
+      </div>
+
+      <h1>Citas Médicas</h1>
+
+      <p>
+        Accede a tu cuenta para gestionar tus citas.
+      </p>
+
+    </div>
+
+
+    <div class="form-container">
+
+      <div class="input-group">
+
+        <label>Correo electrónico</label>
+
+        <ion-input
+          type="email"
+          placeholder="correo@ejemplo.com"
+          [(ngModel)]="email">
+        </ion-input>
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>Contraseña</label>
+
+        <div class="password-container">
+
+          <ion-input
+            [type]="mostrarPassword ? 'text' : 'password'"
+            placeholder="Ingresa tu contraseña"
+            [(ngModel)]="password">
+          </ion-input>
+
+          <ion-button
+            class="eye-button"
+            fill="clear"
+            type="button"
+            (click)="cambiarVisibilidadPassword()">
+
+            <ion-icon
+              slot="icon-only"
+              [name]="mostrarPassword ? 'eye-off-outline' : 'eye-outline'">
+            </ion-icon>
+
+          </ion-button>
+
+        </div>
+
+      </div>
+
+
+ <ion-button
+  expand="block"
+  (click)="iniciarSesion()">
+
+  Iniciar sesión
+
+</ion-button>
+
+    </div>
+
+  </div>
+
+</ion-content>

@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-toolbar>
+
+    <ion-button
+      slot="start"
+      fill="clear"
+      (click)="regresar()">
+
+      <ion-icon name="arrow-back-outline"></ion-icon>
+
+    </ion-button>
+
+    <ion-title>Mi perfil</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <div class="profile-container">
+
+    <!-- ENCABEZADO DEL PERFIL -->
+    <div class="profile-header">
+
+      <div class="avatar">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </div>
+
+      <h1>{{ nombrePaciente }}</h1>
+
+      <span class="patient-badge">
+        Paciente
+      </span>
+
+    </div>
+
+    <!-- INFORMACIÓN PERSONAL -->
+    <h2 class="section-title">
+      Información personal
+    </h2>
+
+    <div class="info-card">
+
+      <!-- CORREO -->
+      <div class="info-row">
+
+        <div class="info-icon">
+          <ion-icon name="mail-outline"></ion-icon>
+        </div>
+
+        <div class="info-content">
+          <span>Correo electrónico</span>
+
+          <strong>
+            {{ email || 'No disponible' }}
+          </strong>
+        </div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- TIPO DE CUENTA -->
+      <div class="info-row">
+
+        <div class="info-icon">
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+
+        <div class="info-content">
+          <span>Tipo de cuenta</span>
+          <strong>Paciente</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CUENTA -->
+    <h2 class="section-title">
+      Cuenta
+    </h2>
+
+    <div class="account-card">
+
+      <button
+        class="logout-button"
+        type="button"
+        (click)="cerrarSesion()">
+
+        <ion-icon name="log-out-outline"></ion-icon>
+
+        <span>Cerrar sesión</span>
+
+      </button>
+
+    </div>
+
+  </div>
+
+</ion-content>

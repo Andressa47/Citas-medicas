@@ -1,0 +1,239 @@
+ion-content {
+  --background: #f5f7fb;
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #111827;
+  --border-color: transparent;
+}
+
+
+/* =========================
+   CONTENEDOR DEL CHAT
+========================= */
+
+.chat-container {
+  padding: 18px;
+  padding-bottom: 110px;
+}
+
+
+/* =========================
+   CARGANDO
+========================= */
+
+.loading-container {
+  min-height: 70vh;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #6b7280;
+}
+
+
+/* =========================
+   CHAT VACÍO
+========================= */
+
+.empty-chat {
+  min-height: 60vh;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  padding: 30px;
+
+  color: #6b7280;
+}
+
+.empty-chat ion-icon {
+  font-size: 52px;
+
+  color: #93c5fd;
+
+  margin-bottom: 14px;
+}
+
+.empty-chat h2 {
+  margin: 0 0 8px;
+
+  font-size: 19px;
+
+  color: #111827;
+}
+
+.empty-chat p {
+  margin: 0;
+
+  max-width: 300px;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   MENSAJES
+========================= */
+
+.message-row {
+  display: flex;
+
+  justify-content: flex-start;
+
+  margin-bottom: 12px;
+}
+
+.message-row.own {
+  justify-content: flex-end;
+}
+
+.message-bubble {
+  max-width: 78%;
+
+  background: #ffffff;
+
+  padding: 11px 14px 8px;
+
+  border-radius: 6px 18px 18px 18px;
+
+  box-shadow:
+    0 3px 12px
+    rgba(15, 23, 42, 0.06);
+}
+
+.message-row.own .message-bubble {
+  background: #2563eb;
+
+  color: #ffffff;
+
+  border-radius: 18px 6px 18px 18px;
+}
+
+.sender {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  color: #2563eb;
+}
+
+.message-row.own .sender {
+  color: #dbeafe;
+}
+
+.message-bubble p {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 1.45;
+
+  color: #1f2937;
+
+  word-break: break-word;
+}
+
+.message-row.own .message-bubble p {
+  color: #ffffff;
+}
+
+.time {
+  display: block;
+
+  margin-top: 5px;
+
+  text-align: right;
+
+  font-size: 10px;
+
+  color: #9ca3af;
+}
+
+.message-row.own .time {
+  color: #dbeafe;
+}
+
+
+/* =========================
+   BARRA PARA ESCRIBIR
+========================= */
+.message-input {
+  position: fixed;
+
+  left: 0;
+  right: 0;
+  bottom: 64px;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 8px 10px;
+
+  background: #ffffff;
+
+  border-top: 1px solid #e5e7eb;
+
+  box-shadow:
+    0 -2px 8px
+    rgba(15, 23, 42, 0.05);
+}
+
+.message-input ion-textarea {
+  flex: 1;
+
+  min-height: 42px;
+
+  --background: #ffffff;
+  --color: #111827;
+
+  --placeholder-color: #6b7280;
+  --placeholder-opacity: 1;
+
+  --padding-start: 14px;
+  --padding-end: 14px;
+
+  --padding-top: 9px;
+  --padding-bottom: 9px;
+
+  border: 1.5px solid #d1d5db;
+
+  border-radius: 21px;
+
+  font-size: 14px;
+
+  max-height: 100px;
+}
+
+.send-button {
+  width: 42px;
+  height: 42px;
+
+  min-width: 42px;
+
+  margin: 0;
+
+  --padding-start: 0;
+  --padding-end: 0;
+
+  --border-radius: 50%;
+
+  --background: #2563eb;
+  --color: #ffffff;
+}

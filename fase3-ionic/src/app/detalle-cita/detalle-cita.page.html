@@ -1,0 +1,280 @@
+<ion-header [translucent]="true">
+
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+
+      <ion-back-button
+        defaultHref="/tabs/tab3">
+      </ion-back-button>
+
+    </ion-buttons>
+
+    <ion-title>
+      Detalle de cita
+    </ion-title>
+
+  </ion-toolbar>
+
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+
+  <!-- CARGANDO -->
+  <div
+    class="loading-container"
+    *ngIf="cargando">
+
+    <ion-spinner></ion-spinner>
+
+    <p>
+      Cargando cita...
+    </p>
+
+  </div>
+
+
+  <!-- CITA NO ENCONTRADA -->
+  <div
+    class="empty-container"
+    *ngIf="!cargando && !cita">
+
+    <h2>
+      Cita no encontrada
+    </h2>
+
+    <p>
+      No pudimos encontrar esta cita.
+    </p>
+
+  </div>
+
+
+  <!-- DETALLE -->
+  <div
+    class="detail-container"
+    *ngIf="!cargando && cita">
+
+
+    <!-- CABECERA -->
+    <div class="doctor-card">
+
+      <p class="specialty">
+        {{ cita.especialidadNombre }}
+      </p>
+
+      <h1>
+        {{ cita.medicoNombre }}
+      </h1>
+
+      <ion-button
+        fill="clear"
+        class="doctor-profile-button"
+        (click)="verPerfilMedico()">
+
+        Ver perfil del médico
+
+      </ion-button>
+
+    </div>
+
+
+    <!-- ESTADO -->
+    <div class="status-container">
+
+      <span
+        class="status pending"
+        *ngIf="cita.estado === 'PENDIENTE'">
+
+        Pendiente
+
+      </span>
+
+      <span
+        class="status completed"
+        *ngIf="cita.estado === 'COMPLETADA'">
+
+        Completada
+
+      </span>
+
+      <span
+        class="status cancelled"
+        *ngIf="cita.estado === 'CANCELADA'">
+
+        Cancelada
+
+      </span>
+
+    </div>
+
+
+    <!-- INFORMACIÓN -->
+    <div class="info-card">
+
+      <div class="info-row">
+
+        <ion-icon
+          name="calendar-outline">
+        </ion-icon>
+
+        <div>
+
+          <small>
+            Fecha
+          </small>
+
+          <p>
+            {{
+              cita.fechaHoraInicio
+                | date:'dd/MM/yyyy'
+            }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="info-row">
+
+        <ion-icon
+          name="time-outline">
+        </ion-icon>
+
+        <div>
+
+          <small>
+            Horario
+          </small>
+
+          <p>
+            {{
+              cita.fechaHoraInicio
+                | date:'h:mm a'
+            }}
+            -
+            {{
+              cita.fechaHoraFin
+                | date:'h:mm a'
+            }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="info-row">
+
+        <ion-icon
+          name="document-text-outline">
+        </ion-icon>
+
+        <div>
+
+          <small>
+            Motivo de consulta
+          </small>
+
+          <p>
+            {{ cita.motivo }}
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- INFORMACIÓN MÉDICA -->
+    <div
+      class="medical-card"
+      *ngIf="cita.estado === 'COMPLETADA'">
+
+      <h2>
+        Información de la consulta
+      </h2>
+
+
+      <div
+        class="medical-section"
+        *ngIf="cita.diagnostico">
+
+        <small>
+          Diagnóstico
+        </small>
+
+        <p>
+          {{ cita.diagnostico }}
+        </p>
+
+      </div>
+
+
+      <div
+        class="medical-section"
+        *ngIf="cita.receta">
+
+        <small>
+          Receta / indicaciones
+        </small>
+
+        <p>
+          {{ cita.receta }}
+        </p>
+
+      </div>
+
+
+      <p
+        class="no-medical-info"
+        *ngIf="
+          !cita.diagnostico &&
+          !cita.receta
+        ">
+
+        Aún no hay información médica
+        registrada para esta consulta.
+
+      </p>
+
+    </div>
+
+
+    <!-- CHAT -->
+    <ion-button
+      expand="block"
+      fill="outline"
+      class="chat-button"
+      *ngIf="cita.estado !== 'CANCELADA'"
+      (click)="abrirChat()">
+
+      <ion-icon
+        slot="start"
+        name="chatbubble-outline">
+      </ion-icon>
+
+      Chat con el médico
+
+    </ion-button>
+
+
+    <!-- CANCELAR -->
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="danger"
+      class="cancel-button"
+      *ngIf="cita.estado === 'PENDIENTE'"
+      (click)="cancelarCita()">
+
+      Cancelar cita
+
+    </ion-button>
+
+  </div>
+
+</ion-content>

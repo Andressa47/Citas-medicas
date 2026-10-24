@@ -1,0 +1,223 @@
+ion-content {
+  --background: #f6f8fb;
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #1f2937;
+}
+
+ion-title {
+  font-weight: 700;
+}
+
+ion-toolbar ion-button {
+  --color: #3b82f6;
+}
+
+.profile-container {
+  padding: 24px 20px 40px;
+}
+
+
+/* =========================
+   ENCABEZADO DEL PERFIL
+   ========================= */
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  padding: 20px 0 28px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #e8f0ff;
+
+  margin-bottom: 14px;
+}
+
+.avatar ion-icon {
+  font-size: 78px;
+  color: #3b82f6;
+}
+
+.profile-header h1 {
+  margin: 0 0 9px;
+
+  font-size: 24px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.patient-badge {
+  padding: 6px 13px;
+
+  border-radius: 20px;
+
+  background: #e8f0ff;
+  color: #2563eb;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* =========================
+   TÍTULOS
+   ========================= */
+
+.section-title {
+  margin: 22px 0 12px;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+
+/* =========================
+   TARJETAS
+   ========================= */
+
+.info-card,
+.account-card {
+  background: #ffffff;
+
+  border-radius: 18px;
+
+  padding: 6px 18px;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+}
+
+
+/* =========================
+   FILAS DE INFORMACIÓN
+   ========================= */
+
+.info-row {
+  display: flex;
+  align-items: center;
+
+  padding: 17px 0;
+}
+
+.info-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eff6ff;
+
+  margin-right: 14px;
+}
+
+.info-icon ion-icon {
+  font-size: 22px;
+  color: #3b82f6;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.info-content span {
+  margin-bottom: 4px;
+
+  font-size: 12px;
+
+  color: #6b7280;
+}
+
+.info-content strong {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #111827;
+
+  overflow-wrap: anywhere;
+}
+
+.divider {
+  height: 1px;
+
+  background: #f0f1f3;
+
+  margin-left: 58px;
+}
+
+
+/* =========================
+   CERRAR SESIÓN
+   ========================= */
+
+.account-card {
+  padding: 4px 18px;
+}
+
+.logout-button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 16px 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #dc2626;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.logout-button ion-icon {
+  font-size: 23px;
+}
+
+
+/* =========================
+   AJUSTES PARA PANTALLAS
+   GRANDES
+   ========================= */
+
+@media (min-width: 768px) {
+
+  .profile-container {
+    max-width: 650px;
+    margin: 0 auto;
+
+    padding-top: 35px;
+  }
+
+}

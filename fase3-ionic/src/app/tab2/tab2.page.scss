@@ -1,0 +1,176 @@
+ion-content {
+  --background: #f6f8fb;
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #1f2937;
+}
+
+.search-container {
+  padding: 20px;
+}
+
+ion-title {
+    font-weight: 700;
+  }
+
+.intro {
+  margin-bottom: 24px;
+}
+
+.intro h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.intro p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.second-step {
+  margin-top: 28px;
+}
+
+.step-number {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #e8f0ff;
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.step h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.step p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.selector {
+  --background: #ffffff;
+  --border-radius: 16px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+ion-select {
+  width: 100%;
+  color: #111827;
+}
+
+.search-button {
+  margin-top: 30px;
+  height: 50px;
+
+  --border-radius: 14px;
+
+  font-weight: 600;
+  text-transform: none;
+}
+
+.horarios-section {
+  margin-top: 30px;
+}
+
+.horarios-title {
+  margin-bottom: 16px;
+}
+
+.horario-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.horario-fecha {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.horario-hora {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.horario-card ion-button {
+  margin: 0;
+  height: 42px;
+  --border-radius: 12px;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.confirmacion-section {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.motivo-container {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.motivo-container label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.motivo-container ion-textarea {
+  --background: #f6f8fb;
+  --color: #111827;
+  --placeholder-color: #9ca3af;
+
+  border-radius: 12px;
+  padding: 4px 12px;
+}
+
+.confirm-button {
+  height: 48px;
+  margin-top: 16px;
+
+  --border-radius: 12px;
+
+  text-transform: none;
+  font-weight: 600;
+}

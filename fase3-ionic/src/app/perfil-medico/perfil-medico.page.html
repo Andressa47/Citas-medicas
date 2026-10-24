@@ -1,0 +1,284 @@
+<ion-header>
+  <ion-toolbar>
+
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/tabs/tab3">
+      </ion-back-button>
+    </ion-buttons>
+
+    <ion-title>
+      Perfil del médico
+    </ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+
+  <!-- CARGANDO -->
+  <div
+    class="loading-container"
+    *ngIf="cargando">
+
+    <ion-spinner></ion-spinner>
+
+    <p>
+      Cargando perfil...
+    </p>
+
+  </div>
+
+
+  <!-- MÉDICO NO ENCONTRADO -->
+  <div
+    class="empty-container"
+    *ngIf="!cargando && !medico">
+
+    <h2>
+      Médico no encontrado
+    </h2>
+
+    <p>
+      No pudimos encontrar la información
+      de este médico.
+    </p>
+
+  </div>
+
+
+  <!-- PERFIL -->
+  <div
+    class="profile-container"
+    *ngIf="!cargando && medico">
+
+
+    <!-- CABECERA -->
+
+    <div class="profile-header">
+
+      <div class="doctor-avatar">
+        <ion-icon
+          name="person-outline">
+        </ion-icon>
+      </div>
+
+      <h1>
+        {{ medico.usuario.nombreCompleto }}
+      </h1>
+
+      <p class="specialty">
+        {{ medico.especialidad.nombre }}
+      </p>
+
+      <p class="experience"
+         *ngIf="medico.aniosExperiencia">
+
+        {{ medico.aniosExperiencia }}
+        años de experiencia
+
+      </p>
+
+    </div>
+
+
+    <!-- INFORMACIÓN PROFESIONAL -->
+
+    <div class="section-title">
+      Información profesional
+    </div>
+
+
+    <div class="info-card">
+
+      <div class="info-row">
+
+        <ion-icon
+          name="medical-outline">
+        </ion-icon>
+
+        <div>
+          <small>
+            Especialidad
+          </small>
+
+          <p>
+            {{ medico.especialidad.nombre }}
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="info-row">
+
+        <ion-icon
+          name="ribbon-outline">
+        </ion-icon>
+
+        <div>
+          <small>
+            No. de colegiado
+          </small>
+
+          <p>
+            {{ medico.numeroColegiado }}
+          </p>
+        </div>
+
+      </div>
+
+
+      <div
+        class="info-row"
+        *ngIf="medico.centroClinica">
+
+        <ion-icon
+          name="business-outline">
+        </ion-icon>
+
+        <div>
+          <small>
+            Centro / clínica
+          </small>
+
+          <p>
+            {{ medico.centroClinica }}
+          </p>
+        </div>
+
+      </div>
+
+
+      <div
+        class="info-row"
+        *ngIf="medico.direccion">
+
+        <ion-icon
+          name="location-outline">
+        </ion-icon>
+
+        <div>
+          <small>
+            Dirección
+          </small>
+
+          <p>
+            {{ medico.direccion }}
+          </p>
+        </div>
+
+      </div>
+
+
+      <div
+        class="info-row"
+        *ngIf="medico.horarioAtencion">
+
+        <ion-icon
+          name="time-outline">
+        </ion-icon>
+
+        <div>
+          <small>
+            Horario de atención
+          </small>
+
+          <p>
+            {{ medico.horarioAtencion }}
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- CONTACTO -->
+
+    <div class="section-title">
+      Contacto
+    </div>
+
+
+    <div class="info-card">
+
+      <div
+        class="info-row"
+        *ngIf="medico.telefono">
+
+        <ion-icon
+          name="call-outline">
+        </ion-icon>
+
+        <div>
+          <small>
+            Teléfono
+          </small>
+
+          <p>
+            {{ medico.telefono }}
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="info-row">
+
+        <ion-icon
+          name="mail-outline">
+        </ion-icon>
+
+        <div>
+          <small>
+            Correo electrónico
+          </small>
+
+          <p>
+            {{ medico.usuario.email }}
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- BIOGRAFÍA -->
+
+    <div
+      class="bio-card"
+      *ngIf="medico.biografia">
+
+      <h2>
+        Acerca del médico
+      </h2>
+
+      <p>
+        {{ medico.biografia }}
+      </p>
+
+    </div>
+
+
+    <!-- RESERVAR -->
+
+    <ion-button
+      expand="block"
+      class="reserve-button"
+      (click)="reservarCita()">
+
+      <ion-icon
+        name="calendar-outline"
+        slot="start">
+      </ion-icon>
+
+      Reservar cita
+
+    </ion-button>
+
+  </div>
+
+</ion-content>

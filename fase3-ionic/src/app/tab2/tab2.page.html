@@ -1,0 +1,168 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Buscar cita</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div class="search-container">
+
+    <div class="intro">
+      <h1>Agenda tu cita</h1>
+      <p>Busca un médico y consulta sus horarios disponibles.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-number">1</div>
+      <div>
+        <h2>Selecciona una especialidad</h2>
+        <p>¿Qué tipo de atención necesitas?</p>
+      </div>
+    </div>
+
+    <ion-item class="selector">
+  <ion-select
+    label="Especialidad"
+    label-placement="stacked"
+    placeholder="Seleccionar especialidad"
+    [(ngModel)]="especialidadSeleccionada"
+    (ionChange)="cargarMedicos($event.detail.value)">
+
+    <ion-select-option
+      *ngFor="let especialidad of especialidades"
+      [value]="especialidad.id">
+
+      {{ especialidad.nombre }}
+
+    </ion-select-option>
+
+  </ion-select>
+</ion-item>
+
+    <div class="step second-step">
+      <div class="step-number">2</div>
+      <div>
+        <h2>Selecciona un médico</h2>
+        <p>Elige con quién deseas atenderte.</p>
+      </div>
+    </div>
+
+    <ion-item class="selector">
+      <ion-select
+        label="Médico"
+        label-placement="stacked"
+        placeholder="Seleccionar médico"
+        [(ngModel)]="medicoSeleccionado"
+        [disabled]="!especialidadSeleccionada">
+
+        <ion-select-option
+          *ngFor="let medico of medicos"
+          [value]="medico.id">
+
+          {{ medico.usuario.nombreCompleto }}
+
+        </ion-select-option>
+
+      </ion-select>
+    </ion-item>
+
+    <ion-button
+      class="search-button"
+      expand="block"
+      [disabled]="!medicoSeleccionado"
+      (click)="cargarHorarios()">
+
+      <ion-icon
+        name="calendar-outline"
+        slot="start">
+      </ion-icon>
+
+      Ver horarios disponibles
+
+    </ion-button>
+
+    <div class="horarios-section" *ngIf="horarios.length > 0">
+
+  <div class="step horarios-title">
+    <div class="step-number">3</div>
+
+    <div>
+      <h2>Selecciona un horario</h2>
+      <p>Elige la fecha y hora que más te convenga.</p>
+    </div>
+  </div>
+
+  <div
+    class="horario-card"
+    *ngFor="let horario of horarios">
+
+    <div class="horario-fecha">
+      {{ horario.fechaHoraInicio | date:'dd/MM/yyyy' }}
+    </div>
+
+    <div class="horario-hora">
+      {{ horario.fechaHoraInicio | date:'h:mm a' }}
+      -
+      {{ horario.fechaHoraFin | date:'h:mm a' }}
+    </div>
+
+    <ion-button
+  expand="block"
+  [fill]="horarioSeleccionado?.id === horario.id ? 'solid' : 'outline'"
+  (click)="seleccionarHorario(horario)">
+
+  {{
+    horarioSeleccionado?.id === horario.id
+      ? 'Horario seleccionado'
+      : 'Seleccionar horario'
+  }}
+
+</ion-button>
+
+  </div>
+
+</div>
+
+<div
+  class="confirmacion-section"
+  *ngIf="horarioSeleccionado">
+
+  <div class="step">
+    <div class="step-number">4</div>
+
+    <div>
+      <h2>Confirma tu cita</h2>
+      <p>
+        Cuéntanos brevemente el motivo de tu consulta.
+      </p>
+    </div>
+  </div>
+
+  <div class="motivo-container">
+
+    <label>Motivo de la consulta</label>
+
+    <ion-textarea
+      [(ngModel)]="motivo"
+      placeholder="Ej. Consulta de seguimiento"
+      [autoGrow]="true"
+      maxlength="500">
+    </ion-textarea>
+
+  </div>
+
+  <ion-button
+  class="confirm-button"
+  expand="block"
+  [disabled]="!motivo.trim()"
+  (click)="confirmarReserva()">
+
+  Confirmar reserva
+
+</ion-button>
+
+</div>
+  </div>
+
+</ion-content>

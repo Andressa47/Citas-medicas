@@ -1,0 +1,256 @@
+ion-content {
+  --background: #f5f7fb;
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #111827;
+  --border-color: transparent;
+}
+
+.detail-container {
+  padding: 18px;
+  padding-bottom: 100px;
+}
+
+.loading-container,
+.empty-container {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* =========================
+   MÉDICO
+========================= */
+
+.doctor-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 14px;
+
+  box-shadow:
+    0 6px 20px
+    rgba(15, 23, 42, 0.15);
+}
+
+.specialty {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.doctor-card h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.doctor-profile-button {
+  margin-top: 10px;
+  margin-left: -12px;
+
+  --color: #2563eb;
+
+  text-transform: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* =========================
+   ESTADO
+========================= */
+
+.status-container {
+  margin: 4px 0 14px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 7px 13px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status.pending {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.status.completed {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.status.cancelled {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* =========================
+   INFORMACIÓN CITA
+========================= */
+
+.info-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 8px 18px;
+
+  box-shadow:
+    0 6px 20px
+    rgba(15, 23, 42, 0.06);
+
+  margin-bottom: 18px;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+
+  padding: 16px 0;
+
+  border-bottom:
+    1px solid #eef2f7;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row ion-icon {
+  flex-shrink: 0;
+
+  font-size: 22px;
+  color: #2563eb;
+
+  margin-top: 4px;
+}
+
+.info-row div {
+  flex: 1;
+}
+
+.info-row small {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  color: #8a94a6;
+}
+
+.info-row p {
+  margin: 0;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  color: #1f2937;
+
+  line-height: 1.45;
+}
+
+/* =========================
+   INFORMACIÓN MÉDICA
+========================= */
+
+.medical-card {
+  background: #ffffff;
+  border-radius: 20px;
+
+  padding: 20px;
+  margin-bottom: 18px;
+
+  box-shadow:
+    0 6px 20px
+    rgba(15, 23, 42, 0.06);
+}
+
+.medical-card h2 {
+  margin: 0 0 18px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.medical-section {
+  padding: 14px;
+
+  background: #f8fafc;
+
+  border-radius: 14px;
+
+  margin-top: 12px;
+}
+
+.medical-section small {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  color: #6b7280;
+}
+
+.medical-section p {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  color: #1f2937;
+}
+
+.no-medical-info {
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+.chat-button,
+.cancel-button {
+  height: 50px;
+
+  --border-radius: 14px;
+
+  text-transform: none;
+
+  font-weight: 700;
+
+  margin-top: 12px;
+}
+
+.chat-button {
+  --border-color: #2563eb;
+  --color: #2563eb;
+}
+
+.cancel-button {
+  --border-color: #ef4444;
+  --color: #ef4444;
+}

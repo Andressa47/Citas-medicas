@@ -1,0 +1,366 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Mis citas
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <div class="appointments-container">
+
+    <div class="intro">
+      <h1>
+        Mis citas
+      </h1>
+
+      <p>
+        Consulta tus próximas citas
+        y tu historial médico.
+      </p>
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- CITAS PENDIENTES -->
+    <!-- ========================= -->
+
+    <div
+      *ngIf="citasPendientes.length > 0">
+
+      <div
+        class="appointment-card"
+        *ngFor="let cita of citasPendientes"
+        (click)="verDetalle(cita.id)">
+
+        <div class="card-header">
+
+          <div>
+            <p class="specialty">
+              {{ cita.especialidadNombre }}
+            </p>
+
+            <h2>
+              {{ cita.medicoNombre }}
+            </h2>
+          </div>
+
+          <span class="status pending">
+            Pendiente
+          </span>
+
+        </div>
+
+
+        <!-- MENSAJES NUEVOS -->
+        <div
+          class="unread-message"
+          *ngIf="tieneMensajesNoLeidos(cita.id)">
+
+          <span class="unread-dot"></span>
+
+          <span>
+            {{
+              obtenerMensajesNoLeidos(cita.id)
+            }}
+
+            {{
+              obtenerMensajesNoLeidos(cita.id) === 1
+                ? 'mensaje nuevo'
+                : 'mensajes nuevos'
+            }}
+          </span>
+
+        </div>
+
+
+        <div class="appointment-info">
+
+          <div class="info-row">
+
+            <ion-icon
+              name="calendar-outline">
+            </ion-icon>
+
+            <span>
+              {{
+                cita.fechaHoraInicio
+                  | date:'dd/MM/yyyy'
+              }}
+            </span>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <ion-icon
+              name="time-outline">
+            </ion-icon>
+
+            <span>
+
+              {{
+                cita.fechaHoraInicio
+                  | date:'h:mm a'
+              }}
+
+              -
+
+              {{
+                cita.fechaHoraFin
+                  | date:'h:mm a'
+              }}
+
+            </span>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <ion-icon
+              name="document-text-outline">
+            </ion-icon>
+
+            <span>
+              {{ cita.motivo }}
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="danger"
+          (click)="
+            $event.stopPropagation();
+            cancelarCita(cita.id)
+          ">
+
+          Cancelar cita
+
+        </ion-button>
+
+      </div>
+
+    </div>
+
+
+    <!-- SIN CITAS PENDIENTES -->
+
+    <div
+      class="empty-state"
+      *ngIf="citasPendientes.length === 0">
+
+      <p>
+        No tienes citas pendientes.
+      </p>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- HISTORIAL -->
+    <!-- ========================= -->
+
+    <h2 class="section-title">
+      Historial
+    </h2>
+
+
+    <div
+      *ngIf="historial.length > 0">
+
+      <div
+        class="appointment-card"
+        *ngFor="let cita of historial"
+        (click)="verDetalle(cita.id)">
+
+        <div class="card-header">
+
+          <div>
+
+            <p class="specialty">
+              {{ cita.especialidadNombre }}
+            </p>
+
+            <h2>
+              {{ cita.medicoNombre }}
+            </h2>
+
+          </div>
+
+
+          <span
+            class="status completed"
+            *ngIf="
+              cita.estado === 'COMPLETADA'
+            ">
+
+            Completada
+
+          </span>
+
+
+          <span
+            class="status cancelled"
+            *ngIf="
+              cita.estado === 'CANCELADA'
+            ">
+
+            Cancelada
+
+          </span>
+
+        </div>
+
+
+        <!-- MENSAJES NUEVOS EN CITAS COMPLETADAS -->
+        <div
+          class="unread-message"
+          *ngIf="
+            cita.estado === 'COMPLETADA' &&
+            tieneMensajesNoLeidos(cita.id)
+          ">
+
+          <span class="unread-dot"></span>
+
+          <span>
+            {{
+              obtenerMensajesNoLeidos(cita.id)
+            }}
+
+            {{
+              obtenerMensajesNoLeidos(cita.id) === 1
+                ? 'mensaje nuevo'
+                : 'mensajes nuevos'
+            }}
+          </span>
+
+        </div>
+
+
+        <div class="appointment-info">
+
+          <div class="info-row">
+
+            <ion-icon
+              name="calendar-outline">
+            </ion-icon>
+
+            <span>
+              {{
+                cita.fechaHoraInicio
+                  | date:'dd/MM/yyyy'
+              }}
+            </span>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <ion-icon
+              name="time-outline">
+            </ion-icon>
+
+            <span>
+
+              {{
+                cita.fechaHoraInicio
+                  | date:'h:mm a'
+              }}
+
+              -
+
+              {{
+                cita.fechaHoraFin
+                  | date:'h:mm a'
+              }}
+
+            </span>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <ion-icon
+              name="document-text-outline">
+            </ion-icon>
+
+            <span>
+              {{ cita.motivo }}
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- DIAGNÓSTICO -->
+
+        <div
+          class="medical-result"
+          *ngIf="
+            cita.estado === 'COMPLETADA' &&
+            cita.diagnostico
+          ">
+
+          <strong>
+            Diagnóstico
+          </strong>
+
+          <p>
+            {{ cita.diagnostico }}
+          </p>
+
+        </div>
+
+
+        <!-- RECETA -->
+
+        <div
+          class="medical-result"
+          *ngIf="
+            cita.estado === 'COMPLETADA' &&
+            cita.receta
+          ">
+
+          <strong>
+            Receta / indicaciones
+          </strong>
+
+          <p>
+            {{ cita.receta }}
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- SIN HISTORIAL -->
+
+    <div
+      class="empty-state"
+      *ngIf="
+        historial.length === 0
+      ">
+
+      <p>
+        Aún no tienes historial de citas.
+      </p>
+
+    </div>
+
+  </div>
+
+</ion-content>
