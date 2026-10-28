@@ -15,6 +15,7 @@ import com.umg.citasmedicas.repository.CitaRepository;
 import com.umg.citasmedicas.repository.HorarioDisponibleRepository;
 import com.umg.citasmedicas.repository.UsuarioRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,6 +103,12 @@ public class CitaService {
         if (!horario.isDisponible()) {
             throw new ScheduleConflictException(
                     "El horario seleccionado no está disponible."
+            );
+        }
+
+        if (!horario.getFechaHoraInicio().isAfter(LocalDateTime.now())) {
+            throw new BusinessException(
+                    "No se puede reservar una cita en una fecha u hora que ya pasó."
             );
         }
 

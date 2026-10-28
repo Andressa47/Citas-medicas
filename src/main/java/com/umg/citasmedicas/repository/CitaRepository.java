@@ -27,4 +27,6 @@ public interface CitaRepository
             Long pacienteId,
             Long medicoId
     );
+
+    boolean existsByHorarioId(Long horarioId);
 }

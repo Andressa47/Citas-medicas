@@ -27,4 +27,7 @@ public class HorarioDisponible {
 
     @Column(nullable = false)
     private boolean disponible = true;
+
+    @Column(name = "generado_automaticamente", nullable = false)
+    private boolean generadoAutomaticamente = false;
 }

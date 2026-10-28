@@ -1,5 +1,4 @@
 CREATE DATABASE IF NOT EXISTS citas_medicas;
-
 USE citas_medicas;
 
 CREATE TABLE IF NOT EXISTS usuarios (
@@ -24,12 +23,10 @@ CREATE TABLE IF NOT EXISTS medicos (
     numero_colegiado VARCHAR(50) NOT NULL UNIQUE,
 
     CONSTRAINT fk_medico_usuario
-        FOREIGN KEY (usuario_id)
-        REFERENCES usuarios(id),
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
 
     CONSTRAINT fk_medico_especialidad
-        FOREIGN KEY (especialidad_id)
-        REFERENCES especialidades(id)
+        FOREIGN KEY (especialidad_id) REFERENCES especialidades(id)
 );
 
 CREATE TABLE IF NOT EXISTS perfiles_medicos (
@@ -43,8 +40,27 @@ CREATE TABLE IF NOT EXISTS perfiles_medicos (
     ubicacion_consultorio VARCHAR(255),
 
     CONSTRAINT fk_perfil_medico
-        FOREIGN KEY (medico_id)
-        REFERENCES medicos(id)
+        FOREIGN KEY (medico_id) REFERENCES medicos(id)
+);
+
+CREATE TABLE IF NOT EXISTS configuraciones_horario_medico (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    medico_id BIGINT NOT NULL UNIQUE,
+    duracion_consulta_minutos INT NOT NULL DEFAULT 30,
+
+    CONSTRAINT fk_config_horario_medico
+        FOREIGN KEY (medico_id) REFERENCES medicos(id)
+);
+
+CREATE TABLE IF NOT EXISTS horarios_semanales (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    medico_id BIGINT NOT NULL,
+    dia_semana VARCHAR(20) NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+
+    CONSTRAINT fk_horario_semanal_medico
+        FOREIGN KEY (medico_id) REFERENCES medicos(id)
 );
 
 CREATE TABLE IF NOT EXISTS horarios_disponibles (
@@ -53,10 +69,10 @@ CREATE TABLE IF NOT EXISTS horarios_disponibles (
     fecha_hora_inicio DATETIME NOT NULL,
     fecha_hora_fin DATETIME NOT NULL,
     disponible BOOLEAN NOT NULL DEFAULT TRUE,
+    generado_automaticamente BOOLEAN NOT NULL DEFAULT FALSE,
 
     CONSTRAINT fk_horario_medico
-        FOREIGN KEY (medico_id)
-        REFERENCES medicos(id)
+        FOREIGN KEY (medico_id) REFERENCES medicos(id)
 );
 
 CREATE TABLE IF NOT EXISTS citas (
@@ -72,19 +88,14 @@ CREATE TABLE IF NOT EXISTS citas (
     fecha_actualizacion DATETIME,
 
     CONSTRAINT fk_cita_paciente
-        FOREIGN KEY (paciente_id)
-        REFERENCES usuarios(id),
+        FOREIGN KEY (paciente_id) REFERENCES usuarios(id),
 
     CONSTRAINT fk_cita_medico
-        FOREIGN KEY (medico_id)
-        REFERENCES medicos(id),
+        FOREIGN KEY (medico_id) REFERENCES medicos(id),
 
     CONSTRAINT fk_cita_horario
-        FOREIGN KEY (horario_id)
-        REFERENCES horarios_disponibles(id)
-    -- ==========================================
--- CONVERSACIONES DE CHAT
--- ==========================================
+        FOREIGN KEY (horario_id) REFERENCES horarios_disponibles(id)
+);
 
 CREATE TABLE IF NOT EXISTS conversaciones (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -95,21 +106,14 @@ CREATE TABLE IF NOT EXISTS conversaciones (
         ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_conversacion_paciente
-        FOREIGN KEY (paciente_id)
-        REFERENCES usuarios(id),
+        FOREIGN KEY (paciente_id) REFERENCES usuarios(id),
 
     CONSTRAINT fk_conversacion_medico
-        FOREIGN KEY (medico_id)
-        REFERENCES medicos(id),
+        FOREIGN KEY (medico_id) REFERENCES medicos(id),
 
     CONSTRAINT uk_conversacion_paciente_medico
         UNIQUE (paciente_id, medico_id)
 );
-
-
--- ==========================================
--- MENSAJES DEL CHAT
--- ==========================================
 
 CREATE TABLE IF NOT EXISTS mensajes_chat (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -120,19 +124,8 @@ CREATE TABLE IF NOT EXISTS mensajes_chat (
     leido BOOLEAN NOT NULL DEFAULT FALSE,
 
     CONSTRAINT fk_mensaje_conversacion
-        FOREIGN KEY (conversacion_id)
-        REFERENCES conversaciones(id),
+        FOREIGN KEY (conversacion_id) REFERENCES conversaciones(id),
 
     CONSTRAINT fk_mensaje_remitente
-        FOREIGN KEY (remitente_id)
-        REFERENCES usuarios(id)
-);
-
-
-CREATE INDEX idx_mensaje_conversacion
-ON mensajes_chat (conversacion_id);
-
-
-CREATE INDEX idx_mensaje_fecha
-ON mensajes_chat (fecha_envio);
+        FOREIGN KEY (remitente_id) REFERENCES usuarios(id)
 );

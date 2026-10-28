@@ -5,6 +5,7 @@ import com.umg.citasmedicas.entity.Medico;
 import com.umg.citasmedicas.exception.BusinessException;
 import com.umg.citasmedicas.exception.ResourceNotFoundException;
 import com.umg.citasmedicas.exception.ScheduleConflictException;
+import com.umg.citasmedicas.repository.CitaRepository;
 import com.umg.citasmedicas.repository.HorarioDisponibleRepository;
 import com.umg.citasmedicas.repository.MedicoRepository;
 
@@ -17,67 +18,74 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
 @Service
 public class HorarioDisponibleService {
 
     private final HorarioDisponibleRepository horarioRepository;
     private final MedicoRepository medicoRepository;
+    private final CitaRepository citaRepository;
+    private final ConfiguracionHorarioService configuracionHorarioService;
 
     public HorarioDisponibleService(
             HorarioDisponibleRepository horarioRepository,
-            MedicoRepository medicoRepository) {
+            MedicoRepository medicoRepository,
+            CitaRepository citaRepository,
+            ConfiguracionHorarioService configuracionHorarioService) {
 
         this.horarioRepository = horarioRepository;
         this.medicoRepository = medicoRepository;
+        this.citaRepository = citaRepository;
+        this.configuracionHorarioService = configuracionHorarioService;
     }
 
-    // ==========================================
-    // LISTAR TODOS
-    // ==========================================
     public List<HorarioDisponible> listarTodos() {
         return horarioRepository.findAll();
     }
 
-    // ==========================================
-    // BUSCAR POR ID
-    // ==========================================
     public Optional<HorarioDisponible> buscarPorId(Long id) {
         return horarioRepository.findById(id);
     }
 
-    // ==========================================
-    // DISPONIBLES POR MÉDICO
-    // ==========================================
-    public List<HorarioDisponible> listarDisponiblesPorMedico(
-            Long medicoId) {
+    @Transactional
+    public List<HorarioDisponible> listarDisponiblesPorMedico(Long medicoId) {
+
+        configuracionHorarioService.asegurarDisponibilidad(medicoId);
 
         return horarioRepository
-                .findByMedicoIdAndDisponibleTrue(medicoId);
+                .findByMedicoIdAndDisponibleTrueAndFechaHoraInicioAfterOrderByFechaHoraInicioAsc(
+                        medicoId,
+                        LocalDateTime.now()
+                );
     }
 
-    // ==========================================
-    // DISPONIBLES POR MÉDICO Y FECHA
-    // ==========================================
+    @Transactional
     public List<HorarioDisponible> listarDisponiblesPorMedicoYFecha(
             Long medicoId,
             LocalDate fecha) {
 
+        configuracionHorarioService.asegurarDisponibilidad(medicoId);
+
+        if (fecha.isBefore(LocalDate.now())) {
+            return List.of();
+        }
+
         LocalDateTime inicio = fecha.atStartOfDay();
         LocalDateTime fin = fecha.atTime(LocalTime.MAX);
 
-        return horarioRepository
-                .findByMedicoIdAndFechaHoraInicioBetweenAndDisponibleTrue(
+        List<HorarioDisponible> horarios = horarioRepository
+                .findByMedicoIdAndFechaHoraInicioBetweenAndDisponibleTrueOrderByFechaHoraInicioAsc(
                         medicoId,
                         inicio,
                         fin
                 );
+
+        LocalDateTime ahora = LocalDateTime.now();
+
+        return horarios.stream()
+                .filter(horario -> horario.getFechaHoraInicio().isAfter(ahora))
+                .toList();
     }
 
-    // ==========================================
-    // CREAR HORARIO DESDE DTO
-    // ==========================================
     @Transactional
     public HorarioDisponible crear(
             Long medicoId,
@@ -85,87 +93,61 @@ public class HorarioDisponibleService {
             LocalDateTime fechaHoraFin,
             Boolean disponible) {
 
-        // Buscar al médico real en la base de datos
         Medico medico = medicoRepository.findById(medicoId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "No existe un médico con el ID "
-                                + medicoId + "."
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No existe un médico con el ID " + medicoId + "."
+                ));
 
         HorarioDisponible horario = new HorarioDisponible();
-
         horario.setMedico(medico);
         horario.setFechaHoraInicio(fechaHoraInicio);
         horario.setFechaHoraFin(fechaHoraFin);
+        horario.setDisponible(disponible == null || disponible);
+        horario.setGeneradoAutomaticamente(false);
 
-        if (disponible == null) {
-            horario.setDisponible(true);
-        } else {
-            horario.setDisponible(disponible);
-        }
-
-        // Reutilizamos todas las validaciones de guardar()
         return guardar(horario);
     }
 
-    // ==========================================
-    // GUARDAR HORARIO
-    // ==========================================
     @Transactional
-    public HorarioDisponible guardar(
-            HorarioDisponible horario) {
+    public HorarioDisponible guardar(HorarioDisponible horario) {
 
-        // 1. Validar médico
         if (horario.getMedico() == null
                 || horario.getMedico().getId() == null) {
-
-            throw new BusinessException(
-                    "Debe seleccionar un médico."
-            );
+            throw new BusinessException("Debe seleccionar un médico.");
         }
 
-        // 2. Validar fecha/hora de inicio
         if (horario.getFechaHoraInicio() == null) {
-
             throw new BusinessException(
                     "La fecha y hora de inicio son obligatorias."
             );
         }
 
-        // 3. Validar fecha/hora de fin
         if (horario.getFechaHoraFin() == null) {
-
             throw new BusinessException(
                     "La fecha y hora de fin son obligatorias."
             );
         }
 
-        // 4. El final debe ser posterior al inicio
-        if (!horario.getFechaHoraFin()
-                .isAfter(horario.getFechaHoraInicio())) {
-
+        if (!horario.getFechaHoraFin().isAfter(horario.getFechaHoraInicio())) {
             throw new BusinessException(
                     "La hora de fin debe ser posterior a la hora de inicio."
             );
         }
 
-        Long medicoId = horario.getMedico().getId();
+        if (!horario.getFechaHoraInicio().isAfter(LocalDateTime.now())) {
+            throw new BusinessException(
+                    "No se pueden crear horarios en una fecha u hora que ya pasó."
+            );
+        }
 
-        // ==========================================
-        // 5. COMPROBAR CRUCE DE HORARIOS
-        // ==========================================
-        boolean existeCruce =
-                horarioRepository.existeCruceHorario(
-                        medicoId,
-                        horario.getFechaHoraInicio(),
-                        horario.getFechaHoraFin(),
-                        horario.getId()
-                );
+        boolean existeCruce = horarioRepository.existeCruceHorario(
+                horario.getMedico().getId(),
+                horario.getFechaHoraInicio(),
+                horario.getFechaHoraFin(),
+                horario.getId()
+        );
 
         if (existeCruce) {
-
             throw new ScheduleConflictException(
                     "El médico ya tiene un horario que se cruza con este bloque."
             );
@@ -174,10 +156,20 @@ public class HorarioDisponibleService {
         return horarioRepository.save(horario);
     }
 
-    // ==========================================
-    // ELIMINAR
-    // ==========================================
+    @Transactional
     public void eliminar(Long id) {
-        horarioRepository.deleteById(id);
+
+        HorarioDisponible horario = horarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "No existe un horario con el ID " + id + "."
+                ));
+
+        if (citaRepository.existsByHorarioId(id)) {
+            throw new BusinessException(
+                    "No se puede eliminar un horario que ya tiene una cita asociada."
+            );
+        }
+
+        horarioRepository.delete(horario);
     }
 }

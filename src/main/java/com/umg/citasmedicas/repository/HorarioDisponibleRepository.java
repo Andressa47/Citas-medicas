@@ -11,26 +11,25 @@ import org.springframework.data.repository.query.Param;
 public interface HorarioDisponibleRepository
         extends JpaRepository<HorarioDisponible, Long> {
 
-    // ==========================================
-    // HORARIOS DISPONIBLES POR MÉDICO
-    // ==========================================
-    List<HorarioDisponible> findByMedicoIdAndDisponibleTrue(
-            Long medicoId
-    );
-
-    // ==========================================
-    // HORARIOS DISPONIBLES POR MÉDICO Y FECHA
-    // ==========================================
     List<HorarioDisponible>
-            findByMedicoIdAndFechaHoraInicioBetweenAndDisponibleTrue(
+            findByMedicoIdAndDisponibleTrueAndFechaHoraInicioAfterOrderByFechaHoraInicioAsc(
+                    Long medicoId,
+                    LocalDateTime fechaHoraInicio
+            );
+
+    List<HorarioDisponible>
+            findByMedicoIdAndFechaHoraInicioBetweenAndDisponibleTrueOrderByFechaHoraInicioAsc(
                     Long medicoId,
                     LocalDateTime inicio,
                     LocalDateTime fin
             );
 
-    // ==========================================
-    // DETECTAR CRUCE DE HORARIOS
-    // ==========================================
+    List<HorarioDisponible>
+            findByMedicoIdAndGeneradoAutomaticamenteTrueAndFechaHoraInicioAfter(
+                    Long medicoId,
+                    LocalDateTime fechaHoraInicio
+            );
+
     @Query("""
         SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END
         FROM HorarioDisponible h

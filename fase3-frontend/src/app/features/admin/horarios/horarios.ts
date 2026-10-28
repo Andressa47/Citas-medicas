@@ -7,16 +7,15 @@ import {
 import { CommonModule } from '@angular/common';
 
 import {
-  AbstractControl,
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
   Validators
 } from '@angular/forms';
 
 import {
+  BloqueHorarioSemanal,
+  DiaSemana,
   HorariosService
 } from '../../../core/services/horarios';
 
@@ -24,39 +23,47 @@ import {
   MedicosService
 } from '../../../core/services/medicos';
 
+interface OpcionDia {
+  valor: DiaSemana;
+  nombre: string;
+}
 
 @Component({
   selector: 'app-horarios',
-
   standalone: true,
-
   imports: [
     CommonModule,
     ReactiveFormsModule
   ],
-
   templateUrl: './horarios.html',
-
   styleUrl: './horarios.css'
 })
 export class Horarios implements OnInit {
 
   medicos: any[] = [];
-
   horarios: any[] = [];
-
-  mostrarFormulario = false;
+  bloques: BloqueHorarioSemanal[] = [];
 
   cargando = false;
+  cargandoConfiguracion = false;
+  guardando = false;
 
   mensaje = '';
-
   error = '';
 
   filtroForm: FormGroup;
+  configuracionForm: FormGroup;
+  bloqueForm: FormGroup;
 
-  horarioForm: FormGroup;
-
+  readonly dias: OpcionDia[] = [
+    { valor: 'MONDAY', nombre: 'Lunes' },
+    { valor: 'TUESDAY', nombre: 'Martes' },
+    { valor: 'WEDNESDAY', nombre: 'Miércoles' },
+    { valor: 'THURSDAY', nombre: 'Jueves' },
+    { valor: 'FRIDAY', nombre: 'Viernes' },
+    { valor: 'SATURDAY', nombre: 'Sábado' },
+    { valor: 'SUNDAY', nombre: 'Domingo' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -65,215 +72,272 @@ export class Horarios implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
 
-    // ==========================================
-    // FORMULARIO DE FILTRO
-    // ==========================================
+    this.filtroForm = this.fb.group({
+      medicoId: [null, Validators.required],
+      fecha: ['']
+    });
 
-    this.filtroForm =
-      this.fb.group({
-
-        medicoId: [
-          null,
-          Validators.required
-        ],
-
-        fecha: [
-          ''
+    this.configuracionForm = this.fb.group({
+      duracionConsultaMinutos: [
+        30,
+        [
+          Validators.required,
+          Validators.min(10),
+          Validators.max(240)
         ]
+      ]
+    });
 
-      });
-
-
-    // ==========================================
-    // FORMULARIO DE NUEVO HORARIO
-    // ==========================================
-
-    this.horarioForm =
-      this.fb.group(
-        {
-
-          fechaHoraInicio: [
-            '',
-            Validators.required
-          ],
-
-          fechaHoraFin: [
-            '',
-            Validators.required
-          ]
-
-        },
-
-        {
-          validators:
-            this.validarRangoHorario()
-        }
-
-      );
-
+    this.bloqueForm = this.fb.group({
+      diaSemana: ['MONDAY', Validators.required],
+      horaInicio: ['08:00', Validators.required],
+      horaFin: ['12:00', Validators.required]
+    });
   }
-
 
   ngOnInit(): void {
-
     this.cargarMedicos();
-
   }
-
-
-  // ==========================================
-  // MÉDICO ACTUAL DEL FILTRO
-  // ==========================================
 
   get medicoSeleccionadoId(): number | null {
-
-    return (
-      this.filtroForm
-        .get('medicoId')
-        ?.value ?? null
-    );
-
+    return this.filtroForm.get('medicoId')?.value ?? null;
   }
-
-
-  // ==========================================
-  // VALIDAR HORARIO
-  // ==========================================
-
-  validarRangoHorario(): ValidatorFn {
-
-    return (
-      control: AbstractControl
-    ): ValidationErrors | null => {
-
-      const inicio =
-        control
-          .get('fechaHoraInicio')
-          ?.value;
-
-      const fin =
-        control
-          .get('fechaHoraFin')
-          ?.value;
-
-
-      // Si todavía falta algún campo,
-      // Validators.required se encargará.
-      if (!inicio || !fin) {
-
-        return null;
-
-      }
-
-
-      const fechaInicio =
-        new Date(inicio);
-
-      const fechaFin =
-        new Date(fin);
-
-
-      if (
-        fechaFin.getTime()
-        <=
-        fechaInicio.getTime()
-      ) {
-
-        return {
-          rangoInvalido: true
-        };
-
-      }
-
-
-      return null;
-
-    };
-
-  }
-
-
-  // ==========================================
-  // CARGAR MÉDICOS
-  // ==========================================
 
   cargarMedicos(): void {
+    this.medicosService.listarTodos().subscribe({
+      next: (data) => {
+        this.medicos = data;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Error al cargar médicos:', err);
+        this.error = 'No se pudieron cargar los médicos.';
+        this.cdr.markForCheck();
+      }
+    });
+  }
 
-    this.medicosService
-      .listarTodos()
+  alCambiarMedico(): void {
+    this.mensaje = '';
+    this.error = '';
+    this.horarios = [];
+    this.bloques = [];
+
+    if (!this.medicoSeleccionadoId) {
+      return;
+    }
+
+    this.cargarConfiguracion();
+    this.buscarHorarios();
+  }
+
+  cargarConfiguracion(): void {
+    const medicoId = this.medicoSeleccionadoId;
+
+    if (!medicoId) {
+      return;
+    }
+
+    this.cargandoConfiguracion = true;
+
+    this.horariosService
+      .obtenerConfiguracion(medicoId)
       .subscribe({
+        next: (configuracion) => {
+          this.configuracionForm.patchValue({
+            duracionConsultaMinutos:
+              configuracion.duracionConsultaMinutos
+          });
 
-        next: (data) => {
-
-          this.medicos = data;
-
-          console.log(
-            'Médicos cargados:',
-            data
-          );
-
+          this.bloques = [...configuracion.bloques];
+          this.cargandoConfiguracion = false;
           this.cdr.markForCheck();
-
         },
-
         error: (err) => {
-
           console.error(
-            'Error al cargar médicos:',
+            'Error al cargar configuración:',
             err
           );
 
           this.error =
-            'No se pudieron cargar los médicos.';
+            err?.error?.message ||
+            'No se pudo cargar la configuración del médico.';
 
+          this.cargandoConfiguracion = false;
           this.cdr.markForCheck();
-
         }
-
       });
-
   }
 
-
-  // ==========================================
-  // BUSCAR HORARIOS
-  // ==========================================
-
-  buscarHorarios(): void {
-
+  agregarBloque(): void {
+    this.error = '';
     this.mensaje = '';
 
-    this.error = '';
-
-
-    const medicoId =
-      this.filtroForm
-        .get('medicoId')
-        ?.value;
-
-
-    const fecha =
-      this.filtroForm
-        .get('fecha')
-        ?.value;
-
-
-    if (!medicoId) {
-
-      this.filtroForm
-        .get('medicoId')
-        ?.markAsTouched();
-
-      this.error =
-        'Debes seleccionar un médico.';
-
+    if (this.bloqueForm.invalid) {
+      this.bloqueForm.markAllAsTouched();
+      this.error = 'Completa correctamente el bloque de atención.';
       return;
-
     }
 
+    const valores = this.bloqueForm.getRawValue();
+
+    if (valores.horaFin <= valores.horaInicio) {
+      this.error =
+        'La hora de fin debe ser posterior a la hora de inicio.';
+      return;
+    }
+
+    const nuevo: BloqueHorarioSemanal = {
+      diaSemana: valores.diaSemana as DiaSemana,
+      horaInicio: valores.horaInicio,
+      horaFin: valores.horaFin
+    };
+
+    const seCruza = this.bloques.some(
+      bloque =>
+        bloque.diaSemana === nuevo.diaSemana &&
+        nuevo.horaInicio < bloque.horaFin &&
+        nuevo.horaFin > bloque.horaInicio
+    );
+
+    if (seCruza) {
+      this.error =
+        'Ese bloque se cruza con otro horario del mismo día.';
+      return;
+    }
+
+    this.bloques = [
+      ...this.bloques,
+      nuevo
+    ].sort((a, b) => {
+      const diaA = this.indiceDia(a.diaSemana);
+      const diaB = this.indiceDia(b.diaSemana);
+
+      if (diaA !== diaB) {
+        return diaA - diaB;
+      }
+
+      return a.horaInicio.localeCompare(b.horaInicio);
+    });
+
+    this.bloqueForm.patchValue({
+      horaInicio: '08:00',
+      horaFin: '12:00'
+    });
+
+    this.cdr.markForCheck();
+  }
+
+  eliminarBloque(index: number): void {
+    this.bloques = this.bloques.filter(
+      (_, posicion) => posicion !== index
+    );
+
+    this.mensaje = '';
+    this.error = '';
+    this.cdr.markForCheck();
+  }
+
+  guardarConfiguracion(): void {
+    this.mensaje = '';
+    this.error = '';
+
+    const medicoId = this.medicoSeleccionadoId;
+
+    if (!medicoId) {
+      this.error = 'Debes seleccionar un médico.';
+      return;
+    }
+
+    if (this.configuracionForm.invalid) {
+      this.configuracionForm.markAllAsTouched();
+      this.error =
+        'La duración debe estar entre 10 y 240 minutos.';
+      return;
+    }
+
+    if (this.bloques.length === 0) {
+      this.error =
+        'Debes agregar al menos un bloque semanal de atención.';
+      return;
+    }
+
+    const duracion = Number(
+      this.configuracionForm
+        .get('duracionConsultaMinutos')
+        ?.value
+    );
+
+    const bloqueMuyCorto = this.bloques.find(
+      bloque =>
+        this.minutosEntre(
+          bloque.horaInicio,
+          bloque.horaFin
+        ) < duracion
+    );
+
+    if (bloqueMuyCorto) {
+      this.error =
+        `El bloque de ${this.nombreDia(bloqueMuyCorto.diaSemana)} ` +
+        'es menor que la duración de una consulta.';
+      return;
+    }
+
+    this.guardando = true;
+
+    this.horariosService
+      .guardarConfiguracion(
+        medicoId,
+        {
+          duracionConsultaMinutos: duracion,
+          bloques: this.bloques.map(bloque => ({
+            diaSemana: bloque.diaSemana,
+            horaInicio: bloque.horaInicio,
+            horaFin: bloque.horaFin
+          }))
+        }
+      )
+      .subscribe({
+        next: (configuracion) => {
+          this.bloques = [...configuracion.bloques];
+          this.guardando = false;
+
+          this.mensaje =
+            'Configuración guardada correctamente. ' +
+            `${configuracion.horariosGenerados} horarios nuevos fueron generados.`;
+
+          this.buscarHorarios();
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error(
+            'Error al guardar configuración:',
+            err
+          );
+
+          this.error =
+            err?.error?.message ||
+            'No se pudo guardar la configuración.';
+
+          this.guardando = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  buscarHorarios(): void {
+    this.error = '';
+
+    const medicoId = this.medicoSeleccionadoId;
+    const fecha = this.filtroForm.get('fecha')?.value;
+
+    if (!medicoId) {
+      this.filtroForm.get('medicoId')?.markAsTouched();
+      this.error = 'Debes seleccionar un médico.';
+      return;
+    }
 
     this.cargando = true;
-
 
     this.horariosService
       .listarDisponibles(
@@ -281,267 +345,44 @@ export class Horarios implements OnInit {
         fecha || undefined
       )
       .subscribe({
-
         next: (data) => {
-
           this.horarios = data;
-
           this.cargando = false;
-
-          console.log(
-            'Horarios cargados:',
-            data
-          );
-
           this.cdr.markForCheck();
-
         },
-
         error: (err) => {
-
-          console.error(
-            'Error al cargar horarios:',
-            err
-          );
+          console.error('Error al cargar horarios:', err);
 
           this.error =
             err?.error?.message ||
             'No se pudieron cargar los horarios.';
 
           this.cargando = false;
-
           this.cdr.markForCheck();
-
         }
-
       });
-
   }
 
-
-  // ==========================================
-  // ABRIR FORMULARIO
-  // ==========================================
-
-  abrirFormulario(): void {
-
-    this.mensaje = '';
-
-    this.error = '';
-
-
-    if (!this.medicoSeleccionadoId) {
-
-      this.filtroForm
-        .get('medicoId')
-        ?.markAsTouched();
-
-      this.error =
-        'Primero debes seleccionar un médico.';
-
-      return;
-
-    }
-
-
-    this.horarioForm.reset({
-
-      fechaHoraInicio: '',
-
-      fechaHoraFin: ''
-
-    });
-
-
-    this.mostrarFormulario = true;
-
+  nombreDia(dia: DiaSemana): string {
+    return this.dias.find(
+      opcion => opcion.valor === dia
+    )?.nombre ?? dia;
   }
 
-
-  // ==========================================
-  // CREAR HORARIO
-  // ==========================================
-
-  guardarHorario(): void {
-
-    this.mensaje = '';
-
-    this.error = '';
-
-
-    if (!this.medicoSeleccionadoId) {
-
-      this.error =
-        'Debes seleccionar un médico.';
-
-      return;
-
-    }
-
-
-    if (this.horarioForm.invalid) {
-
-      this.horarioForm
-        .markAllAsTouched();
-
-
-      if (
-        this.horarioForm
-          .hasError('rangoInvalido')
-      ) {
-
-        this.error =
-          'La fecha y hora de fin debe ser posterior a la fecha y hora de inicio.';
-
-      } else {
-
-        this.error =
-          'Debes completar correctamente todos los campos del horario.';
-
-      }
-
-      return;
-
-    }
-
-
-    const valores =
-      this.horarioForm
-        .getRawValue();
-
-
-    const horario = {
-
-      medicoId:
-        this.medicoSeleccionadoId,
-
-      fechaHoraInicio:
-        valores.fechaHoraInicio,
-
-      fechaHoraFin:
-        valores.fechaHoraFin,
-
-      disponible: true
-
-    };
-
-
-    this.horariosService
-      .crear(horario)
-      .subscribe({
-
-        next: () => {
-
-          this.mensaje =
-            'Horario creado correctamente.';
-
-          this.mostrarFormulario =
-            false;
-
-          this.horarioForm.reset();
-
-          this.buscarHorarios();
-
-          this.cdr.markForCheck();
-
-        },
-
-        error: (err) => {
-
-          console.error(
-            'Error al crear horario:',
-            err
-          );
-
-          this.error =
-            err?.error?.message ||
-            'No se pudo crear el horario.';
-
-          this.cdr.markForCheck();
-
-        }
-
-      });
-
+  private indiceDia(dia: DiaSemana): number {
+    return this.dias.findIndex(
+      opcion => opcion.valor === dia
+    );
   }
 
+  private minutosEntre(inicio: string, fin: string): number {
+    const [horaInicio, minutoInicio] =
+      inicio.split(':').map(Number);
 
-  // ==========================================
-  // ELIMINAR HORARIO
-  // ==========================================
+    const [horaFin, minutoFin] =
+      fin.split(':').map(Number);
 
-  eliminarHorario(
-    horario: any
-  ): void {
-
-    if (!horario.id) {
-
-      return;
-
-    }
-
-
-    const confirmar =
-      confirm(
-        '¿Deseas eliminar este horario?'
-      );
-
-
-    if (!confirmar) {
-
-      return;
-
-    }
-
-
-    this.horariosService
-      .eliminar(horario.id)
-      .subscribe({
-
-        next: () => {
-
-          this.mensaje =
-            'Horario eliminado correctamente.';
-
-          this.buscarHorarios();
-
-          this.cdr.markForCheck();
-
-        },
-
-        error: (err) => {
-
-          console.error(
-            'Error al eliminar horario:',
-            err
-          );
-
-          this.error =
-            err?.error?.message ||
-            'No se pudo eliminar el horario.';
-
-          this.cdr.markForCheck();
-
-        }
-
-      });
-
+    return (horaFin * 60 + minutoFin)
+      - (horaInicio * 60 + minutoInicio);
   }
-
-
-  // ==========================================
-  // CANCELAR FORMULARIO
-  // ==========================================
-
-  cancelarFormulario(): void {
-
-    this.mostrarFormulario =
-      false;
-
-    this.horarioForm.reset();
-
-    this.error = '';
-
-  }
-
 }

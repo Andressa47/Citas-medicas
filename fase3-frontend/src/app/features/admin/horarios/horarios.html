@@ -1,416 +1,286 @@
 <div class="horarios-container">
 
-
-  <!-- ====================================== -->
-  <!-- TÍTULO -->
-  <!-- ====================================== -->
-
   <div class="titulo">
-
     <div>
-
-      <h2>
-        Gestión de horarios
-      </h2>
-
+      <h2>Disponibilidad médica</h2>
       <p>
-        Administra los bloques disponibles
-        para la atención médica.
+        Configura el horario semanal de cada médico.
+        El sistema genera automáticamente los espacios
+        que los pacientes pueden reservar.
       </p>
-
     </div>
-
   </div>
 
-
-  <!-- ====================================== -->
-  <!-- MENSAJES -->
-  <!-- ====================================== -->
-
-  <div
-    class="mensaje exito"
-    *ngIf="mensaje"
-  >
+  <div class="mensaje exito" *ngIf="mensaje">
     {{ mensaje }}
   </div>
 
-
-  <div
-    class="mensaje error"
-    *ngIf="error"
-  >
+  <div class="mensaje error" *ngIf="error">
     {{ error }}
   </div>
 
-
-  <!-- ====================================== -->
-  <!-- FILTROS -->
-  <!-- ====================================== -->
-
-  <section
-    class="filtros-card"
-    [formGroup]="filtroForm"
-  >
-
-
-    <!-- MÉDICO -->
-
-    <div class="form-group">
-
-      <label>
-        Médico
-      </label>
-
+  <section class="selector-card" [formGroup]="filtroForm">
+    <div class="form-group medico-selector">
+      <label>Médico</label>
 
       <select
         formControlName="medicoId"
+        (change)="alCambiarMedico()"
       >
-
-        <option
-          [ngValue]="null"
-        >
+        <option [ngValue]="null">
           Seleccione un médico
         </option>
-
 
         <option
           *ngFor="let medico of medicos"
           [ngValue]="medico.id"
         >
-
           {{ medico.usuario?.nombreCompleto }}
           -
           {{ medico.especialidad?.nombre }}
-
         </option>
-
       </select>
-
-
-      <small
-        class="validacion"
-        *ngIf="
-          filtroForm.get('medicoId')?.touched
-          &&
-          filtroForm.get('medicoId')?.invalid
-        "
-      >
-        Debes seleccionar un médico.
-      </small>
-
     </div>
-
-
-    <!-- FECHA -->
-
-    <div class="form-group">
-
-      <label>Filtrar por fecha</label>
-
-
-      <input
-        type="date"
-        formControlName="fecha"
-      >
-      <p class="field-help">
-  Selecciona una fecha para mostrar únicamente los horarios de ese día.
-</p>
-
-    </div>
-
-
-    <!-- BOTONES -->
-
-    <div class="acciones-superiores">
-
-      <button
-        type="button"
-        class="btn-secondary"
-        (click)="buscarHorarios()"
-      >
-        Buscar horarios
-      </button>
-
-
-      <button
-        type="button"
-        class="btn-primary"
-        (click)="abrirFormulario()"
-      >
-        + Nuevo horario
-      </button>
-
-    </div>
-
   </section>
 
+  <ng-container *ngIf="medicoSeleccionadoId">
 
-  <!-- ====================================== -->
-  <!-- FORMULARIO NUEVO HORARIO -->
-  <!-- ====================================== -->
-
-  <section
-    class="form-card"
-    *ngIf="mostrarFormulario"
-  >
-
-    <h3>
-      Nuevo horario
-    </h3>
-
-
-    <form
-      [formGroup]="horarioForm"
-      (ngSubmit)="guardarHorario()"
+    <div
+      class="loading"
+      *ngIf="cargandoConfiguracion"
     >
+      Cargando configuración...
+    </div>
 
-
-      <!-- INICIO -->
-
-      <div class="form-group">
-
-        <label>
-          Fecha y hora de inicio
-        </label>
-
-
-        <input
-          type="datetime-local"
-          formControlName="fechaHoraInicio"
-        >
-
-
-        <small
-          class="validacion"
-          *ngIf="
-            horarioForm
-              .get('fechaHoraInicio')
-              ?.touched
-            &&
-            horarioForm
-              .get('fechaHoraInicio')
-              ?.hasError('required')
-          "
-        >
-          La fecha y hora de inicio es obligatoria.
-        </small>
-
+    <section
+      class="config-card"
+      *ngIf="!cargandoConfiguracion"
+    >
+      <div class="section-header">
+        <div>
+          <h3>Configuración semanal</h3>
+          <p>
+            Define cuánto dura cada consulta y en qué
+            bloques atiende el médico normalmente.
+          </p>
+        </div>
       </div>
 
+      <div
+        class="duracion-box"
+        [formGroup]="configuracionForm"
+      >
+        <div class="form-group">
+          <label>Duración de cada consulta</label>
 
-      <!-- FIN -->
+          <div class="duration-input">
+            <input
+              type="number"
+              min="10"
+              max="240"
+              step="5"
+              formControlName="duracionConsultaMinutos"
+            >
+            <span>minutos</span>
+          </div>
 
-      <div class="form-group">
-
-        <label>
-          Fecha y hora de fin
-        </label>
-
-
-        <input
-          type="datetime-local"
-          formControlName="fechaHoraFin"
-        >
-
-
-        <small
-          class="validacion"
-          *ngIf="
-            horarioForm
-              .get('fechaHoraFin')
-              ?.touched
-            &&
-            horarioForm
-              .get('fechaHoraFin')
-              ?.hasError('required')
-          "
-        >
-          La fecha y hora de fin es obligatoria.
-        </small>
-
-
-        <small
-          class="validacion"
-          *ngIf="
-            horarioForm.touched
-            &&
-            horarioForm.hasError('rangoInvalido')
-          "
-        >
-          La hora de fin debe ser posterior
-          a la hora de inicio.
-        </small>
-
+          <small class="field-help">
+            Ejemplo: si el bloque es de 08:00 a 12:00
+            y la consulta dura 30 minutos, se crearán
+            espacios a las 08:00, 08:30, 09:00, etc.
+          </small>
+        </div>
       </div>
 
+      <div class="subtitulo">
+        <h4>Agregar bloque de atención</h4>
+        <p>
+          Puedes agregar más de un bloque el mismo día,
+          por ejemplo 08:00–12:00 y 14:00–17:00.
+        </p>
+      </div>
 
-      <!-- BOTONES -->
+      <div
+        class="bloque-form"
+        [formGroup]="bloqueForm"
+      >
+        <div class="form-group">
+          <label>Día</label>
+          <select formControlName="diaSemana">
+            <option
+              *ngFor="let dia of dias"
+              [value]="dia.valor"
+            >
+              {{ dia.nombre }}
+            </option>
+          </select>
+        </div>
 
-      <div class="form-actions">
+        <div class="form-group">
+          <label>Desde</label>
+          <input
+            type="time"
+            formControlName="horaInicio"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Hasta</label>
+          <input
+            type="time"
+            formControlName="horaFin"
+          >
+        </div>
 
         <button
           type="button"
-          class="btn-secondary"
-          (click)="cancelarFormulario()"
+          class="btn-add"
+          (click)="agregarBloque()"
         >
-          Cancelar
+          + Agregar bloque
         </button>
-
-
-        <button
-          type="submit"
-          class="btn-primary"
-        >
-          Guardar
-        </button>
-
       </div>
 
-    </form>
+      <div class="bloques-list" *ngIf="bloques.length > 0">
+        <div
+          class="bloque-item"
+          *ngFor="let bloque of bloques; let i = index"
+        >
+          <div class="dia-badge">
+            {{ nombreDia(bloque.diaSemana) }}
+          </div>
 
-  </section>
+          <div class="bloque-horas">
+            {{ bloque.horaInicio }}
+            <span>—</span>
+            {{ bloque.horaFin }}
+          </div>
 
+          <button
+            type="button"
+            class="btn-remove"
+            (click)="eliminarBloque(i)"
+            title="Quitar bloque"
+          >
+            Quitar
+          </button>
+        </div>
+      </div>
 
-  <!-- ====================================== -->
-  <!-- CARGANDO -->
-  <!-- ====================================== -->
+      <div class="empty-blocks" *ngIf="bloques.length === 0">
+        Aún no has agregado bloques de atención para este médico.
+      </div>
 
-  <div
-    class="loading"
-    *ngIf="cargando"
-  >
-    Cargando horarios...
-  </div>
+      <div class="config-actions">
+        <button
+          type="button"
+          class="btn-primary"
+          [disabled]="guardando"
+          (click)="guardarConfiguracion()"
+        >
+          {{ guardando ? 'Guardando...' : 'Guardar y generar disponibilidad' }}
+        </button>
+      </div>
+    </section>
 
+    <section class="availability-card">
+      <div class="section-header availability-header">
+        <div>
+          <h3>Horarios disponibles generados</h3>
+          <p>
+            Estos son los espacios que actualmente pueden
+            reservar los pacientes. Se muestran únicamente
+            horarios futuros y disponibles.
+          </p>
+        </div>
 
-  <!-- ====================================== -->
-  <!-- TABLA -->
-  <!-- ====================================== -->
+        <div class="availability-filter" [formGroup]="filtroForm">
+          <label>Fecha</label>
+          <input type="date" formControlName="fecha">
+
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="buscarHorarios()"
+          >
+            Filtrar
+          </button>
+        </div>
+      </div>
+
+      <div class="loading" *ngIf="cargando">
+        Cargando horarios...
+      </div>
+
+      <div
+        class="table-wrapper"
+        *ngIf="!cargando && horarios.length > 0"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Inicio</th>
+              <th>Fin</th>
+              <th>Origen</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let horario of horarios">
+              <td>
+                {{ horario.fechaHoraInicio | date:'dd/MM/yyyy' }}
+              </td>
+
+              <td>
+                {{ horario.fechaHoraInicio | date:'HH:mm' }}
+              </td>
+
+              <td>
+                {{ horario.fechaHoraFin | date:'HH:mm' }}
+              </td>
+
+              <td>
+                <span
+                  class="origin-badge automatic"
+                  *ngIf="horario.generadoAutomaticamente"
+                >
+                  Automático
+                </span>
+
+                <span
+                  class="origin-badge manual"
+                  *ngIf="!horario.generadoAutomaticamente"
+                >
+                  Anterior / manual
+                </span>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div
+        class="empty-state"
+        *ngIf="!cargando && horarios.length === 0"
+      >
+        No hay horarios disponibles con los filtros seleccionados.
+      </div>
+    </section>
+
+  </ng-container>
 
   <section
-    class="table-card"
-    *ngIf="
-      !cargando
-      &&
-      medicoSeleccionadoId
-    "
+    class="select-doctor-empty"
+    *ngIf="!medicoSeleccionadoId"
   >
-
-
-    <table
-      *ngIf="horarios.length > 0"
-    >
-
-      <thead>
-
-        <tr>
-
-          <th>
-            ID
-          </th>
-
-          <th>
-            Inicio
-          </th>
-
-          <th>
-            Fin
-          </th>
-
-          <th>
-            Estado
-          </th>
-
-          <th>
-            Acciones
-          </th>
-
-        </tr>
-
-      </thead>
-
-
-      <tbody>
-
-        <tr
-          *ngFor="let horario of horarios"
-        >
-
-
-          <td>
-            {{ horario.id }}
-          </td>
-
-
-          <td>
-
-            {{
-              horario.fechaHoraInicio
-                | date:'dd/MM/yyyy HH:mm'
-            }}
-
-          </td>
-
-
-          <td>
-
-            {{
-              horario.fechaHoraFin
-                | date:'dd/MM/yyyy HH:mm'
-            }}
-
-          </td>
-
-
-          <td>
-
-            <span
-              class="estado-disponible"
-              *ngIf="horario.disponible"
-            >
-              Disponible
-            </span>
-
-
-            <span
-              class="estado-no-disponible"
-              *ngIf="!horario.disponible"
-            >
-              No disponible
-            </span>
-
-          </td>
-
-
-          <td>
-
-            <button
-              type="button"
-              class="btn-delete"
-              (click)="eliminarHorario(horario)"
-            >
-              Eliminar
-            </button>
-
-          </td>
-
-        </tr>
-
-      </tbody>
-
-    </table>
-
-
-    <div
-      class="empty-state"
-      *ngIf="horarios.length === 0"
-    >
-
-      No hay horarios disponibles
-      para el médico seleccionado.
-
-    </div>
-
+    <div class="empty-icon">⌚</div>
+    <h3>Selecciona un médico</h3>
+    <p>
+      Elige un médico para configurar su horario semanal
+      y generar automáticamente su disponibilidad.
+    </p>
   </section>
 
 </div>
