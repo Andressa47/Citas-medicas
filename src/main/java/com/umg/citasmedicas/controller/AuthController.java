@@ -16,6 +16,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import com.umg.citasmedicas.dto.CambiarPasswordRequest;
+
+import java.security.Principal;
+
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -143,4 +147,45 @@ public class AuthController {
                     );
         }
     }
+
+    // =========================================
+// CAMBIO VOLUNTARIO DE CONTRASEÑA
+// =========================================
+
+@PutMapping("/change-password")
+public ResponseEntity<?> cambiarPassword(
+        @RequestBody
+        CambiarPasswordRequest request,
+        Principal principal) {
+
+    try {
+
+        usuarioService.cambiarPassword(
+                principal.getName(),
+                request
+        );
+
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "mensaje",
+                        "Contraseña actualizada correctamente."
+                )
+        );
+
+    } catch (
+            IllegalArgumentException e
+    ) {
+
+        return ResponseEntity
+                .badRequest()
+                .body(
+                        Map.of(
+                                "mensaje",
+                                e.getMessage()
+                        )
+                );
+    }
+}
+
 }

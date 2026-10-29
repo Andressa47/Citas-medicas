@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.umg.citasmedicas.dto.CambiarPasswordRequest;
 
 @Service
 public class UsuarioService {
@@ -230,7 +231,120 @@ public class UsuarioService {
         );
     }
 
+// =========================================
+// CAMBIO VOLUNTARIO DE CONTRASEÑA
+// =========================================
 
+public void cambiarPassword(
+        String email,
+        CambiarPasswordRequest request) {
+
+    if (
+            email == null ||
+            email.isBlank()
+    ) {
+
+        throw new IllegalArgumentException(
+                "No se pudo identificar al usuario autenticado."
+        );
+    }
+
+
+    Usuario usuario =
+            usuarioRepository
+                    .findByEmail(
+                            email
+                    )
+                    .orElseThrow(
+                            () ->
+                                    new IllegalArgumentException(
+                                            "Usuario no encontrado."
+                                    )
+                    );
+
+
+    if (
+            request.getPasswordActual() == null ||
+            request.getPasswordActual().isBlank()
+    ) {
+
+        throw new IllegalArgumentException(
+                "Debes ingresar tu contraseña actual."
+        );
+    }
+
+
+    if (
+            !passwordEncoder.matches(
+                    request.getPasswordActual(),
+                    usuario.getPassword()
+            )
+    ) {
+
+        throw new IllegalArgumentException(
+                "La contraseña actual es incorrecta."
+        );
+    }
+
+
+    if (
+            request.getNuevaPassword() == null ||
+            request.getConfirmarPassword() == null
+    ) {
+
+        throw new IllegalArgumentException(
+                "Debes ingresar y confirmar la nueva contraseña."
+        );
+    }
+
+
+    if (
+            !request.getNuevaPassword()
+                    .equals(
+                            request.getConfirmarPassword()
+                    )
+    ) {
+
+        throw new IllegalArgumentException(
+                "Las nuevas contraseñas no coinciden."
+        );
+    }
+
+
+    validarPasswordSegura(
+            request.getNuevaPassword()
+    );
+
+
+    if (
+            passwordEncoder.matches(
+                    request.getNuevaPassword(),
+                    usuario.getPassword()
+            )
+    ) {
+
+        throw new IllegalArgumentException(
+                "La nueva contraseña debe ser diferente a la contraseña actual."
+        );
+    }
+
+
+    usuario.setPassword(
+            passwordEncoder.encode(
+                    request.getNuevaPassword()
+            )
+    );
+
+
+    usuario.setDebeCambiarPassword(
+            false
+    );
+
+
+    usuarioRepository.save(
+            usuario
+    );
+}
     // =========================================
     // VALIDAR CONTRASEÑA SEGURA
     // =========================================

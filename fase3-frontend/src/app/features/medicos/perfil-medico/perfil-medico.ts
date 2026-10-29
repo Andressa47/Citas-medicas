@@ -16,14 +16,18 @@ import {
   PerfilMedicoService
 } from '../../../core/services/perfil-medico';
 
+import {
+  CambiarPassword
+} from '../../shared/cambiar-password/cambiar-password';
 
 @Component({
   selector: 'app-perfil-medico',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule
-  ],
+  CommonModule,
+  FormsModule,
+  CambiarPassword
+],
   templateUrl: './perfil-medico.html',
   styleUrl: './perfil-medico.css'
 })

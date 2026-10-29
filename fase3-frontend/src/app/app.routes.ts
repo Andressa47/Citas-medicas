@@ -76,6 +76,16 @@ export const routes: Routes = [
             .then(m => m.Horarios)
       },
 
+      {
+  path: 'seguridad',
+  loadComponent: () =>
+    import('./features/shared/cambiar-password/cambiar-password')
+      .then(m => m.CambiarPassword)
+},
+
+
+    
+
       // GESTIÓN DE CITAS
       {
         path: 'citas',
@@ -83,6 +93,7 @@ export const routes: Routes = [
           import('./features/admin/citas-admin/citas-admin')
             .then(m => m.CitasAdmin)
       }
+      
 
     ]
   },

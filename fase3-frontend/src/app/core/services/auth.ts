@@ -58,6 +58,26 @@ export class AuthService {
 
 
   // ==========================================
+  // CAMBIO VOLUNTARIO
+  // ==========================================
+
+  cambiarPassword(
+    datos: {
+      passwordActual: string;
+      nuevaPassword: string;
+      confirmarPassword: string;
+    }
+  ): Observable<any> {
+
+    return this.http.put(
+      `${this.apiUrl}/change-password`,
+      datos
+    );
+
+  }
+
+
+  // ==========================================
   // TOKEN
   // ==========================================
 

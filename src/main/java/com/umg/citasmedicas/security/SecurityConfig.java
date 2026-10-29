@@ -94,7 +94,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // 2. PÚBLICO (Login, registro y errores)
-                        .requestMatchers("/api/v1/auth/**", "/error").permitAll()
+                        .requestMatchers(
+        "/api/v1/auth/login",
+        "/api/v1/auth/change-required-password",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/v3/api-docs/**",
+        "/error"
+).permitAll()
+
+.requestMatchers(
+        "/api/v1/auth/change-password"
+).authenticated()
 
                         // 3. USUARIOS (Soporta tanto 'ADMIN' como 'ROLE_ADMIN')
                         .requestMatchers("/api/v1/users/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
