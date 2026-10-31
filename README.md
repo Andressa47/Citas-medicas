@@ -1,213 +1,377 @@
-# Sistema de Citas Médicas y Portal de Salud
+# Medular
 
-Sistema distribuido para la gestión de servicios médicos ambulatorios.
+## Sistema de Citas Médicas y Portal de Salud
 
-La arquitectura general del proyecto contempla:
+**Medular** es un sistema distribuido para la gestión de servicios médicos ambulatorios. Permite administrar usuarios, médicos, especialidades, disponibilidad y citas médicas mediante un panel web, mientras que los pacientes utilizan una aplicación móvil para consultar disponibilidad, reservar citas y acceder a sus servicios médicos.
 
-- Panel web administrativo desarrollado con Angular.
-- Aplicación móvil para pacientes desarrollada con Ionic Framework.
-- Backend REST desarrollado con Spring Boot.
-- Base de datos relacional MySQL.
+El proyecto integra:
 
-> **Estado actual del proyecto: Fase 1 completada.**  
-> En esta fase se desarrolló el backend, la base de datos, la seguridad mediante JWT y las pruebas de los servicios REST.
-
----
-
-# Roles y responsabilidades del equipo
-
-Para organizar el desarrollo del Sistema de Citas Médicas, las responsabilidades principales se distribuyen de la siguiente manera:
-
-| Integrante | Rol principal | Responsabilidades |
-|---|---|---|
-| **Andre** | **Líder del proyecto / Frontend** | Coordinación general del equipo, seguimiento de las fases, integración de módulos, desarrollo del panel web con Angular, aplicación móvil con Ionic y conexión de las interfaces con la API REST. |
-| **Daniela** | **Base de Datos / DBA** | Administración de MySQL, mantenimiento del modelo de datos, DER, tablas, relaciones, claves primarias y foráneas, integridad de datos, `schema.sql`, consultas y datos de prueba. |
-| **Vivian** | **Backend / API REST** | Desarrollo y mantenimiento del backend con Spring Boot, entidades JPA, repositories, services, controllers, DTOs, endpoints REST y lógica de negocio del sistema. |
-| **Alexis** | **Seguridad / QA y pruebas de API** | Spring Security, autenticación JWT, roles y permisos, protección de endpoints, pruebas funcionales de la API, mantenimiento de la colección Postman y pruebas de regresión. |
-
-## Trabajo colaborativo
-
-Aunque cada integrante tiene un área principal asignada, el proyecto se desarrolla de manera colaborativa. Todos pueden apoyar en otras áreas cuando sea necesario.
-
-- Los cambios en **MySQL, tablas o relaciones** deben coordinarse con **Daniela**.
-- Los cambios en **Spring Boot, endpoints o lógica de negocio** deben coordinarse con **Vivian**.
-- Los cambios en **JWT, Spring Security, permisos o pruebas de API** deben coordinarse con **Alexis**.
-- Los cambios en **Angular, Ionic o integración general del sistema** deben coordinarse con **Andre**.
-
-Los cambios que afecten varios módulos deben ser comunicados al equipo antes de integrarse a la rama `main`.
-
----
-
-# Fase 1 - Backend y Base de Datos
-
-Durante la primera fase se implementó la estructura principal del backend del Sistema de Citas Médicas.
-
-Se desarrollaron las entidades del sistema, persistencia de datos, servicios REST, autenticación mediante JWT y pruebas de los endpoints utilizando Postman.
-
-## Funcionalidades implementadas
-
-- Autenticación de usuarios.
-- Autorización mediante JWT.
-- Gestión de usuarios.
-- Gestión de especialidades médicas.
-- Gestión de médicos.
-- Asociación de médicos con especialidades.
-- Filtrado de médicos por especialidad.
-- Creación y consulta de horarios disponibles.
-- Creación y consulta de citas médicas.
-- Consulta del historial de citas del paciente autenticado.
-- Registro de diagnóstico.
-- Registro de receta.
-- Cambio de estado de una cita a completada.
-- Control automático de disponibilidad de horarios después de reservar una cita.
-
----
-
-# Tecnologías utilizadas
-
-| Tecnología | Uso |
-|---|---|
-| Java 21 | Lenguaje de programación |
-| Spring Boot 3.3.5 | Framework principal del backend |
-| Spring Web | Desarrollo de servicios REST |
-| Spring Data JPA | Persistencia y acceso a datos |
-| Spring Security | Seguridad y autorización |
-| JWT | Autenticación basada en tokens |
-| Hibernate | ORM |
-| MySQL | Base de datos |
-| Maven | Gestión de dependencias |
-| Postman | Pruebas de servicios REST |
-| Lombok | Reducción de código repetitivo |
+- Panel web administrativo y médico desarrollado con **Angular**.
+- Aplicación móvil para pacientes desarrollada con **Ionic Framework**.
+- API REST centralizada desarrollada con **Spring Boot**.
+- Base de datos relacional **MySQL**.
+- Autenticación y autorización mediante **JWT**.
+- Documentación interactiva de la API mediante **Swagger / OpenAPI**.
 
 ---
 
 # Arquitectura del sistema
 
 ```text
-                                  +-------------------+
-                                  |  Panel Web        |
-                                  |  Angular          |
-                                  +---------+---------+
-                                            |
-                                            | REST / HTTPS
-                                            v
-+-------------------+             +-------------------+             +-------------------+
-|  App Móvil        | ----------->|  Servidor REST    | ----------->|  Base de Datos    |
-|  Ionic            | REST / HTTPS|  Spring Boot      |    JDBC     |  MySQL            |
-+-------------------+             +-------------------+             +-------------------+
+                         +----------------------+
+                         |     Panel Web        |
+                         |       Angular        |
+                         | Admin / Médico       |
+                         +----------+-----------+
+                                    |
+                                    | REST / JWT
+                                    v
++----------------------+   +----------------------+   +----------------------+
+| Aplicación móvil     |   |   Servidor REST      |   |   Base de datos      |
+| Ionic                |-->|   Spring Boot        |-->|   MySQL              |
+| Paciente             |   |   Java 21            |   |                      |
++----------------------+   +----------------------+   +----------------------+
 ```
 
-Durante la **Fase 1**, el desarrollo se concentra principalmente en:
-
-```text
-Spring Boot + MySQL + API REST + Spring Security + JWT
-```
-
-Angular e Ionic serán integrados en las siguientes fases.
+Angular e Ionic no se comunican directamente entre sí. Ambos consumen la misma API REST desarrollada con Spring Boot, que contiene la lógica de negocio y centraliza el acceso a MySQL.
 
 ---
 
-# Estructura del backend
+# Tecnologías utilizadas
 
-El código principal se encuentra en:
+## Backend
 
-```text
-src/main/java/com/umg/citasmedicas/
-```
+- Java 21
+- Spring Boot 3.3.x
+- Spring Web
+- Spring Data JPA
+- Spring Security
+- JWT
+- Maven
+- Lombok
+- Springdoc OpenAPI
+- Swagger UI
 
-La estructura utilizada es:
+## Aplicación web
 
-```text
-citasmedicas/
-│
-├── controller/
-├── dto/
-├── entity/
-├── enums/
-├── repository/
-├── security/
-├── service/
-│
-└── CitasmedicasApplication.java
-```
+- Angular
+- TypeScript
+- RxJS
+- Angular Router
+- HttpClient
+- Guards
+- Interceptors
 
-## Controller
+## Aplicación móvil
 
-Contiene los controladores REST encargados de recibir las solicitudes HTTP.
+- Ionic Framework
+- Angular
+- Capacitor
+- TypeScript
 
-Ejemplos:
+## Base de datos
 
-```java
-@GetMapping
-@PostMapping
-@PutMapping
-@DeleteMapping
-```
+- MySQL
+- MySQL Workbench
 
-## Service
+## Herramientas
 
-Contiene la lógica de negocio.
+- Git
+- GitHub
+- Postman
+- Swagger
+- Apache NetBeans
+- Visual Studio Code
 
-Aquí se realizan operaciones como:
+---
 
-- Validar disponibilidad.
-- Verificar registros.
-- Cambiar estados.
-- Crear citas.
+# Roles del sistema
+
+El sistema utiliza control de acceso basado en roles.
+
+## ROLE_ADMIN
+
+El administrador puede:
+
+- Gestionar usuarios.
+- Crear usuarios con contraseña temporal.
+- Gestionar médicos.
+- Gestionar especialidades.
+- Consultar y filtrar usuarios.
+- Configurar la disponibilidad semanal de los médicos.
+- Definir la duración de las consultas.
+- Generar automáticamente espacios disponibles.
+- Consultar todas las citas.
+- Filtrar citas.
+- Asignar citas a pacientes.
+- Cambiar su contraseña.
+
+## ROLE_DOCTOR
+
+El médico puede:
+
+- Consultar su agenda.
+- Visualizar citas del día.
+- Consultar próximas citas.
+- Atender pacientes.
 - Registrar diagnósticos.
-- Coordinar operaciones entre diferentes repositorios.
+- Registrar recetas o indicaciones.
+- Comunicarse con pacientes mediante chat.
+- Consultar y actualizar su perfil profesional.
+- Cambiar su contraseña.
 
-## Repository
+## ROLE_PATIENT
 
-Contiene las interfaces de Spring Data JPA utilizadas para consultar y modificar la base de datos.
+El paciente utiliza principalmente la aplicación móvil y puede:
 
-## Entity
+- Iniciar sesión.
+- Consultar especialidades.
+- Consultar médicos.
+- Consultar horarios disponibles.
+- Reservar citas.
+- Cancelar citas.
+- Consultar su historial médico.
+- Consultar diagnósticos y recetas.
+- Comunicarse con médicos mediante chat.
 
-Contiene las entidades JPA que representan las tablas de MySQL.
+---
 
-## Security
+# Funcionalidades principales
 
-Contiene la configuración relacionada con:
+## Autenticación y seguridad
+
+Medular utiliza autenticación sin estado mediante JSON Web Tokens.
+
+Después del inicio de sesión, las solicitudes protegidas utilizan:
+
+```text
+Authorization: Bearer <token>
+```
+
+El sistema implementa:
 
 - Spring Security.
 - JWT.
-- Filtros de autenticación.
-- PasswordEncoder.
-- AuthenticationManager.
+- BCrypt para almacenamiento seguro de contraseñas.
+- Guards de Angular.
+- Interceptor HTTP para adjuntar automáticamente el JWT.
+- Protección de rutas según rol.
+- Protección de endpoints en el backend.
+- Configuración CORS.
+- Validación de contraseñas seguras.
+- Cambio obligatorio de contraseña temporal.
+- Cambio voluntario de contraseña.
 
-## DTO
+Las contraseñas seguras deben contener como mínimo:
 
-Contiene objetos utilizados para transferir información entre el cliente y el servidor sin necesidad de exponer siempre una entidad completa.
-
-## Enums
-
-Contiene enumeraciones utilizadas por el sistema, incluyendo roles y estados de las citas.
+- 8 caracteres.
+- Una letra mayúscula.
+- Una letra minúscula.
+- Un número.
+- Un carácter especial.
 
 ---
 
-# Flujo recomendado del backend
+# Gestión de usuarios
 
-Al desarrollar nuevas funcionalidades se debe respetar, cuando corresponda, la siguiente estructura:
+El administrador puede crear y consultar usuarios del sistema.
+
+La gestión incluye:
+
+- Búsqueda por nombre.
+- Búsqueda por correo electrónico.
+- Búsqueda por ID.
+- Filtro por rol.
+- Contraseña temporal para nuevos usuarios.
+- Cambio obligatorio de contraseña en el primer ingreso cuando corresponda.
+
+---
+
+# Gestión de médicos
+
+El administrador puede registrar médicos y asociarlos con una especialidad.
+
+El sistema permite almacenar información profesional adicional del médico, como:
+
+- Biografía.
+- Teléfono profesional.
+- Años de experiencia.
+- Formación académica.
+- Idiomas.
+- Ubicación del consultorio.
+
+---
+
+# Gestión automática de disponibilidad médica
+
+Medular evita que el administrador tenga que crear manualmente cada horario de atención.
+
+Para cada médico se puede configurar:
+
+- Duración estándar de cada consulta.
+- Día de la semana.
+- Hora de inicio.
+- Hora de finalización.
+- Múltiples bloques de atención para un mismo día.
+
+Ejemplo:
 
 ```text
-REQUEST
-   ↓
-CONTROLLER
-   ↓
-SERVICE
-   ↓
-REPOSITORY
-   ↓
-ENTITY
-   ↓
-MYSQL
+Dra. Laura Méndez
+Duración: 30 minutos
+
+Lunes
+08:00 - 12:00
+13:00 - 17:00
+
+Martes
+08:00 - 12:00
 ```
 
-No se recomienda colocar toda la lógica de negocio directamente dentro de los Controllers.
+El sistema genera automáticamente espacios como:
+
+```text
+08:00 - 08:30
+08:30 - 09:00
+09:00 - 09:30
+09:30 - 10:00
+```
+
+Cuando un espacio es reservado deja de aparecer como disponible.
+
+Cuando una cita es cancelada, el horario vuelve a quedar disponible.
+
+El backend también evita reservar horarios cuya fecha ya pasó.
 
 ---
 
-# Base de Datos
+# Gestión de citas
+
+Las citas manejan los estados:
+
+```text
+PENDIENTE
+COMPLETADA
+CANCELADA
+```
+
+Cada cita contiene información relacionada con:
+
+- Paciente.
+- Médico.
+- Especialidad.
+- Fecha.
+- Hora.
+- Motivo de consulta.
+- Estado.
+- Diagnóstico.
+- Receta o indicaciones.
+
+El administrador puede asignar una cita directamente a un paciente utilizando la misma disponibilidad que utiliza la aplicación móvil.
+
+---
+
+# Agenda médica
+
+El médico dispone de un panel desde el cual puede consultar:
+
+- Citas del día.
+- Próximas citas.
+- Datos del paciente.
+- Fecha y horario.
+- Motivo de consulta.
+
+Al atender una cita, el médico puede registrar:
+
+- Diagnóstico.
+- Receta.
+- Indicaciones médicas.
+
+Una vez finalizada la consulta, la cita puede cambiar al estado `COMPLETADA`.
+
+---
+
+# Chat médico-paciente
+
+El sistema incorpora comunicación entre médicos y pacientes.
+
+La comunicación utiliza la API REST:
+
+```text
+Paciente en Ionic
+        ↓
+   Spring Boot
+        ↑
+Médico en Angular
+```
+
+Los mensajes son almacenados en MySQL y ambas interfaces consultan la misma conversación.
+
+---
+
+# Estructura principal del repositorio
+
+```text
+Citas-medicas/
+│
+├── src/
+│   └── main/
+│       ├── java/com/umg/citasmedicas/
+│       │   ├── config/
+│       │   ├── controller/
+│       │   ├── dto/
+│       │   ├── entity/
+│       │   ├── enums/
+│       │   ├── exception/
+│       │   ├── repository/
+│       │   ├── security/
+│       │   └── service/
+│       │
+│       └── resources/
+│           ├── application.properties
+│           ├── schema.sql
+│           └── scripts de migración
+│
+├── fase3-frontend/
+│   └── Aplicación web Angular
+│
+├── fase3-ionic/
+│   └── Aplicación móvil Ionic
+│
+├── Sistema_Citas_Medicas.postman_collection.json
+├── pom.xml
+├── mvnw
+├── mvnw.cmd
+└── README.md
+```
+
+---
+
+# Requisitos para ejecutar el proyecto
+
+Se recomienda contar con:
+
+- Java JDK 21.
+- MySQL Server.
+- MySQL Workbench.
+- Node.js.
+- npm.
+- Git.
+- Apache NetBeans, IntelliJ IDEA o un IDE compatible con Spring Boot.
+- Visual Studio Code.
+
+Puede comprobarse el entorno con:
+
+```bash
+java -version
+node -v
+npm -v
+git --version
+```
+
+---
+
+# Base de datos
 
 La base de datos utilizada es:
 
@@ -215,166 +379,85 @@ La base de datos utilizada es:
 citas_medicas
 ```
 
-Las tablas principales implementadas durante la Fase 1 son:
+Entre las entidades principales se encuentran:
 
-```text
-usuarios
-especialidades
-medicos
-horarios_disponibles
-citas
-```
+- usuarios
+- especialidades
+- medicos
+- perfiles_medicos
+- configuraciones_horario_medico
+- horarios_semanales
+- horarios_disponibles
+- citas
+- conversaciones
+- mensajes_chat
 
-## Relaciones principales
-
-```text
-usuarios.id
-    ↓
-medicos.usuario_id
-
-especialidades.id
-    ↓
-medicos.especialidad_id
-
-medicos.id
-    ↓
-horarios_disponibles.medico_id
-
-usuarios.id
-    ↓
-citas.paciente_id
-
-medicos.id
-    ↓
-citas.medico_id
-
-horarios_disponibles.id
-    ↓
-citas.horario_id
-```
-
----
-
-# Diagrama Entidad-Relación
-
-El proyecto incluye un Diagrama Entidad-Relación basado en la estructura real de MySQL.
-
-El DER representa las relaciones entre:
-
-- Usuarios.
-- Especialidades.
-- Médicos.
-- Horarios disponibles.
-- Citas.
-
-<img width="888" height="522" alt="image" src="https://github.com/user-attachments/assets/c28b7ffc-aad3-4d27-bb6b-4a00a09e8eea" />
-
----
-
-# Configuración del proyecto
-
-La configuración principal se encuentra en:
-
-```text
-src/main/resources/application.properties
-```
-
-La configuración utilizada durante el desarrollo es similar a:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/citas_medicas?useSSL=false&serverTimezone=UTC
-spring.datasource.username=${DB_USER:root}
-spring.datasource.password=${DB_PASSWORD:}
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-spring.jpa.hibernate.ddl-auto=validate
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.open-in-view=false
-
-jwt.secret=${JWT_SECRET:CLAVE_DE_DESARROLLO}
-jwt.expiration=86400000
-```
-
-Para otros entornos se recomienda utilizar variables de entorno:
-
-```text
-DB_USER
-DB_PASSWORD
-JWT_SECRET
-```
-
-## Importante
-
-No subir al repositorio:
-
-- Contraseñas personales.
-- Tokens JWT generados.
-- Claves privadas.
-- Credenciales reales.
-- Archivos con información sensible.
-
----
-
-# Requisitos para ejecutar el proyecto
-
-Cada integrante debe contar con:
-
-- Java 21.
-- MySQL.
-- Git.
-- Postman.
-- Un IDE compatible con Maven y Spring Boot.
-
-Ejemplos:
-
-- NetBeans.
-- IntelliJ IDEA.
-- Visual Studio Code con las extensiones correspondientes.
+Las relaciones utilizan claves primarias y foráneas para mantener la integridad referencial.
 
 ---
 
 # Configuración de MySQL
 
-Antes de ejecutar Spring Boot debe estar iniciado el servidor MySQL.
+Antes de iniciar Spring Boot debe encontrarse activo MySQL Server.
 
-Debe existir la base de datos:
-
-```text
-citas_medicas
-```
-
-Configuración local utilizada durante el desarrollo:
+El proyecto contiene:
 
 ```text
-Host: localhost
-Port: 3306
-Database: citas_medicas
-Usuario: root
+src/main/resources/schema.sql
 ```
 
-Cada integrante puede configurar su contraseña local mediante `DB_PASSWORD`.
+y scripts adicionales de migración correspondientes a funcionalidades incorporadas durante el desarrollo.
+
+Estos scripts deben ejecutarse en MySQL Workbench cuando correspondan.
 
 ---
 
-# Ejecutar Spring Boot
+# Configuración privada
 
-Desde la raíz del proyecto, en Windows:
+Las credenciales privadas no deben almacenarse directamente en el repositorio.
 
-```bash
-mvnw.cmd spring-boot:run
-```
-
-También puede ejecutarse directamente desde el IDE.
-
-Cuando Spring Boot inicia correctamente deben aparecer mensajes similares a:
+Durante el desarrollo puede utilizarse:
 
 ```text
-Tomcat started on port 8080
-Started CitasmedicasApplication
+src/main/resources/application-local.properties
 ```
 
-La API estará disponible en:
+para datos locales como:
+
+- usuario de MySQL;
+- contraseña de MySQL;
+- secreto JWT;
+- configuraciones específicas del equipo.
+
+El proyecto puede cargar esta configuración mediante:
+
+```properties
+spring.config.import=optional:classpath:application-local.properties
+```
+
+No deben subirse a GitHub:
+
+- contraseñas;
+- tokens JWT;
+- secretos;
+- credenciales de base de datos;
+- archivos locales con información sensible.
+
+---
+
+# Ejecutar el backend
+
+Desde la raíz del repositorio:
+
+## Windows
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+También puede ejecutarse mediante **Run Project** desde Apache NetBeans.
+
+El backend utiliza:
 
 ```text
 http://localhost:8080
@@ -382,32 +465,117 @@ http://localhost:8080
 
 ---
 
-# Seguridad y JWT
+# Ejecutar Angular
 
-El backend utiliza:
+Entrar al directorio:
 
-- Spring Security.
-- JWT.
-- BCrypt.
-- Autenticación Stateless.
+```powershell
+cd fase3-frontend
+```
 
-El endpoint de autenticación es público:
+Instalar dependencias:
 
-```http
+```powershell
+npm install
+```
+
+Ejecutar:
+
+```powershell
+npm start
+```
+
+La aplicación web estará disponible en:
+
+```text
+http://localhost:4200
+```
+
+El panel web está dirigido a:
+
+- administradores;
+- médicos.
+
+---
+
+# Ejecutar Ionic
+
+Desde la raíz del proyecto:
+
+```powershell
+cd fase3-ionic
+```
+
+Instalar dependencias:
+
+```powershell
+npm install
+```
+
+Ejecutar en el puerto utilizado durante el desarrollo:
+
+```powershell
+npm start -- --port 8100
+```
+
+La aplicación estará disponible en:
+
+```text
+http://localhost:8100
+```
+
+La aplicación móvil corresponde al perfil de paciente.
+
+---
+
+# Puertos utilizados
+
+| Servicio | Puerto |
+|---|---:|
+| Spring Boot | 8080 |
+| Angular | 4200 |
+| Ionic | 8100 |
+| MySQL | 3306 |
+
+---
+
+# Swagger y documentación de la API
+
+Medular incorpora documentación automática mediante OpenAPI y Swagger UI.
+
+Con Spring Boot iniciado, Swagger está disponible en:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+La definición OpenAPI está disponible en:
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+Swagger permite:
+
+- consultar endpoints;
+- revisar DTOs;
+- visualizar parámetros;
+- ejecutar solicitudes;
+- probar respuestas;
+- utilizar autenticación JWT.
+
+## Probar endpoints protegidos
+
+1. Ejecutar:
+
+```text
 POST /api/v1/auth/login
 ```
 
-Los demás recursos principales requieren autenticación.
-
-## Roles
-
-Actualmente se contemplan roles como:
-
-```text
-ROLE_ADMIN
-ROLE_DOCTOR
-ROLE_PATIENT
-```
+2. Copiar el token JWT recibido.
+3. Presionar **Authorize**.
+4. Introducir el token.
+5. Ejecutar el endpoint protegido deseado.
 
 ---
 
@@ -415,343 +583,147 @@ ROLE_PATIENT
 
 ## Autenticación
 
-### Login
-
-```http
+```text
 POST /api/v1/auth/login
+PUT  /api/v1/auth/change-required-password
+PUT  /api/v1/auth/change-password
 ```
-
-Permite iniciar sesión y obtener un JWT.
-
----
-
-## Usuarios
-
-### Crear usuario
-
-```http
-POST /api/v1/users
-```
-
-### Listar usuarios
-
-```http
-GET /api/v1/users
-```
-
----
-
-## Especialidades
-
-### Crear especialidad
-
-```http
-POST /api/v1/specialties
-```
-
-### Listar especialidades
-
-```http
-GET /api/v1/specialties
-```
-
----
 
 ## Médicos
 
-### Crear médico
-
-```http
-POST /api/v1/doctors
-```
-
-### Listar médicos
-
-```http
+```text
 GET /api/v1/doctors
 ```
 
-### Buscar médico por ID
+El listado puede filtrarse por especialidad.
 
-```http
-GET /api/v1/doctors/{id}
+## Disponibilidad
+
+```text
+GET /api/v1/schedules/available
 ```
 
-### Filtrar médicos por especialidad
+## Citas
 
-```http
-GET /api/v1/doctors?especialidadId={id}
-```
-
-Ejemplo:
-
-```http
-GET /api/v1/doctors?especialidadId=27
-```
-
-### Actualizar médico
-
-```http
-PUT /api/v1/doctors/{id}
-```
-
-### Eliminar médico
-
-```http
-DELETE /api/v1/doctors/{id}
-```
-
----
-
-# Horarios
-
-Los horarios permiten registrar la disponibilidad de los médicos.
-
-### Crear horario
-
-```http
-POST /api/v1/schedules
-```
-
-La colección Postman contiene también la consulta de horarios disponibles utilizando los parámetros implementados en el backend.
-
----
-
-# Citas
-
-### Crear cita
-
-```http
+```text
 POST /api/v1/appointments
+GET  /api/v1/appointments/my-history
+PUT  /api/v1/appointments/{id}/cancel
+PUT  /api/v1/appointments/{id}/diagnosis
 ```
 
-### Listar citas
+La documentación completa y actualizada de los endpoints se encuentra disponible en Swagger.
 
-```http
-GET /api/v1/appointments
-```
+---
 
-### Buscar cita por ID
+# Flujo principal del sistema
 
-```http
-GET /api/v1/appointments/{id}
-```
+El flujo principal utilizado para la demostración e integración es:
 
-### Historial por paciente
-
-```http
-GET /api/v1/appointments/patient/{pacienteId}
-```
-
-### Citas por médico
-
-```http
-GET /api/v1/appointments/doctor/{medicoId}
-```
-
-### Historial del paciente autenticado
-
-```http
-GET /api/v1/appointments/my-history
-```
-
-Este endpoint obtiene el paciente directamente a partir del usuario autenticado mediante JWT.
-
-### Registrar diagnóstico y receta
-
-```http
-PUT /api/v1/appointments/{id}/diagnosis
+```text
+1. El administrador inicia sesión.
+        ↓
+2. Registra o selecciona un médico.
+        ↓
+3. Configura su horario semanal.
+        ↓
+4. Define la duración de la consulta.
+        ↓
+5. El sistema genera automáticamente disponibilidad.
+        ↓
+6. El paciente inicia sesión desde Ionic.
+        ↓
+7. Selecciona una especialidad.
+        ↓
+8. Selecciona un médico.
+        ↓
+9. Consulta horarios disponibles.
+        ↓
+10. Reserva una cita.
+        ↓
+11. El horario deja de mostrarse como disponible.
+        ↓
+12. La cita aparece en la agenda del médico.
+        ↓
+13. El médico atiende al paciente.
+        ↓
+14. Registra diagnóstico y receta.
+        ↓
+15. La cita cambia a COMPLETADA.
+        ↓
+16. El paciente consulta posteriormente el resultado.
 ```
 
 ---
 
-# Flujo principal probado durante la Fase 1
+# Reglas de negocio verificadas
 
-Durante las pruebas se verificó el siguiente flujo:
-
-```text
-1. Iniciar sesión
-        ↓
-2. Obtener JWT
-        ↓
-3. Crear usuario
-        ↓
-4. Crear especialidad
-        ↓
-5. Crear médico
-        ↓
-6. Asociar médico con especialidad
-        ↓
-7. Crear horario disponible
-        ↓
-8. Crear cita
-        ↓
-9. El horario cambia a no disponible
-        ↓
-10. Consultar historial del paciente
-        ↓
-11. Registrar diagnóstico y receta
-        ↓
-12. La cita cambia a COMPLETADA
-```
+- Un horario pasado no puede reservarse.
+- Un horario reservado deja de aparecer como disponible.
+- Una cita cancelada libera nuevamente su horario.
+- Los horarios automáticos se generan según la configuración semanal.
+- La modificación del horario semanal no debe eliminar citas ya existentes.
+- Los usuarios solo pueden acceder a los recursos permitidos para su rol.
+- Las contraseñas se almacenan mediante BCrypt.
+- Una contraseña temporal puede requerir cambio obligatorio.
+- El usuario autenticado puede cambiar voluntariamente su contraseña.
+- El médico solo visualiza las citas correspondientes a su perfil.
 
 ---
 
-# Lógica importante de las citas
+# Pruebas
 
-Esta sección es especialmente importante para futuros cambios en `CitaService`.
+Durante el desarrollo se realizaron pruebas relacionadas con:
 
-Cuando se crea una cita:
+- Inicio de sesión.
+- JWT.
+- Roles.
+- Gestión de usuarios.
+- Gestión de médicos.
+- Gestión de especialidades.
+- Configuración semanal.
+- Generación automática de horarios.
+- Reserva desde Ionic.
+- Asignación administrativa de citas.
+- Cancelación de citas.
+- Liberación del horario cancelado.
+- Agenda médica.
+- Registro de diagnóstico.
+- Registro de receta.
+- Historial médico.
+- Perfil médico.
+- Chat médico-paciente.
+- Cambio obligatorio de contraseña.
+- Cambio voluntario de contraseña.
+- API mediante Postman.
+- API mediante Swagger.
+- Integración Angular-Ionic-Spring Boot-MySQL.
 
-1. Se verifica que se haya seleccionado un horario.
-2. Se verifica que el horario exista.
-3. Se verifica que el horario esté disponible.
-4. Se verifica que el horario no haya sido reservado anteriormente.
-5. El médico se obtiene a partir del horario seleccionado.
-6. La cita se crea inicialmente con estado `PENDIENTE`.
-7. El horario cambia automáticamente a:
-
-```text
-disponible = false
-```
-
-El flujo es:
-
-```text
-Horario disponible
-        ↓
-Crear cita
-        ↓
-Horario reservado
-        ↓
-disponible = false
-```
-
-**No eliminar estas validaciones al modificar la lógica de citas.**
+El detalle de los casos de prueba se presenta en el **Reporte de Pruebas** del proyecto.
 
 ---
 
-# Diagnóstico y receta
+# Colección Postman
 
-Cuando se registra un diagnóstico:
-
-- Se almacena el diagnóstico.
-- Se almacena la receta.
-- La cita cambia al estado:
-
-```text
-COMPLETADA
-```
-
-Los estados deben manejarse utilizando el enum `EstadoCita`.
-
-No se recomienda guardar estados mediante Strings arbitrarios.
-
----
-
-# Pruebas con Postman
-
-Los servicios REST desarrollados durante la Fase 1 fueron probados utilizando Postman.
-
-La colección se encuentra en:
+El repositorio incluye:
 
 ```text
 Sistema_Citas_Medicas.postman_collection.json
 ```
 
-## Importar la colección
+Puede importarse en Postman para probar los servicios REST.
 
-1. Abrir Postman.
-2. Seleccionar **Import**.
-3. Seleccionar el archivo:
-   ```text
-   Sistema_Citas_Medicas.postman_collection.json
-   ```
-4. Ejecutar Login.
-5. Obtener el JWT.
-6. Utilizar el token para acceder a los endpoints protegidos.
+Flujo recomendado:
 
-Para:
-
-```http
-GET /api/v1/appointments/my-history
-```
-
-se debe utilizar el JWT correspondiente a un paciente.
+1. Importar la colección.
+2. Ejecutar Login.
+3. Obtener JWT.
+4. Configurar el token.
+5. Ejecutar las solicitudes correspondientes al rol utilizado.
 
 ---
 
-# Importante al modificar Spring Security
-
-Los endpoints protegidos están configurados en `SecurityConfig`.
-
-Durante el desarrollo puede ser necesario utilizar temporalmente:
-
-```java
-.permitAll()
-```
-
-para identificar problemas.
-
-Sin embargo, **no se debe subir a `main` un endpoint como público si originalmente debe requerir autenticación**.
-
-Después de realizar pruebas se debe restaurar:
-
-```java
-.authenticated()
-```
-
-cuando corresponda.
-
----
-
-# Guía para continuar el desarrollo
-
-Esta sección sirve como referencia para Andre, Vivian, Alexis y Daniela durante las siguientes fases.
-
-Antes de modificar una funcionalidad existente:
-
-1. Probar el endpoint actual en Postman.
-2. Revisar su Controller.
-3. Revisar su Service.
-4. Revisar su Repository.
-5. Revisar la Entity relacionada.
-6. Revisar las relaciones correspondientes en MySQL.
-7. Realizar el cambio.
-8. Ejecutar nuevamente Spring Boot.
-9. Volver a probar los endpoints relacionados.
-
-Esto ayuda a identificar rápidamente si un error fue introducido por una modificación reciente.
-
----
-
-# Agregar una funcionalidad nueva
-
-Se recomienda seguir este orden:
-
-```text
-1. Definir qué necesita la funcionalidad
-        ↓
-2. Revisar/crear Entity
-        ↓
-3. Revisar/crear Repository
-        ↓
-4. Implementar Service
-        ↓
-5. Crear endpoint en Controller
-        ↓
-6. Revisar SecurityConfig
-        ↓
-7. Probar en Postman
-        ↓
-8. Actualizar colección Postman
-        ↓
-9. Documentar cambios
-```
-
----
-
-# Trabajo con Git y ramas
+# Trabajo con Git
 
 La rama:
 
@@ -759,196 +731,93 @@ La rama:
 main
 ```
 
-debe conservar una versión estable del proyecto.
+debe utilizarse como versión estable del proyecto.
 
-Cada integrante debe trabajar en su propia rama.
+Durante el desarrollo se utilizan ramas separadas para evitar conflictos entre módulos.
 
-Estructura sugerida:
-
-```text
-main
-│
-├── andre
-├── vivian
-├── alexis
-└── daniela
-```
-
-## Cambiar a una rama
+Antes de integrar cambios se recomienda:
 
 ```bash
-git switch nombre-rama
-```
-
-## Antes de comenzar a trabajar
-
-Actualizar los cambios correspondientes antes de comenzar nuevas modificaciones.
-
-```bash
+git status
 git pull
 ```
 
-## Guardar cambios
+Después de probar una funcionalidad:
 
 ```bash
-git add .
-git commit -m "Descripción clara del cambio"
+git add <archivos>
+git commit -m "Descripción del cambio"
 git push
 ```
 
-Después se debe crear un **Pull Request** hacia `main`.
-
-Los cambios deben revisarse antes de realizar el merge.
+No se recomienda trabajar directamente sobre `main`.
 
 ---
 
-# Reglas recomendadas para el equipo
+# Checklist antes de integrar cambios
 
-1. No desarrollar directamente en `main`.
-2. Mantener la rama de trabajo actualizada.
-3. Realizar commits claros y descriptivos.
-4. No subir contraseñas ni JWT.
-5. Comunicar al equipo cambios realizados en MySQL.
-6. Probar Spring Boot antes de abrir un Pull Request.
-7. Probar en Postman cualquier endpoint modificado.
-8. Agregar a Postman los endpoints nuevos.
-9. Actualizar este README cuando cambie una configuración importante.
-10. Revisar los Pull Requests antes de integrarlos a `main`.
+Antes de realizar un merge o Pull Request comprobar:
 
----
-
-# Checklist antes de hacer Pull Request
-
-Antes de enviar cambios:
-
-- [ ] El proyecto compila correctamente.
-- [ ] Spring Boot inicia.
-- [ ] MySQL conecta correctamente.
-- [ ] Login continúa funcionando.
-- [ ] Los endpoints existentes relacionados siguen funcionando.
-- [ ] Los endpoints nuevos fueron probados en Postman.
-- [ ] No se agregaron contraseñas.
-- [ ] No se agregaron JWT reales.
-- [ ] No se incluyó `target/`.
-- [ ] Todos los archivos fueron guardados.
-- [ ] El commit describe claramente los cambios.
-- [ ] Se actualizó la documentación cuando fue necesario.
+- El backend compila correctamente.
+- Spring Boot inicia.
+- MySQL conecta.
+- Angular compila.
+- Ionic compila.
+- Login funciona.
+- Los endpoints modificados funcionan.
+- No se incluyeron contraseñas reales.
+- No se incluyeron JWT reales.
+- No se incluyó `target/`.
+- Las funcionalidades existentes continúan funcionando.
+- La documentación fue actualizada cuando corresponde.
 
 ---
 
-# Entregables de la Fase 1
+# Organización del equipo
 
-Estado de los requerimientos correspondientes a esta fase:
+El proyecto se desarrolla de forma colaborativa.
 
-- [x] Diagrama Entidad-Relación del sistema.
-- [x] Backend desarrollado con Spring Boot.
-- [x] Base de datos MySQL.
-- [x] Entidades JPA.
-- [x] Repositorios.
-- [x] Servicios REST.
-- [x] Controllers REST.
-- [x] Spring Security.
-- [x] Autenticación mediante JWT.
-- [x] Gestión de usuarios.
-- [x] Gestión de especialidades.
-- [x] Gestión de médicos.
-- [x] Gestión de horarios.
-- [x] Gestión de citas.
-- [x] Historial del paciente.
-- [x] Registro de diagnóstico y receta.
-- [x] Pruebas mediante Postman.
-- [x] Colección Postman en formato JSON.
+Las responsabilidades principales se dividen entre:
+
+- Desarrollo e integración de interfaces.
+- Base de datos.
+- Backend y API REST.
+- Seguridad, pruebas e integración.
+
+Aunque cada integrante posee responsabilidades principales, la integración final requiere coordinación entre todos los módulos.
 
 ---
 
-# Próximas fases
+# Estado actual
 
-El backend desarrollado durante la Fase 1 servirá como API central para las interfaces del sistema.
-
-## Panel web
+Medular cuenta actualmente con integración funcional entre:
 
 ```text
 Angular
    ↓
-REST API
-   ↓
 Spring Boot
    ↓
 MySQL
-```
-
-## Aplicación móvil
-
-```text
+   ↑
 Ionic
-   ↓
-REST API
-   ↓
-Spring Boot
-   ↓
-MySQL
 ```
 
-Antes de modificar URLs, formatos JSON o estructuras de endpoints existentes, se debe considerar que posteriormente estos endpoints serán consumidos por Angular e Ionic.
+Los servicios utilizados durante el desarrollo se ejecutan localmente en:
+
+```text
+Angular       http://localhost:4200
+Ionic         http://localhost:8100
+Spring Boot   http://localhost:8080
+Swagger       http://localhost:8080/swagger-ui/index.html
+MySQL         localhost:3306
+```
+
+El sistema permite ejecutar el flujo completo de creación de disponibilidad, reserva de cita, consulta de agenda, atención médica y registro de resultados.
 
 ---
 
-# Organización recomendada del repositorio
+## Proyecto académico
 
-```text
-Proyecto_Citas_Medicas/
-│
-├── src/
-│
-├── docs/
-│   └── DER_Sistema_Citas_Medicas.png
-│
-├── Sistema_Citas_Medicas.postman_collection.json
-├── README.md
-├── pom.xml
-├── mvnw
-├── mvnw.cmd
-└── .gitignore
-```
+Este repositorio corresponde a un proyecto académico de Ingeniería en Sistemas.
 
-La documentación adicional del proyecto debe almacenarse preferiblemente dentro de:
-
-```text
-docs/
-```
-
----
-
-# Estado del proyecto
-
-## Fase 1: COMPLETADA
-
-La primera fase proporciona una base funcional para continuar el desarrollo del Sistema de Citas Médicas.
-
-Actualmente se cuenta con:
-
-```text
-Base de Datos
-      +
-Spring Boot
-      +
-API REST
-      +
-Spring Security
-      +
-JWT
-      +
-Postman
-```
-
-Las siguientes fases continuarán a partir de esta base con la integración de las interfaces web y móvil.
-
----
-
-## Nota
-
-Este repositorio corresponde a un proyecto académico.
-
-Las configuraciones utilizadas durante el desarrollo local no deben considerarse configuraciones destinadas a un ambiente de producción.
-
-
+Las credenciales y configuraciones utilizadas para desarrollo local no deben considerarse configuraciones de producción.
