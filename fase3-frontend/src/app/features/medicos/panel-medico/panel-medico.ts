@@ -21,13 +21,17 @@ import {
 
 import { PerfilMedico } from '../perfil-medico/perfil-medico';
 
+import { CredencialDigital }
+  from '../credencial-digital/credencial-digital';
+
 @Component({
   selector: 'app-panel-medico',
   standalone: true,
   imports: [
   CommonModule,
   ChatMedico,
-  PerfilMedico
+  PerfilMedico,
+  CredencialDigital
 ],
   templateUrl: './panel-medico.html',
   styleUrl: './panel-medico.css'
@@ -38,7 +42,12 @@ export class PanelMedico implements OnInit {
   // VISTA ACTUAL
   // ==========================================
 
-  vistaActual: 'agenda' | 'mensajes' | 'perfil' = 'agenda';
+  vistaActual:
+  'agenda' |
+  'mensajes' |
+  'perfil' |
+  'credencial'
+  = 'agenda';
 
 
   // ==========================================
@@ -90,7 +99,11 @@ export class PanelMedico implements OnInit {
   // ==========================================
 
   cambiarVista(
-  vista: 'agenda' | 'mensajes' | 'perfil'
+  vista:
+    'agenda' |
+    'mensajes' |
+    'perfil' |
+    'credencial'
 ): void {
   this.vistaActual = vista;
 }

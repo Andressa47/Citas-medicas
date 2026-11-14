@@ -1,9 +1,4 @@
-
 <div class="admin-layout">
-
-  <!-- ===================================== -->
-  <!-- SIDEBAR -->
-  <!-- ===================================== -->
 
   <aside class="sidebar">
 
@@ -23,100 +18,72 @@
         GESTIÓN
       </p>
 
-      <!-- INICIO -->
-
       <a
         routerLink="/admin"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
       >
-        <span class="nav-icon">
-          ⌂
-        </span>
-
+        <span class="nav-icon">⌂</span>
         Inicio
       </a>
-
-      <!-- ESPECIALIDADES -->
 
       <a
         routerLink="/admin/especialidades"
         routerLinkActive="active"
       >
-        <span class="nav-icon">
-          ✚
-        </span>
-
+        <span class="nav-icon">✚</span>
         Especialidades
       </a>
-
-      <!-- USUARIOS -->
 
       <a
         routerLink="/admin/usuarios"
         routerLinkActive="active"
       >
-        <span class="nav-icon">
-          ♟
-        </span>
-
+        <span class="nav-icon">♟</span>
         Usuarios
       </a>
-
-      <!-- MÉDICOS -->
 
       <a
         routerLink="/admin/medicos"
         routerLinkActive="active"
       >
-        <span class="nav-icon">
-          ⚕
-        </span>
-
+        <span class="nav-icon">⚕</span>
         Médicos
       </a>
-
-      <!-- HORARIOS -->
 
       <a
         routerLink="/admin/horarios"
         routerLinkActive="active"
       >
-        <span class="nav-icon">
-          ◷
-        </span>
-
+        <span class="nav-icon">◷</span>
         Horarios
       </a>
-
-      <!-- GESTIÓN DE CITAS -->
 
       <a
         routerLink="/admin/citas"
         routerLinkActive="active"
       >
-        <span class="nav-icon">
-          ▦
-        </span>
-
+        <span class="nav-icon">▦</span>
         Gestión de citas
       </a>
-      <a
-  routerLink="/admin/seguridad"
-  routerLinkActive="active"
->
-  <span class="nav-icon">
-    🔒
-  </span>
 
-  Seguridad
-</a>
+      <a
+        routerLink="/admin/credencial-digital"
+        routerLinkActive="active"
+      >
+        <span class="nav-icon"></span>
+        Credencial Digital
+      </a>
+
+      <a
+        routerLink="/admin/seguridad"
+        routerLinkActive="active"
+      >
+        <span class="nav-icon"></span>
+        Seguridad
+      </a>
 
     </nav>
-
-    <!-- ===================================== -->
-    <!-- PARTE INFERIOR -->
-    <!-- ===================================== -->
 
     <div class="sidebar-bottom">
 
@@ -150,10 +117,6 @@
 
   </aside>
 
-  <!-- ===================================== -->
-  <!-- CONTENIDO -->
-  <!-- ===================================== -->
-
   <div class="main-area">
 
     <header class="topbar">
@@ -173,9 +136,7 @@
     </header>
 
     <main class="page-content">
-
       <router-outlet></router-outlet>
-
     </main>
 
   </div>

@@ -1,0 +1,49 @@
+<div class="credencial-container">
+
+  <h2>Credencial Digital</h2>
+
+  <p class="descripcion">
+    Información de identificación del usuario.
+  </p>
+
+  <div class="credencial">
+
+    <div class="credencial-header">
+      MEDULAR
+    </div>
+
+    <div class="credencial-body">
+
+      <div class="avatar">
+        👤
+      </div>
+
+      <div class="datos">
+
+        <p>
+          <strong>Nombre completo:</strong>
+          {{ nombreCompleto }}
+        </p>
+
+        <p>
+          <strong>Carné / Afiliación:</strong>
+          {{ numeroAfiliacion }}
+        </p>
+
+        <p>
+          <strong>Clínica asignada:</strong>
+          {{ clinicaAsignada }}
+        </p>
+
+        <p>
+          <strong>Fecha:</strong>
+          {{ fechaActual | date:'dd/MM/yyyy' }}
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

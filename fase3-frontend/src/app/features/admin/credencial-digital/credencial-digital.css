@@ -1,0 +1,51 @@
+.credencial-container {
+  padding: 30px;
+}
+
+.descripcion {
+  color: #6b7280;
+  margin-bottom: 25px;
+}
+
+.credencial {
+  max-width: 600px;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+}
+
+.credencial-header {
+  background: #2563eb;
+  color: white;
+  padding: 18px;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.credencial-body {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding: 30px;
+}
+
+.avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #e5edff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 45px;
+}
+
+.datos p {
+  margin: 12px 0;
+}
+
+.datos strong {
+  color: #374151;
+}

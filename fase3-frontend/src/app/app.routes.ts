@@ -21,6 +21,14 @@ export const routes: Routes = [
         .then(m => m.Login)
   },
 
+  // CONTACTO DE EMERGENCIA - RUTA PÚBLICA
+{
+  path: 'public/emergency-contacts',
+  loadComponent: () =>
+    import('./features/public/emergency-contacts/emergency-contacts')
+      .then(m => m.EmergencyContacts)
+},
+
   // ADMINISTRACIÓN
   {
     path: 'admin',
@@ -67,6 +75,13 @@ export const routes: Routes = [
           import('./features/admin/medicos/medicos')
             .then(m => m.Medicos)
       },
+      // CREDENCIAL DIGITAL
+{
+  path: 'credencial-digital',
+  loadComponent: () =>
+    import('./features/admin/credencial-digital/credencial-digital')
+      .then(m => m.CredencialDigital)
+},
 
       // HORARIOS
       {

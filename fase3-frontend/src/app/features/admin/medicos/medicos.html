@@ -3,16 +3,13 @@
   <div class="titulo">
 
     <div>
-
       <h2>Gestión de médicos</h2>
 
       <p>
         Administra los perfiles médicos,
         especialidades y números de colegiado.
       </p>
-
     </div>
-
 
     <button
       class="btn-primary"
@@ -40,190 +37,183 @@
   </div>
 
 
+  <!-- FORMULARIO -->
+
   <section
-  class="form-card"
-  *ngIf="mostrarFormulario"
->
-
-  <h3>
-    {{
-      modoEdicion
-        ? 'Editar médico'
-        : 'Nuevo médico'
-    }}
-  </h3>
-
-
-  <form
-    [formGroup]="medicoForm"
-    (ngSubmit)="guardarMedico()"
+    class="form-card"
+    *ngIf="mostrarFormulario"
   >
 
+    <h3>
+      {{
+        modoEdicion
+          ? 'Editar médico'
+          : 'Nuevo médico'
+      }}
+    </h3>
 
-    <!-- USUARIO -->
 
-    <div class="form-group">
-
-      <label>
-        Usuario médico
-      </label>
+    <form
+      [formGroup]="medicoForm"
+      (ngSubmit)="guardarMedico()"
+    >
 
 
-      <select
-        formControlName="usuarioId"
-      >
+      <!-- USUARIO -->
 
-        <option
-          [ngValue]="null"
+      <div class="form-group">
+
+        <label>
+          Usuario médico
+        </label>
+
+        <select
+          formControlName="usuarioId"
         >
-          Seleccione un usuario
-        </option>
 
+          <option
+            [ngValue]="null"
+          >
+            Seleccione un usuario
+          </option>
 
-        <option
-          *ngFor="let usuario of usuariosMedicos"
-          [ngValue]="usuario.id"
-        >
+          <option
+            *ngFor="let usuario of usuariosMedicos"
+            [ngValue]="usuario.id"
+          >
+            {{ usuario.nombreCompleto }}
+            - {{ usuario.email }}
+          </option>
 
-          {{ usuario.nombreCompleto }}
-          - {{ usuario.email }}
+        </select>
 
-        </option>
-
-      </select>
-
-
-      <small
-        class="validacion"
-        *ngIf="
-          medicoForm.get('usuarioId')?.touched
-          &&
-          medicoForm.get('usuarioId')?.invalid
-        "
-      >
-
-        Debes seleccionar un usuario médico.
-
-      </small>
-
-    </div>
-
-
-    <!-- ESPECIALIDAD -->
-
-    <div class="form-group">
-
-      <label>
-        Especialidad
-      </label>
-
-
-      <select
-        formControlName="especialidadId"
-      >
-
-        <option
-          [ngValue]="null"
-        >
-          Seleccione una especialidad
-        </option>
-
-
-        <option
-          *ngFor="
-            let especialidad
-            of especialidades
+        <small
+          class="validacion"
+          *ngIf="
+            medicoForm.get('usuarioId')?.touched
+            &&
+            medicoForm.get('usuarioId')?.invalid
           "
-          [ngValue]="especialidad.id"
+        >
+          Debes seleccionar un usuario médico.
+        </small>
+
+      </div>
+
+
+      <!-- ESPECIALIDAD -->
+
+      <div class="form-group">
+
+        <label>
+          Especialidad
+        </label>
+
+        <select
+          formControlName="especialidadId"
         >
 
-          {{ especialidad.nombre }}
+          <option
+            [ngValue]="null"
+          >
+            Seleccione una especialidad
+          </option>
 
-        </option>
+          <option
+            *ngFor="let especialidad of especialidades"
+            [ngValue]="especialidad.id"
+          >
+            {{ especialidad.nombre }}
+          </option>
 
-      </select>
+        </select>
 
+        <small
+          class="validacion"
+          *ngIf="
+            medicoForm.get('especialidadId')?.touched
+            &&
+            medicoForm.get('especialidadId')?.invalid
+          "
+        >
+          Debes seleccionar una especialidad.
+        </small>
 
-      <small
-        class="validacion"
-        *ngIf="
-          medicoForm.get('especialidadId')?.touched
-          &&
-          medicoForm.get('especialidadId')?.invalid
-        "
-      >
-
-        Debes seleccionar una especialidad.
-
-      </small>
-
-    </div>
-
-
-    <!-- COLEGIADO -->
-
-    <div class="form-group">
-
-      <label>
-        Número de colegiado
-      </label>
+      </div>
 
 
-      <input
-        type="text"
-        formControlName="numeroColegiado"
-        placeholder="Ej. MED-002"
-      >
+      <!-- NÚMERO DE COLEGIADO -->
+
+      <div class="form-group">
+
+        <label>
+          Número de colegiado
+        </label>
+
+        <input
+          type="text"
+          inputmode="numeric"
+          formControlName="numeroColegiado"
+          placeholder="Ej. 12345"
+        >
+
+        <small
+          class="validacion"
+          *ngIf="
+            medicoForm.get('numeroColegiado')?.touched
+            &&
+            medicoForm.get('numeroColegiado')?.hasError('required')
+          "
+        >
+          El número de colegiado es obligatorio.
+        </small>
+
+        <small
+          class="validacion"
+          *ngIf="
+            medicoForm.get('numeroColegiado')?.touched
+            &&
+            medicoForm.get('numeroColegiado')?.hasError('pattern')
+          "
+        >
+          El número de colegiado debe contener únicamente dígitos enteros.
+        </small>
+
+      </div>
 
 
-      <small
-        class="validacion"
-        *ngIf="
-          medicoForm.get('numeroColegiado')?.touched
-          &&
-          medicoForm.get('numeroColegiado')?.invalid
-        "
-      >
+      <!-- BOTONES -->
 
-        El número de colegiado es obligatorio.
+      <div class="form-actions">
 
-      </small>
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="cancelarFormulario()"
+        >
+          Cancelar
+        </button>
 
-    </div>
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="medicoForm.invalid"
+        >
+          {{
+            modoEdicion
+              ? 'Actualizar'
+              : 'Guardar'
+          }}
+        </button>
+
+      </div>
+
+    </form>
+
+  </section>
 
 
-    <!-- BOTONES -->
-
-    <div class="form-actions">
-
-      <button
-        type="button"
-        class="btn-secondary"
-        (click)="cancelarFormulario()"
-      >
-        Cancelar
-      </button>
-
-
-      <button
-        type="submit"
-        class="btn-primary"
-      >
-
-        {{
-          modoEdicion
-            ? 'Actualizar'
-            : 'Guardar'
-        }}
-
-      </button>
-
-    </div>
-
-  </form>
-
-</section>
-
+  <!-- CARGANDO -->
 
   <div
     class="loading"
@@ -232,6 +222,8 @@
     Cargando médicos...
   </div>
 
+
+  <!-- TABLA -->
 
   <section
     class="table-card"
@@ -245,14 +237,12 @@
       <thead>
 
         <tr>
-
           <th>ID</th>
           <th>Médico</th>
           <th>Correo</th>
           <th>Especialidad</th>
           <th>Colegiado</th>
           <th>Acciones</th>
-
         </tr>
 
       </thead>
@@ -315,9 +305,7 @@
       class="empty-state"
       *ngIf="medicos.length === 0"
     >
-
       No hay médicos registrados.
-
     </div>
 
   </section>

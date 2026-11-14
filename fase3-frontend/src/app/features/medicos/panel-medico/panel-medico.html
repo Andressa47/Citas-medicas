@@ -35,7 +35,6 @@
         [class.active]="vistaActual === 'agenda'"
         (click)="cambiarVista('agenda')"
       >
-
         <span class="menu-icon">
           ⌂
         </span>
@@ -43,7 +42,6 @@
         <span>
           Mi agenda
         </span>
-
       </div>
 
 
@@ -54,7 +52,6 @@
         [class.active]="vistaActual === 'mensajes'"
         (click)="cambiarVista('mensajes')"
       >
-
         <span class="menu-icon">
           ✉
         </span>
@@ -62,22 +59,41 @@
         <span>
           Mensajes
         </span>
-
       </div>
 
-      <div
-  class="menu-item"
-  [class.active]="vistaActual === 'perfil'"
-  (click)="cambiarVista('perfil')"
->
-  <span class="menu-icon">
-    ◎
-  </span>
 
-  <span>
-    Mi perfil
-  </span>
-</div>
+      <!-- MI PERFIL -->
+
+      <div
+        class="menu-item"
+        [class.active]="vistaActual === 'perfil'"
+        (click)="cambiarVista('perfil')"
+      >
+        <span class="menu-icon">
+          ◎
+        </span>
+
+        <span>
+          Mi perfil
+        </span>
+      </div>
+
+
+      <!-- CREDENCIAL DIGITAL -->
+
+      <div
+        class="menu-item"
+        [class.active]="vistaActual === 'credencial'"
+        (click)="cambiarVista('credencial')"
+      >
+        <span class="menu-icon">
+          🪪
+        </span>
+
+        <span>
+          Credencial Digital
+        </span>
+      </div>
 
     </nav>
 
@@ -94,12 +110,10 @@
       >
 
         <div class="avatar">
-
           {{
             medico.usuario?.nombreCompleto
               ?.charAt(0)
           }}
-
         </div>
 
 
@@ -166,10 +180,6 @@
         *ngIf="vistaActual === 'agenda'"
       >
 
-        <!-- ================================ -->
-        <!-- CARGANDO -->
-        <!-- ================================ -->
-
         <div
           class="loading-card"
           *ngIf="cargando"
@@ -177,10 +187,6 @@
           Cargando información...
         </div>
 
-
-        <!-- ================================ -->
-        <!-- ERROR -->
-        <!-- ================================ -->
 
         <div
           class="mensaje-error"
@@ -190,17 +196,11 @@
         </div>
 
 
-        <!-- ================================ -->
-        <!-- CONTENIDO -->
-        <!-- ================================ -->
-
         <ng-container
           *ngIf="!cargando && medico"
         >
 
-          <!-- ===================================== -->
           <!-- PERFIL -->
-          <!-- ===================================== -->
 
           <section class="doctor-profile">
 
@@ -213,16 +213,14 @@
               <h2>
                 Dra.
                 {{
-                  medico.usuario
-                    ?.nombreCompleto
+                  medico.usuario?.nombreCompleto
                 }}
               </h2>
 
               <p>
 
                 {{
-                  medico.especialidad
-                    ?.nombre
+                  medico.especialidad?.nombre
                 }}
 
                 <span class="separator">
@@ -319,8 +317,6 @@
               </div>
 
 
-              <!-- SIN CITAS -->
-
               <div
                 class="empty-state"
                 *ngIf="citasHoy.length === 0"
@@ -344,8 +340,6 @@
 
               </div>
 
-
-              <!-- LISTADO -->
 
               <div
                 class="appointments-grid"
@@ -381,8 +375,6 @@
 
                   <div class="appointment-details">
 
-                    <!-- FECHA -->
-
                     <div class="detail-card">
 
                       <span class="detail-label">
@@ -398,8 +390,6 @@
 
                     </div>
 
-
-                    <!-- HORARIO -->
 
                     <div class="detail-card">
 
@@ -426,8 +416,6 @@
                     </div>
 
 
-                    <!-- ESPECIALIDAD -->
-
                     <div class="detail-card">
 
                       <span class="detail-label">
@@ -445,8 +433,6 @@
                   </div>
 
 
-                  <!-- MOTIVO -->
-
                   <div class="appointment-reason">
 
                     <span class="detail-label">
@@ -459,8 +445,6 @@
 
                   </div>
 
-
-                  <!-- ACCIONES -->
 
                   <div class="appointment-actions">
 
@@ -500,8 +484,6 @@
               </div>
 
 
-              <!-- SIN CITAS -->
-
               <div
                 class="empty-state"
                 *ngIf="proximasCitas.length === 0"
@@ -525,8 +507,6 @@
 
               </div>
 
-
-              <!-- LISTADO -->
 
               <div
                 class="appointments-grid"
@@ -562,8 +542,6 @@
 
                   <div class="appointment-details">
 
-                    <!-- FECHA -->
-
                     <div class="detail-card">
 
                       <span class="detail-label">
@@ -579,8 +557,6 @@
 
                     </div>
 
-
-                    <!-- HORARIO -->
 
                     <div class="detail-card">
 
@@ -607,8 +583,6 @@
                     </div>
 
 
-                    <!-- ESPECIALIDAD -->
-
                     <div class="detail-card">
 
                       <span class="detail-label">
@@ -626,8 +600,6 @@
                   </div>
 
 
-                  <!-- MOTIVO -->
-
                   <div class="appointment-reason">
 
                     <span class="detail-label">
@@ -640,8 +612,6 @@
 
                   </div>
 
-
-                  <!-- ACCIONES -->
 
                   <div class="appointment-actions">
 
@@ -672,53 +642,66 @@
       <!-- VISTA: MENSAJES -->
       <!-- ===================================== -->
 
+      <ng-container
+        *ngIf="vistaActual === 'mensajes'"
+      >
+
+        <div
+          class="loading-card"
+          *ngIf="cargando"
+        >
+          Cargando información del médico...
+        </div>
+
+
+        <div
+          class="mensaje-error"
+          *ngIf="!cargando && error"
+        >
+          {{ error }}
+        </div>
+
+
+        <app-chat-medico
+          *ngIf="!cargando && medico"
+          [medico]="medico"
+        >
+        </app-chat-medico>
+
+      </ng-container>
+
+
       <!-- ===================================== -->
-<!-- VISTA: MENSAJES -->
-<!-- ===================================== -->
+      <!-- VISTA: MI PERFIL -->
+      <!-- ===================================== -->
 
-<ng-container
-  *ngIf="vistaActual === 'mensajes'"
->
+      <ng-container
+        *ngIf="vistaActual === 'perfil'"
+      >
 
-  <div
-    class="loading-card"
-    *ngIf="cargando"
-  >
-    Cargando información del médico...
-  </div>
+        <app-perfil-medico>
+        </app-perfil-medico>
+
+      </ng-container>
 
 
-  <div
-    class="mensaje-error"
-    *ngIf="!cargando && error"
-  >
-    {{ error }}
-  </div>
+      <!-- ===================================== -->
+      <!-- VISTA: CREDENCIAL DIGITAL -->
+      <!-- ===================================== -->
 
+      <ng-container
+        *ngIf="vistaActual === 'credencial'"
+      >
 
-  <app-chat-medico
-    *ngIf="!cargando && medico"
-    [medico]="medico"
-  >
-  </app-chat-medico>
+        <app-credencial-digital
+          *ngIf="medico"
+          [medico]="medico"
+        >
+        </app-credencial-digital>
 
-</ng-container>
+      </ng-container>
 
-
-<!-- ===================================== -->
-<!-- VISTA: MI PERFIL -->
-<!-- ===================================== -->
-
-<ng-container
-  *ngIf="vistaActual === 'perfil'"
->
-
-  <app-perfil-medico>
-  </app-perfil-medico>
-
-</ng-container>
-
-</main>
+    </main>
 
   </div>
 

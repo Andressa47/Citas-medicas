@@ -1,0 +1,67 @@
+<div class="container">
+
+  <div class="card">
+
+    <h2>Contacto de emergencia</h2>
+
+    <p>
+      Ingresa el número telefónico que deseas utilizar
+      como contacto de emergencia.
+    </p>
+
+    <form
+      [formGroup]="contactoForm"
+      (ngSubmit)="actualizar()"
+    >
+
+      <label>
+        Número telefónico
+      </label>
+
+      <input
+        type="text"
+        inputmode="numeric"
+        maxlength="8"
+        formControlName="telefono"
+        placeholder="Ej. 55551234"
+      >
+
+      <small
+        *ngIf="
+          contactoForm.get('telefono')?.touched
+          &&
+          contactoForm.get('telefono')?.hasError('required')
+        "
+      >
+        El número telefónico es obligatorio.
+      </small>
+
+      <small
+        *ngIf="
+          contactoForm.get('telefono')?.touched
+          &&
+          contactoForm.get('telefono')?.hasError('pattern')
+        "
+      >
+        Ingresa exactamente 8 dígitos.
+      </small>
+
+      <button
+        type="submit"
+        [disabled]="contactoForm.invalid"
+      >
+        Actualizar información
+      </button>
+
+    </form>
+
+    <p
+      class="exito"
+      *ngIf="mensaje"
+    >
+      {{ mensaje }}
+    </p>
+
+  </div>
+
+</div>

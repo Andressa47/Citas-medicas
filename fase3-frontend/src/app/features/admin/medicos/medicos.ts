@@ -81,12 +81,12 @@ export class Medicos implements OnInit {
         ],
 
         numeroColegiado: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(3)
-          ]
-        ]
+  '',
+  [
+    Validators.required,
+    Validators.pattern(/^[0-9]+$/)
+  ]
+]
 
       });
 
@@ -537,5 +537,6 @@ export class Medicos implements OnInit {
     this.error = '';
 
   }
+
 
 }
