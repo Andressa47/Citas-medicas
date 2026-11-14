@@ -47,7 +47,9 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:4200", // Angular
-                "http://localhost:8100"  // Ionic
+                "http://localhost:8100", // Ionic
+                "http://localhost",
+                "https://localhost"
         ));
 
         configuration.setAllowedMethods(List.of(
